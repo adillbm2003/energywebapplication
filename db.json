@@ -1,0 +1,853 @@
+{
+  "kpis": [
+    {
+      "id": "kpi-1",
+      "name": "Renewable Energy Capacity",
+      "value": "15.6",
+      "unit": "MW",
+      "lastUpdated": "2026-06-09"
+    },
+    {
+      "id": "kpi-2",
+      "name": "EV Adoption",
+      "value": "842",
+      "unit": "Vehicles",
+      "lastUpdated": "2026-06-02"
+    },
+    {
+      "id": "kpi-3",
+      "name": "Solar Installations",
+      "value": "720",
+      "unit": "Systems",
+      "lastUpdated": "2026-06-08"
+    },
+    {
+      "id": "kpi-4",
+      "name": "Active Energy Projects",
+      "value": "4",
+      "unit": "Projects",
+      "lastUpdated": "2026-06-01"
+    }
+  ],
+  "news": [
+    {
+      "id": "new-1781094599976",
+      "title": "QA Smoke Test Article - Updated",
+      "summary": "This is a smoke test article summary.",
+      "content": "This is the content of the QA Smoke Test Article.",
+      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80",
+      "publishDate": "2026-06-10",
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "new-1781004871399",
+      "title": "testing",
+      "summary": "testing with testing",
+      "content": "testingggggggggggggggggggggg",
+      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80",
+      "publishDate": "2026-06-08",
+      "status": "Published",
+      "targetSite": "all"
+    },
+    {
+      "id": "news-1",
+      "title": "Bermuda Accelerates EV Transition with New EVolve Policy Guidelines",
+      "summary": "The Department of Energy launches updated guidelines under the EVolve Policy to support public vehicle electrification.",
+      "content": "Bermuda is moving forward in its transit electrification. The Department of Energy has released the EVolve Policy Implementation Plan, detailing support structures for both residential chargers and fleet operators. The policy aims to support the Department of Public Transportation's ongoing bus electrification, transitioning 50% of the public fleet by 2027.",
+      "image": "https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=600&q=80",
+      "publishDate": "2026-06-05",
+      "status": "Published",
+      "targetSite": "all"
+    },
+    {
+      "id": "news-2",
+      "title": "BHC Community Solar Programme Launches Phase 1",
+      "summary": "Solar installations begin on low-income residential units under the Bermuda Housing Corporation partnership.",
+      "content": "In partnership with the Bermuda Housing Corporation (BHC), the Department of Energy has commenced Phase 1 of the Community Solar Programme. This project installs solar PV systems on BHC-managed residential blocks, directly reducing electricity bills for tenants and feeding clean energy back into the national grid.",
+      "image": "https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=600&q=80",
+      "publishDate": "2026-05-28",
+      "status": "Published",
+      "targetSite": "all"
+    },
+    {
+      "id": "news-3",
+      "title": "Bermuda Space & Satellite consultation document released",
+      "summary": "Public feedback requested on the outer space legislative framework and commercial satellite filing fees.",
+      "content": "The Department of Energy, in coordination with international partners, has released a consultation document concerning Bermuda's satellite filing processes and outer space legislation. This document outlines administrative fee schedules, coordination requirements, and space insurance regulations.",
+      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80",
+      "publishDate": "2026-05-15",
+      "status": "Published",
+      "targetSite": "site-a"
+    }
+  ],
+  "policies": [
+    {
+      "id": "pol-1781025316643",
+      "title": "testing",
+      "category": "Energy",
+      "effectiveDate": "2026-06-09",
+      "expiryDate": "2030-10-09",
+      "description": "testing",
+      "pdfLink": "/uploads/WhatsAppImage2026-06-09at34902PM-1781025315190.jpeg",
+      "status": "In Development",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "pol-1781004938835",
+      "title": "testing",
+      "category": "Electricity",
+      "effectiveDate": "2026-06-09",
+      "description": "testing",
+      "pdfLink": "/uploads/map-pinned-1781004935700.avif",
+      "status": "Approved",
+      "targetSite": "all"
+    },
+    {
+      "id": "pol-1",
+      "title": "National Electricity Sector Policy",
+      "category": "Electricity",
+      "effectiveDate": "2020-05-12",
+      "description": "Establishes the strategic framework for Bermuda's electricity supply, focusing on reliability, affordability, and renewable energy adoption.",
+      "pdfLink": "/uploads/National-Electricity-Sector-Policy-2020.pdf",
+      "status": "In Force",
+      "targetSite": "all"
+    },
+    {
+      "id": "pol-2",
+      "title": "EVolve Policy & Implementation Plan",
+      "category": "Transportation",
+      "effectiveDate": "2024-03-15",
+      "description": "Details the roadmap for electric vehicle adoption, charging infrastructure, and public transport electrification.",
+      "pdfLink": "/uploads/EVolve-Policy-2024.pdf",
+      "status": "Approved",
+      "targetSite": "all"
+    },
+    {
+      "id": "pol-3",
+      "title": "National Electric Vehicle Charging Infrastructure Policy",
+      "category": "Transportation",
+      "effectiveDate": "2025-08-01",
+      "description": "Regulatory standards and safety codes for public and private EV charging stations across the island.",
+      "pdfLink": "#",
+      "status": "In Development",
+      "targetSite": "site-a"
+    },
+    {
+      "id": "pol-4",
+      "title": "Fuels Act 2022",
+      "category": "Fuels",
+      "effectiveDate": "2022-11-30",
+      "description": "Legislative framework governing the importation, storage, distribution, and pricing of fossil and renewable fuels in Bermuda.",
+      "pdfLink": "#",
+      "status": "In Force",
+      "targetSite": "all"
+    },
+    {
+      "id": "pol-5",
+      "title": "National Space Strategy 2020-2025",
+      "category": "Space & Satellite",
+      "effectiveDate": "2020-01-01",
+      "description": "Bermuda's strategic vision for growing the space and satellite industry, satellite filing, and orbital slot commercialization.",
+      "pdfLink": "#",
+      "status": "Completed",
+      "targetSite": "site-b"
+    }
+  ],
+  "consultations": [
+    {
+      "id": "cons-1",
+      "title": "Space & Satellite Licensing & Fees Consultation",
+      "description": "Seeking public and industry feedback on proposed administrative fees for satellite filings, earth station licensing, and space insurance requirements under the outer space legislative framework.",
+      "startDate": "2026-05-01",
+      "endDate": "2026-07-15",
+      "status": "Open",
+      "relatedLinks": "https://forum.gov.bm/en/consultations/space-satellite-fees",
+      "supportingDocs": "Space_Satellite_Consultation_2026.pdf",
+      "targetSite": "all"
+    },
+    {
+      "id": "cons-2",
+      "title": "National Fuels Policy Review",
+      "description": "Public review of the proposed transition timeline from heavy fuel oil to low-carbon alternative transition fuels for electricity generation.",
+      "startDate": "2026-01-10",
+      "endDate": "2026-03-15",
+      "status": "Closed",
+      "relatedLinks": "https://forum.gov.bm/en/consultations/fuels-policy",
+      "supportingDocs": "Fuels_Policy_Review_Draft.pdf",
+      "targetSite": "all"
+    }
+  ],
+  "staticPages": [
+    {
+      "id": "sta-1781025274187",
+      "title": "testing",
+      "route": "cynovaenergy.com",
+      "content": "testing",
+      "seoTitle": "testing",
+      "seoKeywords": "testing",
+      "seoDescription": "testing",
+      "status": "Published",
+      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80",
+      "lastUpdated": "2026-06-09",
+      "author": "Adrian Dil",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "page-1",
+      "title": "About the Department",
+      "route": "/about",
+      "lastUpdated": "2026-04-12",
+      "author": "A. Dil",
+      "targetSite": "all",
+      "seoTitle": "About the Department of Energy | Government of Bermuda",
+      "seoDescription": "Learn about the mission, goals, and team of the Department of Energy, Government of Bermuda.",
+      "seoKeywords": "department of energy, bermuda, about, government"
+    },
+    {
+      "id": "page-2",
+      "title": "Bermuda & the Global Space Economy",
+      "route": "/space-overview",
+      "lastUpdated": "2026-05-02",
+      "author": "A. Dil",
+      "targetSite": "site-b",
+      "seoTitle": "Bermuda & the Global Space Economy | Space Division",
+      "seoDescription": "Explore how Bermuda contributes to the global space economy and satellite operations.",
+      "seoKeywords": "space economy, satellite, bermuda space, space division"
+    },
+    {
+      "id": "page-3",
+      "title": "Why Choose Bermuda for Satellite Filings",
+      "route": "/why-bermuda",
+      "lastUpdated": "2026-05-10",
+      "author": "A. Dil",
+      "targetSite": "site-b",
+      "seoTitle": "Why Choose Bermuda for Satellite Filings",
+      "seoDescription": "Discover the regulatory and commercial advantages of selecting Bermuda for satellite filings.",
+      "seoKeywords": "satellite filing, regulatory, space filing, ITU"
+    },
+    {
+      "id": "page-4",
+      "title": "Electronic Communications Legislation",
+      "route": "/telecom-laws",
+      "lastUpdated": "2026-03-18",
+      "author": "Dept Staff",
+      "targetSite": "all",
+      "seoTitle": "Electronic Communications Legislation & Policies",
+      "seoDescription": "Browse official legislation, acts, and guidelines governing electronic communications in Bermuda.",
+      "seoKeywords": "telecommunication acts, laws, bermuda policies, electronic communications"
+    }
+  ],
+  "projects": [
+    {
+      "id": "pro-1781073787134",
+      "title": "testing",
+      "description": "testing",
+      "timeline": "2026 - 2028",
+      "status": "Planning",
+      "image": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80",
+      "targetSite": "all"
+    },
+    {
+      "id": "proj-1",
+      "title": "BHC Community Solar Project",
+      "description": "Installing solar PV arrays on Bermuda Housing Corporation multi-family residential complexes to provide direct utility bill savings to low-income families.",
+      "timeline": "2026 - 2028",
+      "status": "In Progress",
+      "image": "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80",
+      "targetSite": "all"
+    },
+    {
+      "id": "proj-2",
+      "title": "Balcony Solar Pilot Programme",
+      "description": "A pilot initiative demonstrating the feasibility of vertical and balcony-mounted solar panels for high-density urban residential structures in Hamilton.",
+      "timeline": "2027 - 2028",
+      "status": "Planning",
+      "image": "https://images.unsplash.com/photo-1620000617482-821324eb9a14?auto=format&fit=crop&w=600&q=80",
+      "targetSite": "all"
+    },
+    {
+      "id": "proj-3",
+      "title": "Public Sector Fleet Electrification",
+      "description": "Transitioning public buses, government sedans, and service vehicles to 100% electric, along with deploying charging infrastructure at depots.",
+      "timeline": "2024 - 2030",
+      "status": "In Progress",
+      "image": "https://images.unsplash.com/photo-1558441719-ff34b0524a24?auto=format&fit=crop&w=600&q=80",
+      "targetSite": "site-a"
+    }
+  ],
+  "tracker": [
+    {
+      "id": "track-1",
+      "name": "National Electricity Sector Policy Update",
+      "type": "Policy",
+      "sector": "Energy",
+      "stage": "Implementation",
+      "progress": 75,
+      "statusLabel": "Implementation in Progress",
+      "relatedDocs": "Electricity_Policy_2020.pdf",
+      "lastUpdated": "2026-06-01",
+      "targetSite": "all"
+    },
+    {
+      "id": "track-2",
+      "name": "EVolve Policy Framework",
+      "type": "Policy",
+      "sector": "Energy",
+      "stage": "Approval",
+      "progress": 90,
+      "statusLabel": "Approved",
+      "relatedDocs": "EVolve_Policy_Draft.pdf",
+      "lastUpdated": "2026-05-24",
+      "targetSite": "all"
+    },
+    {
+      "id": "track-3",
+      "name": "Electricity (Innovative Licence) Regulations 2023",
+      "type": "Regulation",
+      "sector": "Electricity",
+      "stage": "Implementation",
+      "progress": 100,
+      "statusLabel": "In Force",
+      "relatedDocs": "Innovative_Licence_Regs_2023.pdf",
+      "lastUpdated": "2025-12-15",
+      "targetSite": "all"
+    },
+    {
+      "id": "track-4",
+      "name": "Space & Satellite Licensing Reform",
+      "type": "Consultation",
+      "sector": "Space & Satellite",
+      "stage": "Consultation",
+      "progress": 40,
+      "statusLabel": "Open for Consultation",
+      "relatedDocs": "Space_Consultation_2026.pdf",
+      "lastUpdated": "2026-06-05",
+      "targetSite": "site-b"
+    },
+    {
+      "id": "track-5",
+      "name": "Fuels Act Amendments 2026",
+      "type": "Bill",
+      "sector": "Fuels",
+      "stage": "Planning",
+      "progress": 15,
+      "statusLabel": "In Development",
+      "relatedDocs": "",
+      "lastUpdated": "2026-06-09",
+      "targetSite": "all"
+    }
+  ],
+  "installers": [
+    {
+      "id": "ins-1781005034327",
+      "name": "cynova energy",
+      "contact": "9390369835",
+      "website": "https://cynovaenergy.com",
+      "status": "Active"
+    },
+    {
+      "id": "inst-1",
+      "name": "BE Solar",
+      "contact": "info@besolar.bm | +1 (441) 296-3700",
+      "website": "https://www.besolar.bm",
+      "status": "Active"
+    },
+    {
+      "id": "inst-2",
+      "name": "Sunnyside Solar",
+      "contact": "hello@sunnysidesolar.bm | +1 (441) 232-2234",
+      "website": "https://www.sunnysidesolar.bm",
+      "status": "Active"
+    },
+    {
+      "id": "inst-3",
+      "name": "AES Solar",
+      "contact": "contact@aes.bm | +1 (441) 295-2370",
+      "website": "https://www.aes.bm",
+      "status": "Active"
+    },
+    {
+      "id": "inst-4",
+      "name": "Greenlight Energy",
+      "contact": "info@greenlight.bm | +1 (441) 292-4775",
+      "website": "https://www.greenlight.bm",
+      "status": "Active"
+    },
+    {
+      "id": "inst-5",
+      "name": "BAC Group / Bermuda Alternative Energy",
+      "contact": "bae@bac.bm | +1 (441) 292-0881",
+      "website": "https://www.bac.bm",
+      "status": "Active"
+    }
+  ],
+  "education": [
+    {
+      "id": "edu-1781005075777",
+      "title": "testing",
+      "category": "Guides",
+      "description": "testing",
+      "attachment": "/uploads/Automatic_Employee_Roster_User_Story-1781005058138.pdf",
+      "targetSite": "all"
+    },
+    {
+      "id": "edu-1",
+      "title": "Homeowner Solar PV Guide",
+      "category": "Guides",
+      "description": "A comprehensive guide explaining solar installation, net metering, utility rates, and how to select a registered installer.",
+      "attachment": "Homeowner_Solar_Guide.pdf",
+      "targetSite": "all"
+    },
+    {
+      "id": "edu-2",
+      "title": "EV Adoption Fact Sheet",
+      "category": "Fact Sheets",
+      "description": "Quick facts comparing gasoline vehicle costs with electric vehicle charging costs in Bermuda.",
+      "attachment": "EV_Facts_Bermuda.pdf",
+      "targetSite": "all"
+    },
+    {
+      "id": "edu-3",
+      "title": "Space Camps & STEM Pathways",
+      "category": "Educational Resources",
+      "description": "Bermuda student scholarships, space camps in the USA, and local STEM workshops.",
+      "attachment": "STEM_Space_Pathways.pdf",
+      "targetSite": "site-b"
+    },
+    {
+      "id": "edu-4",
+      "title": "Bermuda Electric Transition Animation",
+      "category": "Videos",
+      "description": "A short educational video detailing Bermuda's target of 85% renewable energy by 2035.",
+      "attachment": "Energy_Transition_Intro.mp4",
+      "targetSite": "all"
+    }
+  ],
+  "media": [
+    {
+      "id": "med-1781025315213",
+      "name": "WhatsApp Image 2026-06-09 at 3.49.02 PM.jpeg",
+      "type": "image",
+      "size": "0.09 MB",
+      "uploadedBy": "Adrian Dil",
+      "date": "2026-06-09",
+      "url": "/uploads/WhatsAppImage2026-06-09at34902PM-1781025315190.jpeg"
+    },
+    {
+      "id": "med-1781005104920",
+      "name": "Air Conditioner Energy Guide.png",
+      "type": "image",
+      "size": "1.90 MB",
+      "uploadedBy": "Adrian Dil",
+      "date": "2026-06-09",
+      "url": "/uploads/AirConditionerEnergyGuide-1781005104902.png"
+    },
+    {
+      "id": "med-1781005058142",
+      "name": "Automatic_Employee_Roster_User_Story.pdf",
+      "type": "pdf",
+      "size": "0.00 MB",
+      "uploadedBy": "Adrian Dil",
+      "date": "2026-06-09",
+      "url": "/uploads/Automatic_Employee_Roster_User_Story-1781005058138.pdf"
+    },
+    {
+      "id": "med-1781004935703",
+      "name": "map-pinned.avif",
+      "type": "image",
+      "size": "0.08 MB",
+      "uploadedBy": "Adrian Dil",
+      "date": "2026-06-09",
+      "url": "/uploads/map-pinned-1781004935700.avif"
+    },
+    {
+      "id": "med-1",
+      "name": "bhc_solar_rendering.jpg",
+      "type": "image",
+      "size": "2.4 MB",
+      "uploadedBy": "A. Dil",
+      "date": "2026-06-01",
+      "url": "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?auto=format&fit=crop&w=600&q=80"
+    },
+    {
+      "id": "med-2",
+      "name": "Space_Satellite_Consultation_2026.pdf",
+      "type": "pdf",
+      "size": "4.8 MB",
+      "uploadedBy": "A. Dil",
+      "date": "2026-05-15",
+      "url": "#"
+    },
+    {
+      "id": "med-3",
+      "name": "EV_charging_standards.pdf",
+      "type": "pdf",
+      "size": "1.2 MB",
+      "uploadedBy": "Dept Staff",
+      "date": "2026-06-03",
+      "url": "#"
+    }
+  ],
+  "settings": {
+    "siteName": "Department of Energy CMS",
+    "contactEmail": "energy@gov.bm",
+    "footerInfo": "© 2026 Government of Bermuda | Department of Energy. All rights reserved.",
+    "socialFacebook": "https://facebook.com/bdagov",
+    "socialTwitter": "https://twitter.com/bdagov",
+    "socialInstagram": "https://instagram.com/bdagov",
+    "activeTheme": "website_a",
+    "contactPhone": "+1 (441) 292-4544",
+    "contactOfficeLocation": "Government Administration Building, 30 Parliament Street, Hamilton",
+    "contactHours": "8:45 AM - 5:00 PM, Monday to Friday",
+    "contactDepartmentList": "Clean Energy: energy@gov.bm | Space & Satellite: space@gov.bm | Electronic Communications: telecom@gov.bm",
+    "allowedFileTypes": "pdf,docx,xlsx,png,jpg,jpeg,mp4",
+    "maxUploadSize": "10",
+    "featuredGuide": "Solar PV Homeowner Guide",
+    "featuredTip": "Switch to energy-efficient LED light bulbs to reduce lighting electricity usage by up to 80%.",
+    "featuredResource": "Homeowner_Solar_Guide.pdf",
+    "featuredInfographic": "Bermuda Solar Potential Map"
+  },
+  "energyGuides": [
+    {
+      "id": "guide-1",
+      "title": "Solar PV Homeowner Guide",
+      "category": "Solar Energy",
+      "summary": "A comprehensive guide explaining solar installation, net metering, utility rates, and how to select a registered installer.",
+      "coverImage": "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=600&q=80",
+      "pdfAttachment": "Homeowner_Solar_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=600&q=80",
+      "keyTakeaways": "1. Save up to 40% on bills.\n2. Select certified installers.\n3. Net metering allows selling power back.",
+      "estimatedSavings": "$175 / month",
+      "publishDate": "2026-06-09",
+      "featuredFlag": true,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "guide-2",
+      "title": "Energy Efficient Air Conditioning Guide",
+      "category": "Air Conditioning",
+      "summary": "Learn how to choose and operate energy-efficient air conditioners to save money during hot Bermuda summers.",
+      "coverImage": "https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=600&q=80",
+      "pdfAttachment": "AC_Savings_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1585338107529-13afc5f02586?w=600&q=80",
+      "keyTakeaways": "1. Set thermostat to 24°C.\n2. Clean filters monthly.\n3. Choose inverter-based units.",
+      "estimatedSavings": "$50 / month",
+      "publishDate": "2026-06-07",
+      "featuredFlag": "false",
+      "status": "Published"
+    },
+    {
+      "id": "guide-3",
+      "title": "Computer & Office Electronics Energy Guide",
+      "category": "Energy Efficiency",
+      "summary": "Maximize energy efficiency for desktop computers, laptops, monitors, printers, and home office setups.",
+      "coverImage": "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=600&q=80",
+      "pdfAttachment": "Computer_Energy_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1547082299-de196ea013d6?w=600&q=80",
+      "keyTakeaways": "1. Turn off computers and monitors when not in use.\n2. Use smart power strips to eliminate phantom standby loads.\n3. Configure power management settings to sleep after 15 minutes of inactivity.",
+      "estimatedSavings": "$15 / month",
+      "publishDate": "2026-06-08",
+      "featuredFlag": false,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "guide-4",
+      "title": "Energy Efficient Refrigerator Guide",
+      "category": "Refrigeration",
+      "summary": "Tips on selecting Energy Star refrigerators and optimization strategies to reduce cooling costs in Bermuda.",
+      "coverImage": "https://images.unsplash.com/photo-1584813539806-2538b8d918c6?w=600&q=80",
+      "pdfAttachment": "Refrigerator_Energy_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1584813539806-2538b8d918c6?w=600&q=80",
+      "keyTakeaways": "1. Set refrigerator temp to 3-4°C and freezer to -18°C.\n2. Clean condenser coils twice a year to maintain airflow.\n3. Keep the refrigerator well-stocked to retain cold air.",
+      "estimatedSavings": "$20 / month",
+      "publishDate": "2026-06-08",
+      "featuredFlag": false,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "guide-5",
+      "title": "Home Lighting Efficiency Guide",
+      "category": "Lighting",
+      "summary": "A guide to upgrading home lighting to modern LED bulbs and implementing automated control systems.",
+      "coverImage": "https://images.unsplash.com/photo-1550985616-10810253b84d?w=600&q=80",
+      "pdfAttachment": "Lighting_Efficiency_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1550985616-10810253b84d?w=600&q=80",
+      "keyTakeaways": "1. Replace old incandescent bulbs with Energy Star LEDs.\n2. LEDs use up to 80% less energy and last 25x longer.\n3. Install motion sensors, timers, or smart dimmers for outdoor lighting.",
+      "estimatedSavings": "$25 / month",
+      "publishDate": "2026-06-07",
+      "featuredFlag": false,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "guide-6",
+      "title": "Solar Water Heater Installation Guide",
+      "category": "Water Heating",
+      "summary": "Use Bermuda's abundant sunlight to heat domestic water, reducing utility demand and heating bills.",
+      "coverImage": "https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=600&q=80",
+      "pdfAttachment": "Solar_Water_Heater_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1613665813446-82a78c468a1d?w=600&q=80",
+      "keyTakeaways": "1. Solar water heaters can provide up to 80% of domestic hot water.\n2. Inquire about government incentives and import duty exemptions.\n3. Ensure professional roof mounting for wind resistance.",
+      "estimatedSavings": "$60 / month",
+      "publishDate": "2026-06-06",
+      "featuredFlag": false,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "guide-7",
+      "title": "Water Heater Efficiency Guide",
+      "category": "Water Heating",
+      "summary": "Improve the performance of conventional water heaters and learn about tankless on-demand options.",
+      "coverImage": "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=600&q=80",
+      "pdfAttachment": "Water_Heater_Efficiency_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=600&q=80",
+      "keyTakeaways": "1. Wrap water heater tanks in insulation blankets.\n2. Lower thermostat settings to 50°C (120°F).\n3. Drain tanks annually to remove sediment and minerals.",
+      "estimatedSavings": "$30 / month",
+      "publishDate": "2026-06-05",
+      "featuredFlag": false,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "guide-8",
+      "title": "Electric Vehicle Buyer & Charger Guide",
+      "category": "Electric Vehicles",
+      "summary": "An overview of electric vehicles (EVs) suitable for Bermuda, charging guidelines, and road tax exemptions.",
+      "coverImage": "https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&q=80",
+      "pdfAttachment": "EV_Buyer_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&q=80",
+      "keyTakeaways": "1. EVs cost about 60% less to operate than petrol cars.\n2. Install a Level 2 home charger for overnight charging.\n3. Enjoy zero road tax for the first year of registration.",
+      "estimatedSavings": "$120 / month",
+      "publishDate": "2026-06-05",
+      "featuredFlag": false,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "guide-9",
+      "title": "Television & Media Center Energy Guide",
+      "category": "Home Appliances",
+      "summary": "Manage power consumption of smart TVs, gaming consoles, soundbars, and streaming devices.",
+      "coverImage": "https://images.unsplash.com/photo-1593789198777-f29bc259780e?w=600&q=80",
+      "pdfAttachment": "TV_Energy_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1593789198777-f29bc259780e?w=600&q=80",
+      "keyTakeaways": "1. Enable automatic brightness control or Eco Mode on your TV.\n2. Disable standby mode or quick-start on electronics.\n3. Unplug game consoles or use smart power outlets.",
+      "estimatedSavings": "$10 / month",
+      "publishDate": "2026-06-04",
+      "featuredFlag": false,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "guide-10",
+      "title": "Washing Machine & Laundry Efficiency Guide",
+      "category": "Home Appliances",
+      "summary": "Get the most out of washing machines and dryers by adjusting wash cycles and load sizes.",
+      "coverImage": "https://images.unsplash.com/photo-1545173168-9f1947eebd01?w=600&q=80",
+      "pdfAttachment": "Washing_Machine_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1545173168-9f1947eebd01?w=600&q=80",
+      "keyTakeaways": "1. Wash clothes in cold water to save 90% of laundry energy.\n2. Run full loads to maximize water and power efficiency.\n3. Clean the lint filter in the dryer after every load.",
+      "estimatedSavings": "$18 / month",
+      "publishDate": "2026-06-03",
+      "featuredFlag": false,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "guide-11",
+      "title": "Space Heater Safety & Efficiency Guide",
+      "category": "Heating",
+      "summary": "Guidelines on operating space heaters efficiently and safely during chilly winter months in Bermuda.",
+      "coverImage": "https://images.unsplash.com/photo-1614748057211-12f3ce631e84?w=600&q=80",
+      "pdfAttachment": "Space_Heater_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1614748057211-12f3ce631e84?w=600&q=80",
+      "keyTakeaways": "1. Use zone heating to warm only the room you are in.\n2. Choose thermostatic models that shut off automatically.\n3. Place heaters away from curtains, furniture, and water.",
+      "estimatedSavings": "$15 / month",
+      "publishDate": "2026-06-02",
+      "featuredFlag": false,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    },
+    {
+      "id": "guide-12",
+      "title": "Micro Wind Turbine Installation Guide",
+      "category": "Renewable Energy",
+      "summary": "An assessment of wind energy feasibility for coastal properties and small-scale wind turbine technologies.",
+      "coverImage": "https://images.unsplash.com/photo-1507608158173-1dcec673a2e5?w=600&q=80",
+      "pdfAttachment": "Micro_Wind_Guide.pdf",
+      "featuredImage": "https://images.unsplash.com/photo-1507608158173-1dcec673a2e5?w=600&q=80",
+      "keyTakeaways": "1. Micro wind turbines require consistent coastal winds.\n2. Consult planning regulations regarding height limits.\n3. Best used in hybrid configuration with solar PV panels.",
+      "estimatedSavings": "$45 / month",
+      "publishDate": "2026-06-01",
+      "featuredFlag": false,
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    }
+  ],
+  "infographics": [
+    {
+      "id": "info-1",
+      "title": "Bermuda Solar Potential Map",
+      "image": "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=600&q=80",
+      "description": "A visual overview of Bermuda solar potential and solar array coverage across parishes.",
+      "category": "Solar Energy",
+      "publishDate": "2026-06-08"
+    },
+    {
+      "id": "info-2",
+      "title": "Electric Vehicle Fleet Growth 2020-2026",
+      "image": "https://images.unsplash.com/photo-1563720223185-11003d516935?w=600&q=80",
+      "description": "Visualizing the exponential rise of electric vehicles and public charging infrastructure on the island.",
+      "category": "Electric Vehicles",
+      "publishDate": "2026-06-05"
+    }
+  ],
+  "roadmaps": [
+    {
+      "id": "road-1",
+      "title": "Bermuda Energy Transition Roadmap",
+      "description": "The official timeline and targets for Bermuda's shift towards 85% renewable energy by 2035.",
+      "timelineType": "Energy Transition",
+      "milestones": "[{\"year\": \"2025\", \"title\": \"15MW Solar Achieved\", \"description\": \"Reached 15MW of installed utility and community solar.\", \"status\": \"Completed\"}, {\"year\": \"2027\", \"title\": \"50% Fleet Electrification\", \"description\": \"Transition 50% of the public transit bus fleet to electric.\", \"status\": \"In Progress\"}, {\"year\": \"2030\", \"title\": \"30% Renewables\", \"description\": \"Integrate 30% renewable electricity into the national grid.\", \"status\": \"Planning\"}, {\"year\": \"2035\", \"title\": \"85% Renewables Goal\", \"description\": \"Target date for 85% of total power from renewable resources.\", \"status\": \"Planning\"}]"
+    }
+  ],
+  "bursaries": [
+    {
+      "id": "bur-1781068289362",
+      "name": "Node Test Recipient",
+      "school": "Bermuda College",
+      "fieldOfStudy": "Applied Sciences",
+      "academicYear": "2026/2027",
+      "status": "Published"
+    },
+    {
+      "id": "bur-1781006609799",
+      "name": "Marcus Outerbridge",
+      "fieldOfStudy": "Marine Biology",
+      "school": "Bermuda Institute of Ocean Sciences",
+      "amount": "7500",
+      "academicYear": "2026",
+      "photoUrl": "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=300&q=80",
+      "guidelinesUrl": "",
+      "bio": "Marcus studies local reef resilience and intends to lead government marine resource planning.",
+      "status": "Published",
+      "targetSite": "all",
+      "modifiedBy": "Adrian Dil"
+    }
+  ],
+  "spaceContent": [
+    {
+      "id": "spa-1781006687134",
+      "title": "Orbital Slots Spectrum Management Guideline",
+      "category": "Satellite Filing Guidelines",
+      "content": "<p>This guideline details ITU coordination procedures for Bermuda-registered slots.</p>",
+      "pdfLink": "",
+      "status": "Published",
+      "targetSite": "site-b",
+      "modifiedBy": "Adrian Dil"
+    }
+  ],
+  "recycleBin": [],
+  "versions": [],
+  "logs": [
+    {
+      "id": "log-1781094680682-801",
+      "user": "Adrian Dil",
+      "action": "Updated item",
+      "contentType": "news",
+      "contentName": "QA Smoke Test Article",
+      "timestamp": "2026-06-10T12:31:20.683Z"
+    },
+    {
+      "id": "log-1781094599996-434",
+      "user": "Adrian Dil",
+      "action": "Created item",
+      "contentType": "news",
+      "contentName": "QA Smoke Test Article",
+      "timestamp": "2026-06-10T12:29:59.996Z"
+    },
+    {
+      "id": "log-1781090412770-665",
+      "user": "Adrian Dil",
+      "action": "Updated item",
+      "contentType": "energyGuides",
+      "contentName": "Solar PV Homeowner Guide",
+      "timestamp": "2026-06-10T11:20:12.771Z"
+    },
+    {
+      "id": "log-1781073787139-523",
+      "user": "Adrian Dil",
+      "action": "Created item",
+      "contentType": "projects",
+      "contentName": "testing",
+      "timestamp": "2026-06-10T06:43:07.139Z"
+    },
+    {
+      "id": "log-1781068289369-543",
+      "user": "Adrian Dil",
+      "action": "Created item",
+      "contentType": "bursaries",
+      "contentName": "Node Test Recipient",
+      "timestamp": "2026-06-10T05:11:29.369Z"
+    },
+    {
+      "id": "log-1781025316647-259",
+      "user": "Adrian Dil",
+      "action": "Created item",
+      "contentType": "policies",
+      "contentName": "testing",
+      "timestamp": "2026-06-09T17:15:16.647Z"
+    },
+    {
+      "id": "log-1781025315218-215",
+      "user": "Adrian Dil",
+      "action": "Uploaded file",
+      "contentType": "media",
+      "contentName": "WhatsApp Image 2026-06-09 at 3.49.02 PM.jpeg",
+      "timestamp": "2026-06-09T17:15:15.218Z"
+    },
+    {
+      "id": "log-1781025274194-482",
+      "user": "Adrian Dil",
+      "action": "Created item",
+      "contentType": "staticPages",
+      "contentName": "testing",
+      "timestamp": "2026-06-09T17:14:34.195Z"
+    },
+    {
+      "id": "log-1781006687140-684",
+      "user": "Adrian Dil",
+      "action": "Created item",
+      "contentType": "spaceContent",
+      "contentName": "Orbital Slots Spectrum Management Guideline",
+      "timestamp": "2026-06-09T12:04:47.140Z"
+    },
+    {
+      "id": "log-1781006609802-866",
+      "user": "Adrian Dil",
+      "action": "Created item",
+      "contentType": "bursaries",
+      "contentName": "Marcus Outerbridge",
+      "timestamp": "2026-06-09T12:03:29.802Z"
+    }
+  ]
+}

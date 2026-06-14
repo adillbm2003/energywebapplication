@@ -1,0 +1,2193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<meta name="color-scheme" content="only light"/>
+<title>Home Energy Simulator</title>
+<style>
+:root{
+  --bg:#f0f2f5;--card:#ffffff;--dark:#0d1b2a;--dark2:#162032;
+  --neon:#16a34a;--cyan:#0284c7;--amber:#d97706;--red:#dc2626;
+  --text:#1e293b;--muted:#64748b;--border:#e2e8f0;
+  --green:#16a34a;--forest:#0284c7;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--text);font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;-webkit-font-smoothing:antialiased}
+body{padding:10px;max-width:1440px;margin:0 auto}
+h1,h2,h3{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+
+/* ─── HEADER ─── */
+header{background:linear-gradient(135deg,#0d1b2a,#162540);border-radius:14px;padding:13px 20px;
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.25)}
+.logo{width:44px;height:44px;border-radius:11px;background:linear-gradient(135deg,#14532d,#166534);
+  border:1px solid rgba(45,255,122,.35);display:grid;place-items:center;font-size:22px;flex-shrink:0}
+.htitle h1{font-size:clamp(15px,1.9vw,21px);font-weight:700;color:#fff;line-height:1.2;letter-spacing:.01em}
+.htitle p{font-size:10.5px;color:#94a3b8;margin-top:3px;letter-spacing:.02em}
+.hstats{display:flex;gap:8px;flex-wrap:wrap}
+.hstat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:9px;padding:6px 13px;text-align:center}
+.hstat .k{font-size:8.5px;text-transform:uppercase;letter-spacing:.08em;color:#94a3b8}
+.hstat .v{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:14px;font-weight:700;color:#4ade80;margin-top:1px;font-variant-numeric:tabular-nums}
+.runbar{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{border:1px solid rgba(255,255,255,.2);color:#e2e8f0;border-radius:999px;padding:8px 16px;font-size:12px;font-weight:700;
+  display:inline-flex;align-items:center;gap:6px;transition:.15s;background:rgba(255,255,255,.08);cursor:pointer;letter-spacing:.03em}
+.pill:hover{border-color:#4ade80;color:#4ade80}
+.pill.primary{background:#16a34a;color:#fff;border-color:transparent;box-shadow:0 0 18px rgba(22,163,74,.4)}
+.pill.primary:hover{background:#15803d}
+select.speed{background:rgba(255,255,255,.1);color:#e2e8f0;border:1px solid rgba(255,255,255,.2);
+  border-radius:999px;padding:7px 12px;font-size:12px;font-family:inherit;cursor:pointer}
+
+/* ─── GRID (dashboard below the house) ─── */
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px;margin-top:14px}
+/* BUG FIX #4 START */
+@media(min-width:1025px){
+  body{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(280px,.48fr);gap:12px;align-items:start}
+  header{grid-column:1/-1}
+  .house-fullview{grid-column:1;grid-row:2;margin-top:0}
+  .grid{display:contents}
+  .grid>div:first-child{grid-column:1;grid-row:3}
+  .grid>.rcol{grid-column:2;grid-row:2 / span 2}
+}
+/* BUG FIX #4 END */
+@media(max-width:1024px){.grid{grid-template-columns:1fr}}
+
+/* people pose switching */
+#bed-scene .pose-read{display:none}
+#bed-scene.lit .pose-read{display:inline}
+#bed-scene.lit .pose-sleep{display:none}
+/* BUG FIX #2 START */
+#sofa-scene .pose-watch{display:none}
+#sofa-scene.lit .pose-watch{display:inline}
+#sofa-scene.lit .pose-sleep{display:none}
+/* BUG FIX #2 END */
+#tub-person{opacity:0;transition:opacity .45s;pointer-events:none}
+#tub-person.show{opacity:1}
+/* pool */
+#pool-g .pool-jet{opacity:0;transition:.3s}
+#pool-g .ripple{opacity:0}
+#pool-g.on .pool-jet{opacity:1}
+#pool-g.on .pool-jet path{animation:jetp 1.5s ease-in-out infinite;transform-box:fill-box}
+@keyframes jetp{50%{transform:translateX(7px)}}
+#pool-g.on .ripple{opacity:1;animation:rip 2s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes rip{from{transform:scale(.4);opacity:.9}to{transform:scale(1.8);opacity:0}}
+.pool-shimmer path{animation:wob 6s ease-in-out infinite;transform-box:fill-box}
+
+/* ─── LIVE USAGE BAR under the house ─── */
+.livebar{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px;
+  background:linear-gradient(135deg,#0d1b2a,#13263e);border-radius:12px;padding:12px 14px;
+  border:1px solid #1e3048}
+.livebar .lb{display:flex;flex-direction:column;gap:2px;text-align:center;border-right:1px solid rgba(255,255,255,.07)}
+.livebar .lb:last-child{border-right:none}
+.livebar .lk{font-size:8.5px;text-transform:uppercase;letter-spacing:.1em;color:#4a6a85;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+.livebar .lv{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:clamp(15px,2.2vw,21px);font-weight:700;color:#4ade80;transition:.2s;font-variant-numeric:tabular-nums}
+.livebar .lv.amber{color:#fbbf24}
+@media(max-width:640px){.livebar{grid-template-columns:repeat(2,1fr)}.livebar .lb:nth-child(2){border-right:none}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06),0 4px 16px rgba(0,0,0,.06)}
+.card h2{font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:7px;
+  color:var(--text);text-transform:uppercase;letter-spacing:.07em}
+.card h2 .tag{margin-left:auto;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:9.5px;color:var(--neon);
+  background:rgba(22,163,74,.1);border:1px solid rgba(22,163,74,.25);padding:2px 8px;border-radius:999px}
+.sub{font-size:11px;color:var(--muted);margin-top:2px}
+
+/* ═══════════════════════════════════════
+   BERMUDA HOUSE SCENE (SVG)
+═══════════════════════════════════════ */
+.house-fullview{margin-top:12px;border-radius:14px;overflow:hidden;background:linear-gradient(to bottom,#4fb6e8,#a3dcf6 62%,#dbf2fb);
+  box-shadow:0 4px 24px rgba(0,0,0,.22);border:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column}
+.house-fullview.night-bg{background:linear-gradient(to bottom,#0a1733,#2a4170)}
+.house-svgwrap{position:relative;flex:1;min-height:0;overflow:hidden}
+/* Fit the whole house + garden in the first viewport: size the scene by available
+   height (header + live bar accounted for). The sea/sky/grass layers extend beyond
+   the viewBox (overflow:visible), so they fill the panel width with scenery. */
+#houseSvg{display:block;height:calc(100vh - 252px);min-height:430px;width:auto;max-width:100%;margin:0 auto;overflow:visible}
+html.is-embedded #houseSvg{height:min(520px,55vw);min-height:380px;max-height:540px}
+html.is-embedded .house-svgwrap{flex:none}
+@media(max-width:1024px){#houseSvg{width:100%;height:auto;min-height:0}html.is-embedded #houseSvg{min-height:300px;max-height:none}}
+#dnBtn{position:absolute;top:10px;left:10px;z-index:5;background:rgba(255,255,255,.92)}
+.house-badge{position:absolute;top:10px;right:10px;z-index:5;background:rgba(22,163,74,.18);
+  border:1px solid rgba(74,222,128,.4);color:#4ade80;font-size:9.5px;font-weight:700;
+  padding:3px 10px;border-radius:999px;letter-spacing:.06em;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+.house-fullview .livebar{border-radius:0;border-top:1px solid rgba(255,255,255,.08)}
+.svg-tip{position:fixed;background:#0d1b2a;color:#fff;font:600 11px/1.2 'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;padding:6px 10px;border-radius:6px;
+  pointer-events:none;opacity:0;transform:translate(-50%,-100%) scale(.92);transition:.12s;z-index:99;white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.svg-tip.show{opacity:1;transform:translate(-50%,-100%) scale(1)}
+
+.app-obj{cursor:pointer;transition:filter .15s,opacity .25s}
+.app-obj:hover{filter:brightness(1.12) drop-shadow(0 0 7px rgba(22,163,74,.7))}
+.app-obj:active{filter:brightness(.95)}
+.app-obj.is-off{opacity:.42;filter:grayscale(.85)}
+.app-obj.is-off:hover{opacity:.85;filter:grayscale(.25) drop-shadow(0 0 7px rgba(220,38,38,.55))}
+
+@keyframes rot{to{transform:rotate(360deg)}}
+@keyframes pulse{50%{opacity:.3}}
+.blades,.drum-spin,.wheel-spin{transform-box:fill-box;transform-origin:center}
+.fan.spinning .blades{animation:rot .6s linear infinite}
+#bath-vent.spinning .blades{animation:rot .45s linear infinite}
+#washer-drum.on .drum-spin{animation:rot 1s linear infinite}
+#washer-drum.on .drum-face{fill:#a9d3f5}
+#dryer-drum.on .drum-spin{animation:rot .85s linear infinite}
+#dryer-drum.on .drum-face{fill:#f6d98e}
+.burner.on{fill:#ff7033;stroke:#ffc18a;animation:flick 1.6s ease-in-out infinite}
+@keyframes flick{0%,100%{filter:drop-shadow(0 0 3px #ff7033)}50%{filter:drop-shadow(0 0 8px #ffa45e)}}
+#stove-g .oven-glass{fill:#1a1d24;transition:.3s}
+#stove-g.on .oven-glass{fill:#7a3416;filter:drop-shadow(0 0 4px #ff8c42)}
+#stove-g .hood-light{fill:#3a3f46;transition:.3s}
+#stove-g.on .hood-light{fill:#ffe9a0;filter:drop-shadow(0 0 5px #ffe9a0)}
+#wh-light{fill:#7c828c}
+#wh-light.on{fill:#f59e0b;filter:drop-shadow(0 0 5px #f59e0b);animation:pulse 1.4s ease-in-out infinite}
+.acu .led{fill:#9aa3ad}.acu .air{opacity:0;transform-box:fill-box}
+.acu.on .led{fill:#34d399;filter:drop-shadow(0 0 3px #34d399)}
+.acu.on .air{opacity:.9;animation:airflow 2.1s ease-in-out infinite}
+@keyframes airflow{0%,100%{transform:translateY(0);opacity:.2}50%{transform:translateY(5px);opacity:.95}}
+#tv-g .screen{fill:#0e1220}
+#tv-g .tvc{opacity:0;transition:.3s}
+#tv-g.on .tvc{opacity:1}
+#tv-g #tv-glow{opacity:0;transition:.4s}
+#tv-g.on #tv-glow{opacity:.5;animation:flicktv 4s linear infinite}
+@keyframes flicktv{0%,100%{opacity:.5}12%{opacity:.32}25%{opacity:.56}40%{opacity:.4}60%{opacity:.6}80%{opacity:.36}}
+#fridge-g .fr-led{fill:#8a929c}
+#fridge-g.on .fr-led{fill:#67e8f9;filter:drop-shadow(0 0 3px #67e8f9);animation:pulse 2.4s infinite}
+.lamp .cone{opacity:0;transition:.35s}
+.lamp.on .cone{opacity:.34}
+.lamp.on .bulbshade{fill:#ffd75e;filter:drop-shadow(0 0 6px #ffd75e)}
+#wpump-wheel.on .wheel-spin,#ppump-wheel.on .wheel-spin{animation:rot .55s linear infinite}
+.zz{opacity:0;animation:zfloat 3s ease-in-out infinite}
+.z2{animation-delay:1s}.z3{animation-delay:2s}
+@keyframes zfloat{0%{opacity:0}30%{opacity:.95}100%{opacity:0}}
+.cloudg{animation:drift 60s linear infinite}
+.cloudg.c2{animation-duration:85s;animation-direction:reverse}
+@keyframes drift{from{transform:translateX(-40px)}to{transform:translateX(70px)}}
+.waves path{animation:wob 5s ease-in-out infinite;transform-box:fill-box}
+/* CRUISE SHIPS START — decorative only, never part of the bill */
+.ship-bob{animation:shipBob 5.5s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+@keyframes shipBob{0%,100%{transform:translateY(0) rotate(-.5deg)}50%{transform:translateY(-3.5px) rotate(.6deg)}}
+.ship-drift-far{animation:driftFar 30s ease-in-out infinite alternate}
+@keyframes driftFar{from{transform:translateX(-8px)}to{transform:translateX(20px)}}
+.ship-drift-near{animation:driftNear 22s ease-in-out infinite alternate}
+@keyframes driftNear{from{transform:translateX(8px)}to{transform:translateX(-42px)}}
+.ship-win{fill:#28506e;transition:fill .7s}
+#houseSvg.night .ship-win{fill:#ffe28a}
+.ship-glow{opacity:0;transition:opacity .7s}
+#houseSvg.night .ship-glow{opacity:.75}
+.ship-beacon{opacity:0}
+#houseSvg.night .ship-beacon{animation:shipBeacon 1.7s ease-in-out infinite}
+@keyframes shipBeacon{0%,100%{opacity:.2}50%{opacity:1}}
+.ship-smoke circle{animation:shipSmoke 3.4s linear infinite;transform-box:fill-box}
+.ship-smoke circle:nth-child(2){animation-delay:1.1s}
+.ship-smoke circle:nth-child(3){animation-delay:2.2s}
+@keyframes shipSmoke{0%{transform:translate(0,0) scale(.5);opacity:.55}100%{transform:translate(14px,-30px) scale(1.5);opacity:0}}
+.ship-wake path{animation:wob 4s ease-in-out infinite;transform-box:fill-box}
+/* CRUISE SHIPS END */
+@keyframes wob{50%{transform:translateX(8px)}}
+.room-shade{transition:opacity .45s}
+.breaker-led{animation:pulse 2s infinite}
+.nightonly{opacity:0;transition:opacity .9s}
+#houseSvg.night .nightonly{opacity:1}
+.dayonly{transition:opacity .9s}
+#houseSvg.night .dayonly{opacity:0}
+.nightshade{opacity:0;transition:opacity .9s}
+#houseSvg.night .nightshade{opacity:.45}
+/* NIGHT SEA: the water itself changes colour at night, not just an overlay */
+#houseSvg.night .sea-base{fill:url(#seaNightG)}
+#houseSvg.night .waves{opacity:.3}
+.glass{transition:fill .9s}
+#houseSvg.night .glass{fill:#33486e}
+@media(prefers-reduced-motion:reduce){#houseSvg *{animation:none!important}}
+
+/* SOLAR FEATURE START */
+.solar-panel{fill:#123b63;stroke:#60a5fa;stroke-width:1.6}
+.solar-cell{stroke:#93c5fd;stroke-width:.8;opacity:.75}
+.solar-flow{stroke:#facc15;stroke-width:3;stroke-linecap:round;stroke-dasharray:6 10;filter:drop-shadow(0 0 4px rgba(250,204,21,.8));animation:solarFlow 1.2s linear infinite}
+#houseSvg.night .solar-flow{opacity:0}
+@keyframes solarFlow{to{stroke-dashoffset:-32}}
+.solar-controls{display:flex;flex-direction:column;gap:10px;margin-top:10px}
+.solar-options{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.solar-options button{border:1px solid var(--border);background:#f8fafc;border-radius:7px;padding:7px 4px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer}
+.solar-options button.on{background:#16a34a;color:#fff;border-color:#15803d}
+.solar-custom{display:flex;align-items:center;gap:8px}
+.solar-custom label{font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.solar-custom input{width:88px;border:1px solid var(--border);border-radius:7px;padding:7px 8px;font:700 12px 'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;color:var(--text)}
+.solar-stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:9px}
+/* POWER MODE (3 phases) */
+.mode-options{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+.mode-options button{border:1px solid var(--border);background:#f8fafc;border-radius:7px;padding:9px 4px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;transition:.15s}
+.mode-options button.on{background:#0284c7;color:#fff;border-color:#0369a1;box-shadow:0 0 10px rgba(2,132,199,.3)}
+#solarSizeWrap{transition:.2s}
+#solarSizeWrap.disabled{opacity:.4;pointer-events:none}
+.solar-shortfall{display:none;font-size:11px;font-weight:700;color:#b45309;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:8px 10px;margin-top:4px}
+/* SOLAR FEATURE END */
+
+/* ─── CONTROLS LIST ─── */
+.arows{display:flex;flex-direction:column;gap:1px}
+.arow{padding:9px 3px;border-bottom:1px solid #f1f5f9;transition:background .12s}
+.arow:last-child{border-bottom:none}
+.arow:hover{background:#f8fafc;border-radius:7px}
+.atop{display:flex;align-items:center;gap:9px}
+.sw{position:relative;width:38px;height:21px;border-radius:999px;background:#e2e8f0;border:1px solid #cbd5e1;flex-shrink:0;transition:.17s;cursor:pointer}
+.sw.on{background:#16a34a;border-color:#15803d}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:13px;height:13px;border-radius:50%;background:white;transition:.17s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.sw.on::after{left:20px}
+.aname{font-weight:600;font-size:12.5px;flex:1;min-width:0;color:var(--text)}
+.aname small{display:block;color:var(--muted);font-weight:400;font-size:10px;margin-top:1px}
+.akwh{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:11.5px;font-weight:700;color:var(--neon);text-align:right;min-width:70px}
+.akwh span{display:block;font-size:8.5px;color:var(--muted);font-weight:400}
+.infob{width:19px;height:19px;border-radius:5px;border:1px solid var(--border);color:var(--muted);font-size:9.5px;font-weight:700;flex-shrink:0;cursor:pointer;transition:.13s}
+.infob:hover{border-color:var(--cyan);color:var(--cyan)}
+.actrl{display:flex;align-items:center;gap:9px;margin-top:6px;padding-left:47px;flex-wrap:wrap}
+input[type=range]{-webkit-appearance:none;appearance:none;height:4px;border-radius:999px;
+  background:linear-gradient(90deg,var(--neon) var(--p,40%),#e2e8f0 var(--p,40%));flex:1;min-width:100px;cursor:pointer}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--neon);border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+input[type=range]:disabled{opacity:.3;cursor:not-allowed}
+.hrs{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:10px;font-weight:700;min-width:48px;text-align:right;color:var(--text)}
+.mseg{display:inline-flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;background:#f8fafc}
+.mseg button{font-size:9px;font-weight:700;color:var(--muted);padding:3px 7px;text-transform:uppercase;letter-spacing:.04em;transition:.12s;cursor:pointer;border:none;background:none;font-family:inherit}
+.mseg button.on{background:#16a34a;color:white}
+.tip{display:none;margin:5px 0 0 47px;font-size:10.5px;color:var(--muted);background:#f0fdf4;
+  border-left:2px solid var(--neon);border-radius:0 6px 6px 0;padding:6px 10px;line-height:1.55}
+.tip.show{display:block}
+.tot-row{display:flex;justify-content:space-between;align-items:center;margin-top:11px;
+  padding-top:11px;border-top:1px solid var(--border)}
+.tot-row b{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:12px;color:var(--text);text-transform:uppercase;letter-spacing:.05em}
+.tot-row .v{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:19px;font-weight:700;color:var(--neon)}
+
+/* ─── RIGHT COLUMN (dark) ─── */
+.rcol .card{background:#0f1e2e;border-color:#1e3048;color:#cce0f5}
+.rcol .card h2{color:#e2f0ff}
+.rcol .card h2 .tag{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.25);color:#4ade80}
+.rcol .sub{color:#4a6a85}
+.billwrap{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.gauge svg{width:100%;max-width:195px;display:block;margin:0 auto}
+.bignum{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-weight:700;font-size:clamp(22px,3vw,30px);color:#4ade80;line-height:1;margin-top:-4px;font-variant-numeric:tabular-nums}
+.bignum.warn{color:#fbbf24}.bignum.bad{color:#f87171;animation:bp 1s ease-in-out infinite}
+@keyframes bp{0%,100%{text-shadow:none}50%{text-shadow:0 0 16px rgba(248,113,113,.6)}}
+.save-card{background:#162030;border:1px solid #1e3048;border-radius:9px;padding:12px;display:flex;flex-direction:column;justify-content:center;gap:4px;text-align:center}
+.save-card .lbl{font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:#4a6a85}
+.save-card .amt{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:21px;font-weight:700;color:#4ade80}
+.save-card .save{font-size:11px;font-weight:600;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);padding:5px;border-radius:5px;margin-top:4px;color:#cce0f5}
+.bdline{display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.bdline span:first-child{color:#4a6a85}
+.bdgrand{border-bottom:none;border-top:1px solid #1e3048;margin-top:3px;padding-top:8px;display:flex;justify-content:space-between}
+.bdgrand b{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:11.5px;color:#e2f0ff}
+.bdgrand .mono{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:16px;font-weight:700;color:#4ade80}
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{background:#162030;border:1px solid #1e3048;border-radius:10px;padding:12px;text-align:center}
+.stat .k{font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;color:#4a6a85;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+.grade{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-weight:900;font-size:44px;line-height:1.1;text-shadow:0 0 20px currentColor}
+.stat .v{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-weight:700;font-size:20px;color:#e2f0ff}
+.scorebar{height:5px;border-radius:999px;background:rgba(255,255,255,.07);margin-top:9px;overflow:hidden}
+.scorebar i{display:block;height:100%;border-radius:999px;transition:width .5s}
+.dn{display:flex;flex-direction:column;gap:6px;margin-top:7px}
+.dnrow{display:flex;align-items:center;gap:8px;font-size:11px;color:#cce0f5}
+.dnrow .nm{width:60px;color:#4a6a85;font-weight:600}
+.dnbar{flex:1;height:10px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden}
+.dnbar i{display:block;height:100%;transition:width .5s;border-radius:999px}
+.dnrow .vv{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:10px;font-weight:700;min-width:54px;text-align:right}
+.legend{display:flex;gap:12px;justify-content:flex-end;font-size:10px;color:#4a6a85;margin-bottom:4px}
+.legend i{display:inline-block;width:10px;height:2.5px;border-radius:2px;vertical-align:middle;margin-right:3px}
+.dayread{font-size:10.5px;color:#4a6a85;margin-top:5px}
+.dayread b{color:#4ade80;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+.insights{display:flex;flex-direction:column;gap:6px}
+.ins{display:flex;gap:8px;align-items:flex-start;font-size:11px;line-height:1.5;padding:8px 10px;
+  border-radius:7px;border:1px solid #1e3048;background:#162030;color:#cce0f5}
+.ins .dot{width:6px;height:6px;border-radius:50%;margin-top:4px;flex-shrink:0;background:#4ade80}
+.ins.warn{background:rgba(251,191,36,.04);border-color:rgba(251,191,36,.18)}.ins.warn .dot{background:#fbbf24}
+.ins.bad{background:rgba(248,113,113,.04);border-color:rgba(248,113,113,.18)}.ins.bad .dot{background:#f87171}
+.foot{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.btn{border:1px solid var(--border);background:white;color:var(--text);border-radius:9px;padding:8px 14px;font-weight:600;font-size:12px;
+  display:inline-flex;align-items:center;gap:6px;transition:.13s;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.07)}
+.btn:hover{border-color:var(--neon);color:var(--neon)}
+.btn.solid{background:#f0fdf4;color:var(--neon);border-color:#bbf7d0}
+.credit{margin-left:auto;font-size:9.5px;color:var(--muted)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);display:none;place-items:center;padding:14px;z-index:50}
+.modal.show{display:grid}
+.sheet{background:white;border:1px solid var(--border);border-radius:14px;max-width:600px;width:100%;max-height:90vh;overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,.2)}
+.sheet-h{position:sticky;top:0;background:white;border-bottom:1px solid var(--border);padding:14px 18px;display:flex;align-items:center;gap:8px}
+.sheet-h h2{font-size:14px;font-weight:800;flex:1}.sheet-h button{color:var(--muted);font-size:18px;cursor:pointer;width:28px;height:28px;border-radius:5px;border:none;background:none}
+.sheet-h button:hover{background:#f1f5f9}
+.sheet-b{padding:16px}
+.rs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:4px 0 14px}
+.rb{background:#f8fafc;border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.rb .k{font-size:9px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.rb .v{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-weight:700;font-size:16px;color:var(--neon);margin-top:2px}
+.rep h3{font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin:12px 0 6px;color:var(--neon)}
+.rep table{width:100%;border-collapse:collapse;font-size:11.5px}
+.rep td{padding:5px 3px;border-bottom:1px solid #f1f5f9;color:var(--text)}
+.rep td:last-child{text-align:right;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-weight:700}
+.rep ul{padding-left:14px;font-size:11.5px;color:var(--muted);line-height:1.7}
+
+/* ─── DASHBOARD POLISH ─── */
+:root{color-scheme:only light}
+body{background:
+  radial-gradient(1100px 380px at 88% -60px,rgba(2,132,199,.09),transparent 60%),
+  radial-gradient(900px 320px at 0% 110%,rgba(22,163,74,.07),transparent 60%),
+  linear-gradient(180deg,#f1f4f8,#e8eef5)}
+.card{border-radius:16px;border:1px solid #e5eaf1;
+  background:linear-gradient(180deg,#ffffff,#fbfcfe);
+  box-shadow:0 1px 2px rgba(13,27,42,.05),0 10px 26px rgba(13,27,42,.07);
+  transition:box-shadow .18s}
+.card:hover{box-shadow:0 2px 5px rgba(13,27,42,.07),0 16px 34px rgba(13,27,42,.11)}
+.card h2{gap:8px}
+.card h2::before{content:"";display:inline-block;width:4px;height:15px;border-radius:3px;flex-shrink:0;
+  background:linear-gradient(180deg,#16a34a,#0284c7)}
+.stat{border-radius:12px;border:1px solid #21344d;background:linear-gradient(180deg,#17233a,#121c2e)}
+.save-card{border-radius:12px;border:1px solid #21344d;background:linear-gradient(180deg,#17233a,#121c2e)}
+.mode-options button{padding:11px 6px;border-radius:10px}
+.mode-options button.on{background:linear-gradient(135deg,#0ea5e9,#0369a1);border-color:#0369a1;box-shadow:0 4px 14px rgba(2,132,199,.35)}
+.solar-options button{border-radius:9px}
+.solar-options button.on{background:linear-gradient(135deg,#22c55e,#15803d);border-color:#15803d;box-shadow:0 4px 12px rgba(22,163,74,.3)}
+.solar-custom input{border-radius:9px}
+input[type=range]{accent-color:#16a34a}
+.house-fullview{border-radius:16px;box-shadow:0 6px 28px rgba(13,27,42,.22)}
+.livebar{border-radius:0 0 14px 14px}
+header{border-radius:16px}
+.pill{transition:.18s}
+.pill.primary{background:linear-gradient(135deg,#22c55e,#15803d);box-shadow:0 4px 16px rgba(22,163,74,.4)}
+.arow{border-radius:10px;padding:9px 8px}
+.arow:hover{background:#f6f9fc}
+.solar-shortfall{border-radius:10px}
+.card h2 .tag{box-shadow:inset 0 0 0 1px rgba(22,163,74,.08)}
+/* ─── END DASHBOARD POLISH ─── */
+
+/* BIRDS */
+@keyframes birdDrift1{from{transform:translateX(0) translateY(0)}to{transform:translateX(38px) translateY(-12px)}}
+@keyframes birdDrift2{from{transform:translateX(0) translateY(0)}to{transform:translateX(28px) translateY(8px)}}
+@keyframes birdDrift3{from{transform:translateX(0) translateY(0)}to{transform:translateX(-22px) translateY(-10px)}}
+@keyframes birdDrift4{from{transform:translateX(0) translateY(0)}to{transform:translateX(44px) translateY(5px)}}
+@keyframes birdDrift5{from{transform:translateX(0) translateY(0)}to{transform:translateX(-30px) translateY(14px)}}
+@keyframes birdDrift6{from{transform:translateX(0) translateY(0)}to{transform:translateX(52px) translateY(-6px)}}
+@keyframes birdDrift7{from{transform:translateX(0) translateY(0)}to{transform:translateX(34px) translateY(-9px)}}
+@keyframes birdDrift8{from{transform:translateX(0) translateY(0)}to{transform:translateX(-18px) translateY(11px)}}
+@keyframes birdDrift9{from{transform:translateX(0) translateY(0)}to{transform:translateX(26px) translateY(7px)}}
+@keyframes birdDrift10{from{transform:translateX(0) translateY(0)}to{transform:translateX(-40px) translateY(-8px)}}
+@keyframes birdDrift11{from{transform:translateX(0) translateY(0)}to{transform:translateX(20px) translateY(12px)}}
+@keyframes birdDrift12{from{transform:translateX(0) translateY(0)}to{transform:translateX(-14px) translateY(-5px)}}
+@media(prefers-reduced-motion:reduce){#birds-group *{animation:none!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+<script>if(window.parent!==window)document.documentElement.classList.add('is-embedded');</script>
+
+<header>
+  <div class="logo" style="background:#ffffff;border:1px solid rgba(100,180,255,.35);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:3px;width:70px;height:54px;border-radius:8px;"><img src="data:image/jpeg;base64,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" style="width:100%;height:100%;object-fit:contain;" alt="Government of Bermuda - Department of Energy"/></div>
+  <div class="htitle">
+    <h1>Home Energy Consumption Simulator</h1>
+    <p>Bermuda Department of Energy &nbsp;&middot;&nbsp; Residential Usage &amp; Bill Projection &nbsp;&middot;&nbsp; 2026 BELCO Rates</p>
+  </div>
+  <div class="hstats">
+    <div class="hstat"><div class="k">Live Load</div><div class="v" id="liveLoad">0 W</div></div>
+    <div class="hstat"><div class="k">Daily kWh</div><div class="v" id="hudDaily">0.0</div></div>
+    <div class="hstat"><div class="k">Est. Monthly Bill</div><div class="v" id="hudBill">$0</div></div>
+  </div>
+  <div class="runbar">
+    <button class="pill" id="allOffBtn">&#9632; All Off</button>
+    <button class="pill" id="allOnBtn">&#9654; All On</button>
+    <button class="pill" id="resetBtn">&#8635; Reset</button>
+  </div>
+</header>
+
+<!-- ═══ HOUSE — FULL VIEWPORT HEIGHT ═══ -->
+<div class="house-fullview">
+  <div class="house-svgwrap">
+    <button class="btn" id="dnBtn" type="button">Night Mode</button>
+    <span class="house-badge" id="onCount">0 ONLINE</span>
+    <svg id="houseSvg" viewBox="-50 35 1100 665" xmlns="http://www.w3.org/2000/svg" font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif">
+      <defs>
+        <linearGradient id="skyDayG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4fb6e8"/><stop offset=".62" stop-color="#a3dcf6"/><stop offset="1" stop-color="#dbf2fb"/></linearGradient>
+        <linearGradient id="skyNightG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a1733"/><stop offset="1" stop-color="#2a4170"/></linearGradient>
+        <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5ed3da"/><stop offset="1" stop-color="#2596a6"/></linearGradient>
+        <linearGradient id="seaNightG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1b3a66"/><stop offset="1" stop-color="#081a38"/></linearGradient>
+        <!-- CRUISE SHIP GRADIENTS START -->
+        <linearGradient id="shipHullG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a6a96"/><stop offset=".45" stop-color="#123e5e"/><stop offset="1" stop-color="#071f31"/></linearGradient>
+        <linearGradient id="shipDeckG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#c9d8e4"/></linearGradient>
+        <linearGradient id="shipDeckSideG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#7d97ab" stop-opacity=".75"/></linearGradient>
+        <linearGradient id="shipFunnelG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ef7a5f"/><stop offset=".5" stop-color="#c43c2c"/><stop offset="1" stop-color="#7e261b"/></linearGradient>
+        <filter id="shipGlowF" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>
+        <!-- CRUISE SHIP GRADIENTS END -->
+        <linearGradient id="poolG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7adcf0"/><stop offset="1" stop-color="#2a9bc4"/></linearGradient>
+        <linearGradient id="roofG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fdfbf4"/><stop offset="1" stop-color="#ebe3d0"/></linearGradient>
+        <linearGradient id="pinkWallG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f6b3bd"/><stop offset="1" stop-color="#e9929f"/></linearGradient>
+        <linearGradient id="roomGlowG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".5"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+        <linearGradient id="floorShadeG" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#33270f" stop-opacity=".15"/><stop offset="1" stop-color="#33270f" stop-opacity="0"/></linearGradient>
+        <linearGradient id="steelG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#cfd4da"/><stop offset=".45" stop-color="#f0f3f6"/><stop offset="1" stop-color="#b6bdc6"/></linearGradient>
+        <linearGradient id="tvOnG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1d3a8f"/><stop offset="1" stop-color="#0e2a6e"/></linearGradient>
+        <linearGradient id="woodG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c98c54"/><stop offset="1" stop-color="#a8703c"/></linearGradient>
+        <linearGradient id="wallShadowG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".22"/><stop offset="1" stop-color="#000" stop-opacity="0"/></linearGradient>
+        <radialGradient id="sunGlow"><stop offset="0" stop-color="#fff3b0" stop-opacity=".9"/><stop offset="1" stop-color="#ffe27a" stop-opacity="0"/></radialGradient>
+        <clipPath id="tvclip"><rect x="458" y="444" width="66" height="42" rx="2"/></clipPath>
+        <clipPath id="poolclip"><rect x="596" y="654" width="260" height="36" rx="12"/></clipPath>
+        <filter id="soft" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="7"/></filter>
+        <pattern id="tilePat" width="18" height="18" patternUnits="userSpaceOnUse"><rect width="18" height="18" fill="#eaf4f9"/><path d="M18 0H0V18" fill="none" stroke="#d2e4ee" stroke-width="1.4"/></pattern>
+        <pattern id="kTile" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="#f3efe6"/><path d="M14 0H0V14" fill="none" stroke="#e2dccc" stroke-width="1.2"/></pattern>
+      </defs>
+
+      <!-- ══ SKY ══ -->
+      <rect class="dayonly" x="-600" width="2200" height="640" fill="url(#skyDayG)"/>
+      <rect class="nightonly" x="-600" width="2200" height="640" fill="url(#skyNightG)"/>
+      <g class="nightonly" fill="#fff">
+        <circle cx="80" cy="60" r="1.5"/><circle cx="160" cy="110" r="1"/><circle cx="240" cy="50" r="1.3"/><circle cx="330" cy="90" r="1"/>
+        <circle cx="640" cy="55" r="1.4"/><circle cx="720" cy="100" r="1"/><circle cx="800" cy="45" r="1.2"/><circle cx="950" cy="130" r="1"/>
+        <circle cx="430" cy="40" r="1.1"/><circle cx="540" cy="30" r="1"/><circle cx="880" cy="160" r="1.2"/><circle cx="40" cy="150" r="1"/>
+      </g>
+      <g class="nightonly"><circle cx="908" cy="78" r="24" fill="#f3eed8"/><circle cx="900" cy="70" r="5" fill="#ddd6bc"/><circle cx="916" cy="86" r="4" fill="#ddd6bc"/><circle cx="906" cy="92" r="2.6" fill="#ddd6bc"/></g>
+      <g class="dayonly"><circle cx="908" cy="78" r="62" fill="url(#sunGlow)"/><circle cx="908" cy="78" r="26" fill="#ffdf6b" stroke="#ffd23e" stroke-width="3"/></g>
+      <g class="cloudg dayonly" fill="#ffffff" opacity=".95">
+        <ellipse cx="150" cy="70" rx="48" ry="15"/><ellipse cx="120" cy="60" rx="26" ry="12"/><ellipse cx="180" cy="59" rx="24" ry="11"/>
+      </g>
+      <g class="cloudg c2 dayonly" fill="#ffffff" opacity=".85">
+        <ellipse cx="620" cy="105" rx="40" ry="12"/><ellipse cx="596" cy="96" rx="20" ry="9"/><ellipse cx="646" cy="96" rx="19" ry="9"/>
+      </g>
+      <path class="dayonly" d="M250 95q7-8 14 0M268 95q7-8 14 0M708 142q6-7 12 0" stroke="#5a6e80" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+      <!-- ══ SEA + GRASS ══ -->
+      <rect class="sea-base" x="-600" y="505" width="2200" height="135" fill="url(#seaG)"/>
+      <line x1="-600" y1="506.5" x2="1600" y2="506.5" stroke="#bdf0f2" stroke-width="2" opacity=".8"/>
+      <path d="M0 505q40-14 86 0Z" fill="#2f8f7e" opacity=".55"/><path d="M905 505q48-16 95-2v2Z" fill="#2f8f7e" opacity=".55"/>
+      <g class="waves" stroke="#bdf0f2" stroke-width="2.5" fill="none" opacity=".7">
+        <path d="M10 540q14-7 28 0t28 0"/><path d="M935 560q14-7 28 0t20 0"/><path d="M20 590q14-7 28 0t28 0"/>
+      </g>
+
+
+      <!-- BIRDS START · decorative seagulls on the left sky -->
+      <g class="dayonly" id="birds-group">
+
+        <!-- ═══ UPPER SKY (y 50–175) — existing flock ═══ -->
+        <g style="animation:birdDrift1 28s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(200,95)">
+            <path d="M0 0 q-11-7-20-4 q9-3 20 4Z" fill="#3d4a5c" stroke="#2d3748" stroke-width=".8"/>
+            <path d="M0 0 q11-7 20-4 q-9-3-20 4Z" fill="#3d4a5c" stroke="#2d3748" stroke-width=".8"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift2 22s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(160,120)">
+            <path d="M0 0 q-8-5-15-3 q7-2 15 3Z" fill="#546070" stroke="#2d3748" stroke-width=".7"/>
+            <path d="M0 0 q8-5 15-3 q-7-2-15 3Z" fill="#546070" stroke="#2d3748" stroke-width=".7"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift3 35s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(240,72)">
+            <path d="M0 0 q-6-4-11-2 q5-1.5 11 2Z" fill="#6b7a8d"/>
+            <path d="M0 0 q6-4 11-2 q-5-1.5-11 2Z" fill="#6b7a8d"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift5 40s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(280,58)">
+            <path d="M0 0 q-5-3-9-1.5 q4-1.5 9 1.5Z" fill="#8a98a8"/>
+            <path d="M0 0 q5-3 9-1.5 q-4-1.5-9 1.5Z" fill="#8a98a8"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift7 24s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(215,82)">
+            <path d="M0 0 q-9-6-17-3 q8-3 17 3Z" fill="#3d4a5c" stroke="#2d3748" stroke-width=".7"/>
+            <path d="M0 0 q9-6 17-3 q-8-3-17 3Z" fill="#3d4a5c" stroke="#2d3748" stroke-width=".7"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift9 44s ease-in-out infinite alternate-reverse;transform-box:fill-box">
+          <g transform="translate(230,63)">
+            <path d="M0 0 q-5-3.5-10-1.5 q5-2 10 1.5Z" fill="#6b7a8d"/>
+            <path d="M0 0 q5-3.5 10-1.5 q-5-2-10 1.5Z" fill="#6b7a8d"/>
+          </g>
+        </g>
+
+        <!-- ═══ LEFT SKY PANEL (x -30 to 250, y 190–470) — fills the red-box area ═══ -->
+
+        <!-- Row A · y≈200 — high soaring pair -->
+        <g style="animation:birdDrift3 38s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(60,200)">
+            <path d="M0 0 q-12-7-22-4 q10-3 22 4Z" fill="#2d3a4a" stroke="#1e2a38" stroke-width=".9"/>
+            <path d="M0 0 q12-7 22-4 q-10-3-22 4Z" fill="#2d3a4a" stroke="#1e2a38" stroke-width=".9"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift8 52s ease-in-out infinite alternate-reverse;transform-box:fill-box">
+          <g transform="translate(110,210)">
+            <path d="M0 0 q-9-6-17-3 q8-2.5 17 3Z" fill="#3d4a5c"/>
+            <path d="M0 0 q9-6 17-3 q-8-2.5-17 3Z" fill="#3d4a5c"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift11 29s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(170,195)">
+            <path d="M0 0 q-6-4-11-2 q5-1.5 11 2Z" fill="#6b7a8d"/>
+            <path d="M0 0 q6-4 11-2 q-5-1.5-11 2Z" fill="#6b7a8d"/>
+          </g>
+        </g>
+
+        <!-- Row B · y≈255 — medium scattered -->
+        <g style="animation:birdDrift6 33s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(30,258)">
+            <path d="M0 0 q-10-6-19-3.5 q9-2.5 19 3.5Z" fill="#2d3a4a" stroke="#1e2a38" stroke-width=".8"/>
+            <path d="M0 0 q10-6 19-3.5 q-9-2.5-19 3.5Z" fill="#2d3a4a" stroke="#1e2a38" stroke-width=".8"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift2 41s ease-in-out infinite alternate-reverse;transform-box:fill-box">
+          <g transform="translate(130,248)">
+            <path d="M0 0 q-7-4.5-13-2 q6-2 13 2Z" fill="#546070"/>
+            <path d="M0 0 q7-4.5 13-2 q-6-2-13 2Z" fill="#546070"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift10 26s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(200,265)">
+            <path d="M0 0 q-5-3-9-1.5 q4-1.5 9 1.5Z" fill="#8a98a8"/>
+            <path d="M0 0 q5-3 9-1.5 q-4-1.5-9 1.5Z" fill="#8a98a8"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift4 47s ease-in-out infinite alternate-reverse;transform-box:fill-box">
+          <g transform="translate(80,272)">
+            <path d="M0 0 q-5-3-9-1.5 q4-1.5 9 1.5Z" fill="#8a98a8"/>
+            <path d="M0 0 q5-3 9-1.5 q-4-1.5-9 1.5Z" fill="#8a98a8"/>
+          </g>
+        </g>
+
+        <!-- Row C · y≈320 — mid-sky flock -->
+        <g style="animation:birdDrift1 36s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(50,322)">
+            <path d="M0 0 q-11-7-21-4 q10-3 21 4Z" fill="#2d3a4a" stroke="#1e2a38" stroke-width=".9"/>
+            <path d="M0 0 q11-7 21-4 q-10-3-21 4Z" fill="#2d3a4a" stroke="#1e2a38" stroke-width=".9"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift5 23s ease-in-out infinite alternate-reverse;transform-box:fill-box">
+          <g transform="translate(120,312)">
+            <path d="M0 0 q-8-5-15-3 q7-2 15 3Z" fill="#3d4a5c"/>
+            <path d="M0 0 q8-5 15-3 q-7-2-15 3Z" fill="#3d4a5c"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift9 42s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(185,330)">
+            <path d="M0 0 q-6-4-11-2 q5-2 11 2Z" fill="#546070"/>
+            <path d="M0 0 q6-4 11-2 q-5-2-11 2Z" fill="#546070"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift12 31s ease-in-out infinite alternate-reverse;transform-box:fill-box">
+          <g transform="translate(15,335)">
+            <path d="M0 0 q-5-3-9-1.5 q4-1.5 9 1.5Z" fill="#9daab8"/>
+            <path d="M0 0 q5-3 9-1.5 q-4-1.5-9 1.5Z" fill="#9daab8"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift7 19s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(155,342)">
+            <path d="M0 0 q-4-2.5-8-1 q4-1.5 8 1Z" fill="#9daab8"/>
+            <path d="M0 0 q4-2.5 8-1 q-4-1.5-8 1Z" fill="#9daab8"/>
+          </g>
+        </g>
+
+        <!-- Row D · y≈390 — lower gliding birds -->
+        <g style="animation:birdDrift2 44s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(90,392)">
+            <path d="M0 0 q-12-7-22-4 q10-3 22 4Z" fill="#2d3a4a" stroke="#1e2a38" stroke-width=".9"/>
+            <path d="M0 0 q12-7 22-4 q-10-3-22 4Z" fill="#2d3a4a" stroke="#1e2a38" stroke-width=".9"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift6 27s ease-in-out infinite alternate-reverse;transform-box:fill-box">
+          <g transform="translate(35,400)">
+            <path d="M0 0 q-8-5-15-3 q7-2 15 3Z" fill="#3d4a5c"/>
+            <path d="M0 0 q8-5 15-3 q-7-2-15 3Z" fill="#3d4a5c"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift11 50s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(175,385)">
+            <path d="M0 0 q-6-4-11-2 q5-1.5 11 2Z" fill="#6b7a8d"/>
+            <path d="M0 0 q6-4 11-2 q-5-1.5-11 2Z" fill="#6b7a8d"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift3 22s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(230,405)">
+            <path d="M0 0 q-5-3-9-1.5 q4-1.5 9 1.5Z" fill="#8a98a8"/>
+            <path d="M0 0 q5-3 9-1.5 q-4-1.5-9 1.5Z" fill="#8a98a8"/>
+          </g>
+        </g>
+
+        <!-- Row E · y≈455 — near horizon, just above sea -->
+        <g style="animation:birdDrift4 39s ease-in-out infinite alternate-reverse;transform-box:fill-box">
+          <g transform="translate(60,458)">
+            <path d="M0 0 q-10-6-18-3.5 q8-2.5 18 3.5Z" fill="#2d3a4a" stroke="#1e2a38" stroke-width=".8"/>
+            <path d="M0 0 q10-6 18-3.5 q-8-2.5-18 3.5Z" fill="#2d3a4a" stroke="#1e2a38" stroke-width=".8"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift8 21s ease-in-out infinite alternate;transform-box:fill-box">
+          <g transform="translate(150,465)">
+            <path d="M0 0 q-7-4.5-13-2 q6-2 13 2Z" fill="#3d4a5c"/>
+            <path d="M0 0 q7-4.5 13-2 q-6-2-13 2Z" fill="#3d4a5c"/>
+          </g>
+        </g>
+        <g style="animation:birdDrift10 48s ease-in-out infinite alternate-reverse;transform-box:fill-box">
+          <g transform="translate(210,453)">
+            <path d="M0 0 q-5-3-9-1.5 q4-1.5 9 1.5Z" fill="#8a98a8"/>
+            <path d="M0 0 q5-3 9-1.5 q-4-1.5-9 1.5Z" fill="#8a98a8"/>
+          </g>
+        </g>
+
+      </g>
+      <!-- BIRDS END -->
+      <!-- CRUISE SHIPS START · decorative, animated, lights at night only — NOT included in any bill calculation -->
+      <g id="cruise-far" class="ship-drift-far" opacity=".92">
+        <g transform="translate(-46,500) scale(.30)">
+          <g class="ship-bob">
+            <!-- night glow halo -->
+            <rect class="ship-glow" x="14" y="2" width="226" height="56" rx="10" fill="#ffcf5e" filter="url(#shipGlowF)"/>
+            <!-- hull -->
+            <path d="M6 52 L240 52 Q258 53 264 61 L253 73 Q244 80 226 80 L36 80 Q14 78 6 64 Z" fill="url(#shipHullG)"/>
+            <rect x="10" y="52" width="240" height="6" fill="#c43c2c"/>
+            <path d="M10 58 L250 58" stroke="#7e261b" stroke-width="1.6" opacity=".7"/>
+            <path d="M12 62 Q120 66 244 62" stroke="#ffffff" stroke-width="2" opacity=".14" fill="none"/>
+            <g><circle class="ship-win" cx="40" cy="69" r="3"/><circle class="ship-win" cx="62" cy="69" r="3"/><circle class="ship-win" cx="84" cy="69" r="3"/><circle class="ship-win" cx="106" cy="69" r="3"/><circle class="ship-win" cx="128" cy="69" r="3"/><circle class="ship-win" cx="150" cy="69" r="3"/><circle class="ship-win" cx="172" cy="69" r="3"/><circle class="ship-win" cx="194" cy="69" r="3"/><circle class="ship-win" cx="216" cy="69" r="3"/></g>
+            <!-- decks (stacked, shaded right edge for depth) -->
+            <rect x="26" y="30" width="194" height="22" rx="4" fill="url(#shipDeckG)"/>
+            <rect x="196" y="30" width="24" height="22" rx="4" fill="url(#shipDeckSideG)"/>
+            <g><rect class="ship-win" x="34" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="48" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="62" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="76" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="90" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="104" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="118" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="132" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="146" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="160" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="174" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="188" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="202" y="36" width="8" height="9" rx="2"/></g>
+            <rect x="42" y="14" width="146" height="16" rx="4" fill="url(#shipDeckG)"/>
+            <rect x="164" y="14" width="24" height="16" rx="4" fill="url(#shipDeckSideG)"/>
+            <g><rect class="ship-win" x="50" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="63" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="76" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="89" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="102" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="115" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="128" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="141" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="154" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="167" y="18" width="7" height="8" rx="2"/></g>
+            <!-- bridge -->
+            <rect x="60" y="2" width="64" height="12" rx="4" fill="url(#shipDeckG)"/>
+            <rect class="ship-win" x="64" y="5" width="56" height="5" rx="2.5"/>
+            <!-- funnels -->
+            <g transform="skewX(-7)">
+              <rect x="146" y="-8" width="17" height="22" rx="3" fill="url(#shipFunnelG)"/><rect x="146" y="-8" width="17" height="5" rx="2.5" fill="#5d1c13"/>
+              <rect x="172" y="-8" width="17" height="22" rx="3" fill="url(#shipFunnelG)"/><rect x="172" y="-8" width="17" height="5" rx="2.5" fill="#5d1c13"/>
+            </g>
+            <g class="ship-smoke" fill="#dfe8ee"><circle cx="152" cy="-12" r="5"/><circle cx="178" cy="-14" r="6"/><circle cx="164" cy="-10" r="4"/></g>
+            <!-- mast + beacon -->
+            <line x1="236" y1="52" x2="236" y2="16" stroke="#9fb4c4" stroke-width="3"/>
+            <circle class="ship-beacon" cx="236" cy="13" r="4" fill="#ff5b4d"/>
+            <!-- bow wave + wake -->
+            <g class="ship-wake" stroke="#dff8fa" fill="none" opacity=".75">
+              <path d="M256 76 q14 4 26 1" stroke-width="3.5"/>
+              <path d="M-2 72 q-16 6 -30 2" stroke-width="3"/>
+            </g>
+            <ellipse cx="134" cy="84" rx="128" ry="5" fill="#063044" opacity=".28"/>
+          </g>
+        </g>
+      </g>
+      <g id="cruise-near" class="ship-drift-near">
+        <g transform="translate(894,552) scale(.58)">
+          <g class="ship-bob" style="animation-duration:6.5s">
+            <rect class="ship-glow" x="14" y="2" width="226" height="56" rx="10" fill="#ffcf5e" filter="url(#shipGlowF)"/>
+            <path d="M6 52 L240 52 Q258 53 264 61 L253 73 Q244 80 226 80 L36 80 Q14 78 6 64 Z" fill="url(#shipHullG)"/>
+            <rect x="10" y="52" width="240" height="6" fill="#c43c2c"/>
+            <path d="M10 58 L250 58" stroke="#7e261b" stroke-width="1.6" opacity=".7"/>
+            <path d="M12 62 Q120 66 244 62" stroke="#ffffff" stroke-width="2" opacity=".14" fill="none"/>
+            <g><circle class="ship-win" cx="40" cy="69" r="3"/><circle class="ship-win" cx="62" cy="69" r="3"/><circle class="ship-win" cx="84" cy="69" r="3"/><circle class="ship-win" cx="106" cy="69" r="3"/><circle class="ship-win" cx="128" cy="69" r="3"/><circle class="ship-win" cx="150" cy="69" r="3"/><circle class="ship-win" cx="172" cy="69" r="3"/><circle class="ship-win" cx="194" cy="69" r="3"/><circle class="ship-win" cx="216" cy="69" r="3"/></g>
+            <rect x="26" y="30" width="194" height="22" rx="4" fill="url(#shipDeckG)"/>
+            <rect x="196" y="30" width="24" height="22" rx="4" fill="url(#shipDeckSideG)"/>
+            <g><rect class="ship-win" x="34" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="48" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="62" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="76" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="90" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="104" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="118" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="132" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="146" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="160" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="174" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="188" y="36" width="8" height="9" rx="2"/><rect class="ship-win" x="202" y="36" width="8" height="9" rx="2"/></g>
+            <rect x="42" y="14" width="146" height="16" rx="4" fill="url(#shipDeckG)"/>
+            <rect x="164" y="14" width="24" height="16" rx="4" fill="url(#shipDeckSideG)"/>
+            <g><rect class="ship-win" x="50" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="63" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="76" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="89" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="102" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="115" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="128" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="141" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="154" y="18" width="7" height="8" rx="2"/><rect class="ship-win" x="167" y="18" width="7" height="8" rx="2"/></g>
+            <rect x="60" y="2" width="64" height="12" rx="4" fill="url(#shipDeckG)"/>
+            <rect class="ship-win" x="64" y="5" width="56" height="5" rx="2.5"/>
+            <g transform="skewX(-7)">
+              <rect x="146" y="-8" width="17" height="22" rx="3" fill="url(#shipFunnelG)"/><rect x="146" y="-8" width="17" height="5" rx="2.5" fill="#5d1c13"/>
+              <rect x="172" y="-8" width="17" height="22" rx="3" fill="url(#shipFunnelG)"/><rect x="172" y="-8" width="17" height="5" rx="2.5" fill="#5d1c13"/>
+            </g>
+            <g class="ship-smoke" fill="#dfe8ee"><circle cx="152" cy="-12" r="5"/><circle cx="178" cy="-14" r="6"/><circle cx="164" cy="-10" r="4"/></g>
+            <line x1="236" y1="52" x2="236" y2="16" stroke="#9fb4c4" stroke-width="3"/>
+            <circle class="ship-beacon" cx="236" cy="13" r="4" fill="#ff5b4d"/>
+            <g class="ship-wake" stroke="#dff8fa" fill="none" opacity=".75">
+              <path d="M256 76 q14 4 26 1" stroke-width="3.5"/>
+              <path d="M-2 72 q-16 6 -30 2" stroke-width="3"/>
+            </g>
+            <ellipse cx="134" cy="84" rx="128" ry="5" fill="#063044" opacity=".28"/>
+          </g>
+        </g>
+      </g>
+      <!-- CRUISE SHIPS END -->
+      <rect class="nightshade" x="-600" y="505" width="2200" height="135" fill="#0a1430"/>
+      <rect x="-600" y="640" width="2200" height="60" fill="#6db85f"/>
+      <rect x="-600" y="640" width="2200" height="5" fill="#85cc74"/>
+      <g fill="#54a047"><ellipse cx="120" cy="668" rx="26" ry="6"/><ellipse cx="420" cy="686" rx="22" ry="5"/><ellipse cx="330" cy="664" rx="18" ry="4"/></g>
+      <ellipse cx="500" cy="641" rx="412" ry="7" fill="#1c3a22" opacity=".25"/>
+      <path d="M468 640h64l30 60H438Z" fill="#f0c9ba"/><path d="M468 640h64l30 60H438Z" fill="none" stroke="#dcae9d" stroke-width="2" stroke-dasharray="1 10" stroke-linecap="round"/>
+      <g><!-- hibiscus bush -->
+        <ellipse cx="372" cy="648" rx="28" ry="14" fill="#3f8c3f"/><ellipse cx="360" cy="644" rx="14" ry="9" fill="#4a9c4a"/>
+        <circle cx="362" cy="642" r="3.4" fill="#f273a0"/><circle cx="380" cy="648" r="3.4" fill="#f2588d"/><circle cx="390" cy="640" r="3" fill="#f78fb0"/>
+      </g>
+      <g stroke="#f4f1e6" fill="#fbf9f0"><!-- low bermuda garden walls -->
+        <rect x="0" y="614" width="92" height="26" stroke-width="2"/><rect x="908" y="614" width="92" height="26" stroke-width="2"/>
+        <rect x="-2" y="610" width="96" height="7" fill="#fff"/><rect x="906" y="610" width="96" height="7" fill="#fff"/>
+      </g>
+
+      <!-- GARDEN DECOR START · partial wooden fences + small plants -->
+      <g id="garden-decor">
+        <!-- left wooden rail fence (partial) -->
+        <g>
+          <rect x="-46" y="660" width="178" height="5" rx="2.5" fill="#c08a4e"/>
+          <rect x="-46" y="674" width="178" height="5" rx="2.5" fill="#a9763f"/>
+          <g fill="#8a5a33">
+            <rect x="-44" y="652" width="7" height="38" rx="2.5"/><rect x="-2" y="650" width="7" height="40" rx="2.5"/>
+            <rect x="42" y="652" width="7" height="38" rx="2.5"/><rect x="86" y="650" width="7" height="40" rx="2.5"/><rect x="124" y="652" width="7" height="38" rx="2.5"/>
+          </g>
+          <g fill="#b98850"><rect x="-44" y="652" width="7" height="4" rx="2"/><rect x="-2" y="650" width="7" height="4" rx="2"/><rect x="42" y="652" width="7" height="4" rx="2"/><rect x="86" y="650" width="7" height="4" rx="2"/><rect x="124" y="652" width="7" height="4" rx="2"/></g>
+        </g>
+        <!-- right wooden picket fence (partial) -->
+        <g>
+          <rect x="922" y="662" width="124" height="4.5" rx="2" fill="#c08a4e"/>
+          <rect x="922" y="676" width="124" height="4.5" rx="2" fill="#a9763f"/>
+          <g fill="#9a6b3f">
+            <path d="M926 690v-36l3.5-5 3.5 5v36Z"/><path d="M946 690v-36l3.5-5 3.5 5v36Z"/><path d="M966 690v-36l3.5-5 3.5 5v36Z"/>
+            <path d="M986 690v-36l3.5-5 3.5 5v36Z"/><path d="M1006 690v-36l3.5-5 3.5 5v36Z"/><path d="M1026 690v-36l3.5-5 3.5 5v36Z"/>
+          </g>
+        </g>
+        <!-- small plants & flowers scattered -->
+        <g stroke="#3f8c3f" stroke-width="3" fill="none" stroke-linecap="round">
+          <path d="M-22 696q-4-10-11-13M-22 696q-1-13-3-17M-22 696q4-10 11-12"/>
+          <path d="M112 698q-4-9-10-12M112 698q-1-12-2-16M112 698q4-9 10-11"/>
+          <path d="M414 694q-4-9-10-12M414 694q-1-12-2-15M414 694q4-9 10-11"/>
+          <path d="M952 698q-4-9-10-12M952 698q-1-12-2-16M952 698q4-9 10-11"/>
+        </g>
+        <g><!-- flowers -->
+          <line x1="26" y1="694" x2="26" y2="678" stroke="#3f8c3f" stroke-width="2.5"/><circle cx="26" cy="675" r="4" fill="#f2588d"/><circle cx="26" cy="675" r="1.6" fill="#ffe27a"/>
+          <line x1="64" y1="696" x2="64" y2="682" stroke="#3f8c3f" stroke-width="2.5"/><circle cx="64" cy="679" r="3.6" fill="#f6a73c"/><circle cx="64" cy="679" r="1.5" fill="#fff3c4"/>
+          <line x1="1042" y1="696" x2="1042" y2="681" stroke="#3f8c3f" stroke-width="2.5"/><circle cx="1042" cy="678" r="4" fill="#a78bfa"/><circle cx="1042" cy="678" r="1.6" fill="#ffe27a"/>
+        </g>
+        <g><!-- small shrubs -->
+          <ellipse cx="-8" cy="692" rx="16" ry="9" fill="#3f8c3f"/><ellipse cx="-15" cy="688" rx="8" ry="5" fill="#4a9c4a"/><circle cx="-4" cy="688" r="2.2" fill="#f273a0"/>
+          <ellipse cx="990" cy="694" rx="17" ry="9" fill="#3f8c3f"/><ellipse cx="983" cy="690" rx="8" ry="5" fill="#4a9c4a"/><circle cx="995" cy="690" r="2.2" fill="#f6a73c"/>
+          <ellipse cx="300" cy="688" rx="13" ry="7" fill="#4a9c4a"/><circle cx="296" cy="684" r="2" fill="#f2588d"/>
+        </g>
+      </g>
+      <!-- GARDEN DECOR END -->
+
+      <!-- ══ LOUNGE CORNER (left yard) ══ -->
+      <g>
+        <ellipse cx="220" cy="690" rx="78" ry="7" fill="#4f9a45" opacity=".6"/>
+        <line x1="208" y1="700" x2="208" y2="648" stroke="#b9893f" stroke-width="3.5"/>
+        <path d="M208 648a46 22 0 0 1 46 14l-10 1a36 14 0 0 0-36-11Z" fill="#f2958f"/>
+        <path d="M208 648a46 22 0 0 0-46 14l10 1a36 14 0 0 1 36-11Z" fill="#ffffff"/>
+        <path d="M208 648a23 18 0 0 1 23 10l-9 2a16 11 0 0 0-14-9Z" fill="#ffffff"/>
+        <path d="M208 648a23 18 0 0 0-23 10l9 2a16 11 0 0 1 14-9Z" fill="#f2958f"/>
+        <circle cx="208" cy="646" r="2.6" fill="#9a6b32"/>
+        <path d="M156 692l34-14 56-2" stroke="#e8e2d3" stroke-width="6" fill="none" stroke-linecap="round"/>
+        <path d="M158 690l32-13 54-2" stroke="#56aea3" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <line x1="168" y1="692" x2="168" y2="700" stroke="#b9893f" stroke-width="3"/><line x1="238" y1="678" x2="240" y2="700" stroke="#b9893f" stroke-width="3"/>
+      </g>
+
+      <!-- ══ POOL (front yard · runs on Pool Pump) ══ -->
+      <g class="app-obj" data-id="poolpump" data-label="Pool Pump · 1,000 W">
+        <g id="pool-g">
+          <rect x="584" y="646" width="284" height="52" rx="8" fill="#ecdcbe" stroke="#d6c39e" stroke-width="2.5"/>
+          <g stroke="#dcc9a4" stroke-width="1.4"><line x1="630" y1="648" x2="630" y2="696"/><line x1="690" y1="648" x2="690" y2="696"/><line x1="750" y1="648" x2="750" y2="696"/><line x1="810" y1="648" x2="810" y2="696"/></g>
+          <rect x="596" y="654" width="260" height="36" rx="12" fill="url(#poolG)" stroke="#1f7fa0" stroke-width="2.5"/>
+          <line x1="602" y1="658.5" x2="850" y2="658.5" stroke="#cdf2fb" stroke-width="2.5" opacity=".85"/>
+          <g clip-path="url(#poolclip)">
+            <g class="pool-shimmer" stroke="#bfeefb" stroke-width="2" fill="none" opacity=".65">
+              <path d="M615 670q12-5 24 0t24 0"/><path d="M700 680q12-5 24 0t24 0"/><path d="M760 666q12-5 24 0t24 0"/>
+            </g>
+            <g class="pool-jet" stroke="#eafaff" stroke-width="2.6" fill="none" stroke-linecap="round">
+              <path d="M600 664q14 3 26 1"/><path d="M600 672q16 4 30 1"/><path d="M600 680q14 3 26 0"/>
+            </g>
+            <circle class="ripple" cx="626" cy="672" r="7" fill="none" stroke="#eafaff" stroke-width="2"/>
+            <circle cx="744" cy="674" r="11" fill="none" stroke="#f48fb1" stroke-width="6.5"/>
+            <circle cx="744" cy="674" r="11" fill="none" stroke="#ffffff" stroke-width="6.5" stroke-dasharray="6 11"/>
+          </g>
+          <g stroke="#cfd6da" stroke-width="3.5" fill="none"><path d="M838 652v22M848 652v22"/><line x1="838" y1="660" x2="848" y2="660"/><line x1="838" y1="668" x2="848" y2="668"/></g>
+        </g>
+      </g>
+
+      <!-- ══ PALMS ══ -->
+      <g><path d="M50 648C44 606 56 562 47 522" stroke="#9a6b42" stroke-width="9" fill="none" stroke-linecap="round"/>
+        <path d="M50 648C45 610 55 566 48 530" stroke="#7e5430" stroke-width="3" fill="none" opacity=".5"/>
+        <g fill="none" stroke="#2f8f4e" stroke-width="7" stroke-linecap="round">
+          <path d="M47 522Q18 510 4 526"/><path d="M47 522Q26 496 6 496"/><path d="M47 522Q44 488 24 478"/>
+          <path d="M47 522Q60 490 84 484"/><path d="M47 522Q76 502 94 514"/><path d="M47 522Q70 524 86 540"/>
+        </g><circle cx="42" cy="528" r="4.5" fill="#7a5230"/><circle cx="53" cy="530" r="4.5" fill="#7a5230"/></g>
+      <!-- right palm removed so the near cruise ship is visible -->
+
+      <!-- ══ BERMUDA STEPPED ROOF ══ -->
+      <polygon points="500,70 92,184 908,184" fill="url(#roofG)" stroke="#d4cbb6" stroke-width="3"/>
+      <polygon points="500,70 92,184 192,184" fill="#dcd2bc" opacity=".4"/>
+      <g stroke="#d8cfba" stroke-width="3.5" stroke-linecap="round">
+        <line x1="392" y1="100" x2="608" y2="100"/><line x1="320" y1="120" x2="680" y2="120"/>
+        <line x1="248" y1="140" x2="752" y2="140"/><line x1="176" y1="160" x2="824" y2="160"/>
+      </g>
+      <g stroke="#fffdf6" stroke-width="2" opacity=".9">
+        <line x1="394" y1="97" x2="606" y2="97"/><line x1="322" y1="117" x2="678" y2="117"/>
+        <line x1="250" y1="137" x2="750" y2="137"/><line x1="178" y1="157" x2="822" y2="157"/>
+      </g>
+      <g stroke="#e4dcc6" stroke-width="1.6" opacity=".8">
+        <line x1="450" y1="100" x2="436" y2="120"/><line x1="540" y1="100" x2="556" y2="120"/>
+        <line x1="380" y1="120" x2="362" y2="140"/><line x1="610" y1="120" x2="630" y2="140"/>
+        <line x1="300" y1="140" x2="280" y2="160"/><line x1="700" y1="140" x2="722" y2="160"/>
+      </g>
+      <!-- SOLAR FEATURE START -->
+      <g id="solarRoof" class="dayonly">
+        <path class="solar-flow" id="solarFlow" d="M426 144 C458 170 492 178 526 188"/>
+        <g transform="translate(312 112) skewX(-18)">
+          <rect class="solar-panel" x="0" y="0" width="62" height="38" rx="3"/>
+          <path class="solar-cell" d="M15 0v38M31 0v38M47 0v38M0 13h62M0 26h62"/>
+          <rect class="solar-panel" x="70" y="0" width="62" height="38" rx="3"/>
+          <path class="solar-cell" d="M85 0v38M101 0v38M117 0v38M70 13h62M70 26h62"/>
+          <rect class="solar-panel" x="140" y="0" width="62" height="38" rx="3"/>
+          <path class="solar-cell" d="M155 0v38M171 0v38M187 0v38M140 13h62M140 26h62"/>
+        </g>
+        <text id="solarRoofText" x="690" y="154" font-size="9" text-anchor="middle" fill="#166534" font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif" font-weight="800">Solar 0.0 kWh/day</text>
+      </g>
+      <!-- SOLAR FEATURE END -->
+      <rect x="568" y="92" width="40" height="92" fill="#fbf8f0" stroke="#d8d0bd" stroke-width="2.5"/>
+      <rect x="562" y="86" width="52" height="10" rx="2" fill="#eee8d8" stroke="#d8d0bd" stroke-width="2"/>
+      <circle cx="588" cy="80" r="4" fill="#cfd6da" opacity=".55"><animate attributeName="cy" values="82;62" dur="3.2s" repeatCount="indefinite"/><animate attributeName="opacity" values=".55;0" dur="3.2s" repeatCount="indefinite"/></circle>
+      <rect x="92" y="184" width="816" height="14" fill="#ffffff" stroke="#ddd5c2" stroke-width="2"/>
+      <text x="130" y="194.5" font-size="9.5" letter-spacing="2" fill="#9aa3a8" font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif,monospace">BERMUDA RESIDENCE · LIVE CUTAWAY</text>
+      <text id="roofWatts" x="870" y="194.5" font-size="9.5" text-anchor="end" fill="#2f9e57" font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif,monospace" font-weight="700">0 W active</text>
+      <rect x="100" y="198" width="800" height="10" fill="url(#wallShadowG)"/>
+
+      <!-- ══ EXTERIOR PINK WALLS ══ -->
+      <rect x="100" y="198" width="20" height="442" fill="url(#pinkWallG)"/>
+      <rect x="880" y="198" width="20" height="442" fill="url(#pinkWallG)"/>
+      <g fill="#fdf2ef"><rect x="100" y="212" width="20" height="12"/><rect x="100" y="260" width="14" height="12"/><rect x="100" y="308" width="20" height="12"/><rect x="100" y="356" width="14" height="12"/><rect x="100" y="404" width="20" height="12"/><rect x="100" y="452" width="14" height="12"/><rect x="100" y="500" width="20" height="12"/><rect x="100" y="548" width="14" height="12"/>
+      <rect x="880" y="212" width="20" height="12"/><rect x="886" y="260" width="14" height="12"/><rect x="880" y="308" width="20" height="12"/><rect x="886" y="356" width="14" height="12"/><rect x="880" y="404" width="20" height="12"/><rect x="886" y="452" width="14" height="12"/><rect x="880" y="500" width="20" height="12"/><rect x="886" y="548" width="14" height="12"/></g>
+      <rect x="92" y="618" width="816" height="22" fill="#e3ddcf" stroke="#cfc7b2" stroke-width="2"/>
+
+      <!-- ════════ UPPER FLOOR ════════ -->
+      <!-- BEDROOM -->
+      <g>
+        <rect x="120" y="198" width="280" height="158" fill="#fdf4e7"/>
+        <rect x="120" y="198" width="280" height="36" fill="url(#roomGlowG)"/>
+        <rect x="120" y="318" width="280" height="26" fill="url(#floorShadeG)"/>
+        <rect x="120" y="198" width="280" height="9" fill="#f3e9d8"/>
+        <rect x="120" y="344" width="280" height="12" fill="#c08552"/>
+        <g stroke="#a8703f" stroke-width="1"><line x1="155" y1="344" x2="155" y2="356"/><line x1="210" y1="344" x2="210" y2="356"/><line x1="265" y1="344" x2="265" y2="356"/><line x1="320" y1="344" x2="320" y2="356"/><line x1="375" y1="344" x2="375" y2="356"/></g>
+        <text x="260" y="216" font-size="9" letter-spacing="2.5" text-anchor="middle" fill="#b9a98e" font-weight="700">BEDROOM</text>
+        <!-- window -->
+        <rect x="138" y="216" width="56" height="62" fill="#ffffff" rx="2"/>
+        <rect x="142" y="220" width="48" height="54" class="glass" fill="#bfe6f5"/>
+        <line x1="148" y1="268" x2="184" y2="226" stroke="#fff" stroke-width="4" opacity=".45"/><line x1="158" y1="270" x2="188" y2="236" stroke="#fff" stroke-width="2" opacity=".4"/>
+        <line x1="166" y1="220" x2="166" y2="274" stroke="#fff" stroke-width="3"/><line x1="142" y1="247" x2="190" y2="247" stroke="#fff" stroke-width="3"/>
+        <path d="M138 216v62l10-6v-50Z" fill="#f2958f" opacity=".9"/><path d="M194 216v62l-10-6v-50Z" fill="#f2958f" opacity=".9"/>
+        <!-- wall art -->
+        <rect x="296" y="218" width="32" height="24" fill="#fff" stroke="#d9c9a8" stroke-width="2"/><path d="M300 238l8-10 6 6 5-8 9 12Z" fill="#67b88a"/><circle cx="322" cy="225" r="3" fill="#ffd23e"/>
+        <g class="app-obj" data-id="ac_bed" data-label="Split AC · 1,200 W">
+          <g id="acu-bed" class="acu">
+            <rect x="326" y="246" width="62" height="26" rx="6" fill="#ffffff" stroke="#cfd6da" stroke-width="2"/>
+            <line x1="334" y1="264" x2="380" y2="264" stroke="#aeb8be" stroke-width="2"/>
+            <line x1="334" y1="258" x2="380" y2="258" stroke="#aeb8be" stroke-width="1.4"/>
+            <circle cx="380" cy="252.5" r="2.6" class="led"/>
+            <g class="air" stroke="#7cc7ee" stroke-width="2" fill="none" stroke-linecap="round">
+              <path d="M338 278q4 4 0 9"/><path d="M354 278q4 4 0 9"/><path d="M370 278q4 4 0 9"/>
+            </g>
+          </g>
+        </g>
+        <g class="app-obj" data-id="fan_bed" data-label="Ceiling Fan (Bedroom) · 50 W">
+          <g id="fan-bedroom" class="fan" transform="translate(252,212)">
+            <line x1="0" y1="-14" x2="0" y2="-4" stroke="#8a7a5e" stroke-width="3"/>
+            <g class="blades" fill="#b8a684">
+              <rect x="2" y="-3" width="24" height="6" rx="3"/><rect x="-26" y="-3" width="24" height="6" rx="3"/>
+              <rect x="-3" y="2" width="6" height="24" rx="3"/><rect x="-3" y="-26" width="6" height="24" rx="3"/>
+            </g>
+            <circle r="5" fill="#8a7a5e"/>
+          </g>
+        </g>
+        <!-- bed + person (poses switch with the lights) -->
+        <g id="bed-scene">
+          <ellipse cx="286" cy="348" rx="72" ry="5" fill="#000" opacity=".12"/>
+          <rect x="214" y="244" width="12" height="100" rx="3" fill="#8a5a36"/>
+          <rect x="216" y="246" width="3" height="96" fill="#a8714a"/>
+          <rect x="226" y="300" width="120" height="30" rx="4" fill="#ffffff" stroke="#e0d8c8" stroke-width="2"/>
+          <g class="pose-sleep">
+            <rect x="230" y="292" width="34" height="15" rx="6" fill="#fff" stroke="#e6ddcb" stroke-width="2"/>
+            <circle cx="250" cy="299" r="9.5" fill="#eab38b"/>
+            <path d="M241 296a9.5 9.5 0 0 1 17-4q-9-4-15 4Z" fill="#5a4632"/>
+            <path d="M246 301q2 1.5 4 0" stroke="#4a382a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M266 332v-22q4-10 22-8q18-10 40-2q14 2 18 10v22Z" fill="#56aea3" stroke="#3f8f86" stroke-width="2"/>
+            <path d="M270 314q40-8 92 0" stroke="#3f8f86" stroke-width="1.4" fill="none" opacity=".6"/>
+            <g font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif,sans-serif" font-weight="800" fill="#7fa8c9">
+              <text class="zz z1" x="266" y="284" font-size="13">z</text>
+              <text class="zz z2" x="276" y="272" font-size="16">Z</text>
+              <text class="zz z3" x="290" y="258" font-size="19">Z</text>
+            </g>
+          </g>
+          <g class="pose-read">
+            <rect x="228" y="258" width="16" height="44" rx="6" fill="#fff" stroke="#e6ddcb" stroke-width="2"/>
+            <circle cx="252" cy="266" r="9.5" fill="#eab38b"/>
+            <path d="M242.5 263a9.5 9.5 0 0 1 17-4q-9-4-15 4Z" fill="#5a4632"/>
+            <circle cx="256" cy="266" r="1.3" fill="#3a2c20"/>
+            <path d="M254 271q2 1.6 4.5 .3" stroke="#4a382a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M244 276q-4 14 2 26h18q6-12 0-24q-10-6-20-2Z" fill="#f2a65e"/>
+            <path d="M250 284l14 8M268 284l-8 8" stroke="#eab38b" stroke-width="5.5" stroke-linecap="round"/>
+            <path d="M262 296l12-7v12l-12 6Zm24 -7l-12 7v11l12-6Z" fill="#fdfaf2" stroke="#c9bb98" stroke-width="1.5"/>
+            <line x1="274" y1="289" x2="274" y2="307" stroke="#c9bb98" stroke-width="1.5"/>
+            <path d="M286 332v-16q8-8 22-6q14-2 22 6v16Z" fill="#56aea3" stroke="#3f8f86" stroke-width="2"/>
+            <path d="M300 318q5-8 12-1" stroke="#3f8f86" stroke-width="1.6" fill="none"/>
+          </g>
+          <rect x="226" y="330" width="120" height="14" rx="2" fill="#9a6840"/>
+          <rect x="228" y="332" width="116" height="3" fill="#b0794d"/>
+        </g>
+        <g class="app-obj" data-id="lights_bed" data-label="Bedroom Lights — 30 W">
+          <g id="lamp-bed" class="lamp">
+            <polygon class="cone" points="358,300 382,300 392,344 348,344" fill="#ffe9a8"/>
+            <ellipse cx="370" cy="346" rx="22" ry="3.4" fill="#000" opacity=".1"/>
+            <rect x="354" y="314" width="32" height="30" rx="3" fill="#9a6840"/><rect x="356" y="316" width="28" height="4" fill="#b0794d"/><circle cx="370" cy="330" r="2.4" fill="#6e4a28"/>
+            <rect x="368" y="296" width="4" height="18" fill="#8a8a74"/>
+            <path d="M356 300h28l-6-14h-16Z" class="bulbshade" fill="#e7d6a8" stroke="#c9b87e" stroke-width="2"/>
+          </g>
+        </g>
+        <rect class="room-shade" data-room="bedroom" x="120" y="198" width="280" height="158" fill="#0b1635" opacity=".3" pointer-events="none"/>
+      </g>
+
+      <!-- BATHROOM -->
+      <g>
+        <rect x="404" y="198" width="172" height="158" fill="url(#tilePat)"/>
+        <rect x="404" y="198" width="172" height="30" fill="url(#roomGlowG)"/>
+        <rect x="404" y="318" width="172" height="26" fill="url(#floorShadeG)"/>
+        <rect x="404" y="198" width="172" height="9" fill="#dcebf2"/>
+        <rect x="404" y="344" width="172" height="12" fill="#cfdfe8"/>
+        <text x="470" y="216" font-size="9" letter-spacing="2.5" text-anchor="middle" fill="#8fb0c2" font-weight="700">BATHROOM</text>
+        <g class="app-obj" data-id="lights_bath" data-label="Bathroom Vanity Lights — 20 W">
+          <g id="lamp-bath" class="lamp">
+            <polygon class="cone" points="496,232 534,232 542,300 488,300" fill="#ffe9a8"/>
+            <rect x="494" y="218" width="40" height="6" rx="3" fill="#9aa8b2"/>
+            <circle class="bulbshade" cx="503" cy="228" r="4" fill="#e7d6a8" stroke="#c9b87e" stroke-width="1.4"/>
+            <circle class="bulbshade" cx="514" cy="228" r="4" fill="#e7d6a8" stroke="#c9b87e" stroke-width="1.4"/>
+            <circle class="bulbshade" cx="525" cy="228" r="4" fill="#e7d6a8" stroke="#c9b87e" stroke-width="1.4"/>
+          </g>
+        </g>
+        <g><!-- mirror + sink -->
+          <rect x="498" y="236" width="30" height="30" rx="4" fill="#dff0f8" stroke="#9fc1d2" stroke-width="2.5"/><line x1="504" y1="242" x2="514" y2="258" stroke="#fff" stroke-width="3" opacity=".8"/>
+          <ellipse cx="513" cy="304" rx="17" ry="7" fill="#ffffff" stroke="#c2d4de" stroke-width="2"/>
+          <rect x="506" y="308" width="14" height="36" fill="#f2f7fa" stroke="#c2d4de" stroke-width="2"/>
+          <path d="M513 297v-7h6" stroke="#9aa8b2" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        </g>
+        <g><!-- towels -->
+          <rect x="412" y="244" width="7" height="24" rx="2" fill="#f2958f"/><rect x="421" y="248" width="7" height="20" rx="2" fill="#8fcbd9"/>
+        </g>
+        <g><!-- clawfoot tub + bather (appears with the fan) -->
+          <ellipse cx="454" cy="345" rx="46" ry="4.5" fill="#000" opacity=".12"/>
+          <rect x="412" y="310" width="84" height="30" rx="13" fill="#ffffff" stroke="#c2d4de" stroke-width="2.5"/>
+          <rect x="417" y="313" width="74" height="9" rx="4" fill="#aadcf0"/>
+          <circle cx="424" cy="342" r="3" fill="#b9c8d2"/><circle cx="484" cy="342" r="3" fill="#b9c8d2"/>
+          <path d="M492 308v-10h-8" stroke="#9aa8b2" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <g id="tub-person">
+            <circle cx="434" cy="302" r="8.5" fill="#eab38b"/>
+            <path d="M426 299a8.5 8.5 0 0 1 15-3.5q-8-3.5-13.5 3.5Z" fill="#5a4632"/>
+            <path d="M430 304q2 2 4.5 0" stroke="#4a382a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M428 297.5q1.4-1.4 2.8 0M435 297.5q1.4-1.4 2.8 0" stroke="#4a382a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+            <path d="M441 310q4-4 8-1" stroke="#eab38b" stroke-width="5" fill="none" stroke-linecap="round"/>
+            <path d="M458 314a7 6 0 0 1 12 0M468 314a6 5 0 0 1 10 0" fill="#eab38b"/>
+            <g fill="#fff" opacity=".95"><circle cx="424" cy="312" r="3.6"/><circle cx="448" cy="310" r="3"/><circle cx="455" cy="314" r="2.4"/><circle cx="490" cy="311" r="3.2"/><circle cx="430" cy="308.5" r="2.2"/></g>
+            <g><ellipse cx="481" cy="310" rx="6" ry="4.5" fill="#ffd23e"/><circle cx="486.5" cy="306.5" r="3.4" fill="#ffd23e"/><path d="M490 306.5l4 1.4-4 1.4Z" fill="#f2913d"/><circle cx="487.5" cy="305.6" r=".9" fill="#3a2c20"/></g>
+            <g stroke="#aeb8be" stroke-width="1.6" fill="none" opacity=".8">
+              <path d="M438 290q3-4 0-8"><animate attributeName="opacity" values=".8;.15;.8" dur="2.4s" repeatCount="indefinite"/></path>
+              <path d="M450 292q3-4 0-8"><animate attributeName="opacity" values=".2;.8;.2" dur="2.4s" repeatCount="indefinite"/></path>
+            </g>
+          </g>
+        </g>
+        <g><!-- toilet -->
+          <rect x="538" y="296" width="26" height="20" rx="3" fill="#ffffff" stroke="#c2d4de" stroke-width="2"/>
+          <path d="M536 316h30v8q0 16-15 16t-15-16Z" fill="#ffffff" stroke="#c2d4de" stroke-width="2"/>
+          <circle cx="558" cy="302" r="2.2" fill="#9fc1d2"/>
+        </g>
+        <g class="app-obj" data-id="fan" data-label="Exhaust Fan · 40 W">
+          <g id="bath-vent" class="fan" transform="translate(549,222)">
+            <circle r="14" fill="#eef3f6" stroke="#9fb4c0" stroke-width="2.5"/>
+            <g class="blades" fill="#8fa6b2">
+              <path d="M0 0L9 -3A9 9 0 0 0 3 -9Z"/><path d="M0 0L3 9A9 9 0 0 0 9 3Z"/>
+              <path d="M0 0L-9 3A9 9 0 0 0 -3 9Z"/><path d="M0 0L-3 -9A9 9 0 0 0 -9 -3Z"/>
+            </g>
+            <circle r="2.4" fill="#5d7280"/>
+          </g>
+        </g>
+        <rect class="room-shade" data-room="bath" x="404" y="198" width="172" height="158" fill="#0b1635" opacity=".3" pointer-events="none"/>
+      </g>
+
+      <!-- LAUNDRY -->
+      <g>
+        <rect x="580" y="198" width="300" height="158" fill="#f6f3ec"/>
+        <rect x="580" y="198" width="300" height="32" fill="url(#roomGlowG)"/>
+        <rect x="580" y="318" width="300" height="26" fill="url(#floorShadeG)"/>
+        <rect x="580" y="198" width="300" height="9" fill="#ebe6da"/>
+        <rect x="580" y="344" width="300" height="12" fill="#d4cfc2"/>
+        <text x="700" y="216" font-size="9" letter-spacing="2.5" text-anchor="middle" fill="#b3aa96" font-weight="700">LAUNDRY · UTILITY</text>
+        <g class="app-obj" data-id="lights_laundry" data-label="Utility / Laundry Lights — 10 W">
+          <g id="lamp-laundry" class="lamp">
+            <polygon class="cone" points="752,236 768,236 786,344 734,344" fill="#ffe9a8"/>
+            <line x1="760" y1="207" x2="760" y2="226" stroke="#8a8a74" stroke-width="2"/>
+            <path d="M750 232h20l-4-7h-12Z" fill="#9aa8b2"/>
+            <circle class="bulbshade" cx="760" cy="234" r="5" fill="#e7d6a8" stroke="#c9b87e" stroke-width="1.6"/>
+          </g>
+        </g>
+        <g><!-- shelf + detergent -->
+          <rect x="598" y="240" width="136" height="6" rx="2" fill="#b08a5c"/><rect x="598" y="246" width="136" height="2" fill="#8f6c42" opacity=".5"/>
+          <rect x="606" y="222" width="14" height="18" rx="2" fill="#f2913d"/><rect x="609" y="218" width="8" height="5" fill="#c9712a"/>
+          <rect x="626" y="226" width="13" height="14" rx="2" fill="#3f86c9"/><rect x="644" y="224" width="11" height="16" rx="4" fill="#67b88a"/>
+        </g>
+        <g class="app-obj" data-id="washer" data-label="Washer · 500 W">
+          <ellipse cx="629" cy="347" rx="34" ry="4" fill="#000" opacity=".12"/>
+          <rect x="598" y="258" width="62" height="86" rx="6" fill="#f1f3f5" stroke="#bfc6cd" stroke-width="2.5"/>
+          <rect x="598" y="258" width="62" height="17" rx="6" fill="#e2e6ea"/>
+          <circle cx="613" cy="266.5" r="4.5" fill="#fff" stroke="#9aa3ad" stroke-width="2"/><line x1="613" y1="263" x2="613" y2="266.5" stroke="#9aa3ad" stroke-width="1.6"/>
+          <circle cx="630" cy="266.5" r="2" fill="#34d399"/><circle cx="640" cy="266.5" r="2" fill="#cfd6da"/><rect x="648" y="264" width="8" height="5" rx="1" fill="#cfd6da"/>
+          <circle cx="629" cy="310" r="24" fill="#d4dae0" stroke="#aab3bb" stroke-width="2.5"/>
+          <g id="washer-drum"><g class="drum-spin">
+            <circle cx="629" cy="310" r="17.5" class="drum-face" fill="#aeb9c2" stroke="#8d99a3" stroke-width="2"/>
+            <path d="M629 295v8M616 317l7-4M642 317l-7-4" stroke="#7c8893" stroke-width="2.6" stroke-linecap="round"/>
+          </g></g>
+          <path d="M616 300a17 17 0 0 1 10-6" stroke="#fff" stroke-width="3" fill="none" opacity=".75" stroke-linecap="round"/>
+        </g>
+        <g class="app-obj" data-id="dryer" data-label="Dryer · 3,000 W">
+          <ellipse cx="699" cy="347" rx="34" ry="4" fill="#000" opacity=".12"/>
+          <rect x="668" y="258" width="62" height="86" rx="6" fill="#f4f0e7" stroke="#c8c0ae" stroke-width="2.5"/>
+          <rect x="668" y="258" width="62" height="17" rx="6" fill="#e8e2d3"/>
+          <circle cx="683" cy="266.5" r="4.5" fill="#fff" stroke="#a89e88" stroke-width="2"/><line x1="683" y1="263" x2="683" y2="266.5" stroke="#a89e88" stroke-width="1.6"/>
+          <circle cx="700" cy="266.5" r="2" fill="#f0a13a"/><rect x="708" y="264" width="12" height="5" rx="1" fill="#cdc4ae"/>
+          <circle cx="699" cy="310" r="24" fill="#e0d8c6" stroke="#b5ab92" stroke-width="2.5"/>
+          <g id="dryer-drum"><g class="drum-spin">
+            <circle cx="699" cy="310" r="17.5" class="drum-face" fill="#c4baa2" stroke="#a3987c" stroke-width="2"/>
+            <path d="M699 295v8M686 317l7-4M712 317l-7-4" stroke="#94896c" stroke-width="2.6" stroke-linecap="round"/>
+          </g></g>
+          <path d="M686 300a17 17 0 0 1 10-6" stroke="#fff" stroke-width="3" fill="none" opacity=".7" stroke-linecap="round"/>
+        </g>
+        <g><!-- laundry basket -->
+          <path d="M738 322h32l-4 22h-24Z" fill="#d9b87e" stroke="#bb9858" stroke-width="2"/>
+          <path d="M740 328h28M741 334h26M742 340h24" stroke="#bb9858" stroke-width="1.3"/>
+          <path d="M742 322q6-8 12-2q5-7 12 0q4-4 6 2Z" fill="#8fcbd9"/><path d="M748 318q4-5 9-1" stroke="#ef6f6f" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </g>
+        <g class="app-obj" data-id="heater" data-label="Water Heater · 3,500 W">
+          <ellipse cx="817" cy="341" rx="38" ry="4.5" fill="#000" opacity=".12"/>
+          <path d="M796 230v-24M838 230v-24" stroke="#9aa3ad" stroke-width="6"/>
+          <rect x="790" y="206" width="12" height="6" fill="#d04a3a"/><rect x="832" y="206" width="12" height="6" fill="#3f86c9"/>
+          <rect x="782" y="226" width="70" height="112" rx="22" fill="#f4f6f8" stroke="#b9c1c9" stroke-width="3"/>
+          <rect x="788" y="230" width="10" height="104" rx="5" fill="#fff" opacity=".7"/>
+          <line x1="786" y1="258" x2="848" y2="258" stroke="#cfd6da" stroke-width="3"/>
+          <line x1="786" y1="306" x2="848" y2="306" stroke="#cfd6da" stroke-width="3"/>
+          <circle cx="817" cy="280" r="9" fill="#fff" stroke="#9aa3ad" stroke-width="2"/><line x1="817" y1="280" x2="822" y2="274" stroke="#d04a3a" stroke-width="2"/>
+          <rect x="800" y="316" width="34" height="11" rx="2" fill="#ffd34d" stroke="#d9ab22" stroke-width="1.4"/><text x="817" y="324.5" font-size="7" text-anchor="middle" fill="#6e5710" font-weight="700">3500W</text>
+          <circle id="wh-light" cx="843" cy="296" r="4.4"/>
+          <path d="M852 290h16v54" stroke="#9aa3ad" stroke-width="5" fill="none"/>
+        </g>
+        <rect class="room-shade" data-room="laundry" x="580" y="198" width="300" height="158" fill="#0b1635" opacity=".3" pointer-events="none"/>
+      </g>
+
+      <!-- divider walls upper -->
+      <rect x="399" y="198" width="6" height="158" fill="#e7ddcc"/><rect x="575" y="198" width="6" height="158" fill="#e7ddcc"/>
+
+      <!-- SLAB upper→main -->
+      <rect x="100" y="356" width="800" height="16" fill="#ded7c8"/><line x1="100" y1="357.5" x2="900" y2="357.5" stroke="#f2ecdd" stroke-width="3"/><line x1="100" y1="371" x2="900" y2="371" stroke="#b9b09e" stroke-width="2"/>
+      <text x="132" y="367.5" font-size="8.5" letter-spacing="2" fill="#8a8170" font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif,monospace">UPPER FLOOR</text>
+      <text id="f2kwh" x="868" y="367.5" font-size="8.5" text-anchor="end" fill="#3f6b46" font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif,monospace" font-weight="700">0.0 kWh/day</text>
+
+      <!-- ════════ MAIN FLOOR ════════ -->
+      <!-- LIVING -->
+      <g>
+        <rect x="120" y="372" width="440" height="156" fill="#fbf6ec"/>
+        <rect x="120" y="372" width="440" height="36" fill="url(#roomGlowG)"/>
+        <rect x="120" y="502" width="440" height="26" fill="url(#floorShadeG)"/>
+        <rect x="120" y="372" width="440" height="9" fill="#f1e9d9"/>
+        <rect x="120" y="528" width="440" height="12" fill="#c08552"/>
+        <g stroke="#a8703f" stroke-width="1"><line x1="170" y1="528" x2="170" y2="540"/><line x1="240" y1="528" x2="240" y2="540"/><line x1="310" y1="528" x2="310" y2="540"/><line x1="380" y1="528" x2="380" y2="540"/><line x1="450" y1="528" x2="450" y2="540"/><line x1="520" y1="528" x2="520" y2="540"/></g>
+        <text x="340" y="390" font-size="9" letter-spacing="2.5" text-anchor="middle" fill="#b9a98e" font-weight="700">LIVING ROOM</text>
+        <ellipse cx="306" cy="531" rx="128" ry="8" fill="#f3c6bd"/>
+        <ellipse cx="306" cy="531" rx="100" ry="5.5" fill="none" stroke="#e6a99c" stroke-width="1.5"/>
+        <!-- window -->
+        <rect x="138" y="396" width="64" height="76" fill="#ffffff" rx="2"/>
+        <rect x="142" y="400" width="56" height="68" class="glass" fill="#bfe6f5"/>
+        <line x1="150" y1="462" x2="192" y2="410" stroke="#fff" stroke-width="4" opacity=".45"/><line x1="160" y1="464" x2="196" y2="420" stroke="#fff" stroke-width="2" opacity=".4"/>
+        <line x1="170" y1="400" x2="170" y2="468" stroke="#fff" stroke-width="3"/><line x1="142" y1="434" x2="198" y2="434" stroke="#fff" stroke-width="3"/>
+        <path d="M138 396v76l11-7v-62Z" fill="#f2958f" opacity=".9"/><path d="M202 396v76l-11-7v-62Z" fill="#f2958f" opacity=".9"/>
+        <!-- family photos above sofa -->
+        <rect x="266" y="400" width="22" height="17" fill="#fff" stroke="#c9b87e" stroke-width="2"/><circle cx="277" cy="408" r="4" fill="#eab38b"/>
+        <rect x="294" y="398" width="26" height="20" fill="#fff" stroke="#c9b87e" stroke-width="2"/><circle cx="302" cy="408" r="3.4" fill="#eab38b"/><circle cx="311" cy="408" r="3.4" fill="#e8964f"/>
+        <!-- pendant lamps -->
+        <g class="app-obj" data-id="lights_living" data-label="Living Room Lights — 60 W">
+          <g id="lf-living" class="lamp">
+            <polygon class="cone" points="232,408 262,408 296,528 198,528" fill="#ffe9a8"/>
+            <line x1="247" y1="372" x2="247" y2="392" stroke="#8a8a74" stroke-width="2.5"/>
+            <path d="M232 408h30l-7-16h-16Z" class="bulbshade" fill="#e7d6a8" stroke="#c9b87e" stroke-width="2"/>
+            <circle cx="247" cy="411" r="3.4" fill="#fff8dd"/>
+          </g>
+        </g>
+        <g class="app-obj" data-id="lights_living" data-label="Living Room Lights — 60 W">
+          <g id="lf-living2" class="lamp">
+            <polygon class="cone" points="408,408 438,408 472,528 374,528" fill="#ffe9a8"/>
+            <line x1="423" y1="372" x2="423" y2="392" stroke="#8a8a74" stroke-width="2.5"/>
+            <path d="M408 408h30l-7-16h-16Z" class="bulbshade" fill="#e7d6a8" stroke="#c9b87e" stroke-width="2"/>
+            <circle cx="423" cy="411" r="3.4" fill="#fff8dd"/>
+          </g>
+        </g>
+        <g class="app-obj" data-id="fan_living" data-label="Ceiling Fan (Living Room) · 70 W">
+          <g id="fan-living" class="fan" transform="translate(335,388)">
+            <line x1="0" y1="-14" x2="0" y2="-4" stroke="#8a7a5e" stroke-width="3"/>
+            <g class="blades" fill="#b8a684">
+              <rect x="2" y="-3" width="26" height="6" rx="3"/><rect x="-28" y="-3" width="26" height="6" rx="3"/>
+              <rect x="-3" y="2" width="6" height="26" rx="3"/><rect x="-3" y="-28" width="6" height="26" rx="3"/>
+            </g>
+            <circle r="5" fill="#8a7a5e"/>
+          </g>
+        </g>
+        <g class="app-obj" data-id="ac_living" data-label="Split AC · 1,200 W">
+          <g id="acu-living" class="acu">
+            <rect x="488" y="384" width="64" height="26" rx="6" fill="#ffffff" stroke="#cfd6da" stroke-width="2"/>
+            <line x1="496" y1="402" x2="544" y2="402" stroke="#aeb8be" stroke-width="2"/>
+            <line x1="496" y1="396" x2="544" y2="396" stroke="#aeb8be" stroke-width="1.4"/>
+            <circle cx="544" cy="390.5" r="2.6" class="led"/>
+            <g class="air" stroke="#7cc7ee" stroke-width="2" fill="none" stroke-linecap="round">
+              <path d="M500 416q4 4 0 9"/><path d="M518 416q4 4 0 9"/><path d="M536 416q4 4 0 9"/>
+            </g>
+          </g>
+        </g>
+        <!-- plant -->
+        <g><ellipse cx="213" cy="530" rx="16" ry="3.4" fill="#000" opacity=".12"/>
+        <path d="M212 500q-12-22 2-34M212 500q12-24-2-38M212 500q-2-26 12-30M212 500q2-22-14-28" stroke="#2f8f4e" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M202 500h22l-4 28h-14Z" fill="#c97a4a" stroke="#a85f34" stroke-width="2"/></g>
+        <!-- sofa + person (poses switch with the TV) -->
+        <g id="sofa-scene">
+          <ellipse cx="310" cy="531" rx="92" ry="5.5" fill="#000" opacity=".12"/>
+          <rect x="234" y="442" width="152" height="48" rx="9" fill="#8fb0c4"/>
+          <rect x="234" y="444" width="152" height="6" rx="3" fill="#a3c1d3" opacity=".7"/>
+          <rect x="222" y="446" width="20" height="82" rx="9" fill="#7e9fb4"/>
+          <rect x="378" y="446" width="20" height="82" rx="9" fill="#7e9fb4"/>
+          <g class="pose-watch">
+            <path d="M286 452q-12 16-8 34l4 2q14 4 22 0l4-14q4-14-6-24Z" fill="#ef6f6f"/>
+            <circle cx="293" cy="441" r="10" fill="#eab38b"/>
+            <path d="M283.5 438a10 10 0 0 1 18-3q-10-5-18 3Z" fill="#3c2e22"/>
+            <circle cx="297.5" cy="441" r="1.4" fill="#3a2c20"/>
+            <path d="M296 446q2.5 2 5 .5" stroke="#4a382a" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+            <path d="M300 458l18 8 12-2" stroke="#eab38b" stroke-width="7" fill="none" stroke-linecap="round"/>
+            <rect x="328" y="458" width="13" height="6" rx="2" fill="#374151" transform="rotate(-8 334 461)"/>
+            <path d="M296 488l34 2v14" stroke="#3f5a78" stroke-width="13" fill="none" stroke-linecap="round"/>
+            <path d="M286 490l28 6v12" stroke="#35506b" stroke-width="13" fill="none" stroke-linecap="round"/>
+            <rect x="322" y="516" width="20" height="9" rx="4" fill="#e8e2d3"/><rect x="308" y="520" width="20" height="9" rx="4" fill="#d9d2bf"/>
+          </g>
+          <g class="pose-sleep">
+            <rect x="244" y="462" width="26" height="14" rx="6" fill="#fff" stroke="#dfe6ea" stroke-width="1.6"/>
+            <circle cx="258" cy="462" r="10" fill="#eab38b"/>
+            <path d="M248.5 459a10 10 0 0 1 18-3q-10-5-18 3Z" fill="#3c2e22"/>
+            <path d="M256 460q2-1.6 4 0M254 466q3 1.8 6 0" stroke="#4a382a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+            <path d="M268 470q26-8 56 0q14 4 22 0v14q-44 8-78 0Z" fill="#ef6f6f"/>
+            <path d="M340 470l22 4q9 4 4 12l-26-2Z" fill="#35506b"/>
+            <rect x="358" y="478" width="18" height="8" rx="4" fill="#d9d2bf" transform="rotate(14 367 482)"/>
+            <path d="M272 482q30 7 64 2" stroke="#d65555" stroke-width="1.6" fill="none" opacity=".7"/>
+            <rect x="300" y="510" width="13" height="6" rx="2" fill="#374151" transform="rotate(20 306 513)"/>
+            <g font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif,sans-serif" font-weight="800" fill="#7fa8c9">
+              <text class="zz z1" x="266" y="448" font-size="12">z</text>
+              <text class="zz z2" x="276" y="436" font-size="15">Z</text>
+              <text class="zz z3" x="289" y="423" font-size="18">Z</text>
+            </g>
+          </g>
+          <rect x="240" y="506" width="140" height="22" rx="4" fill="#7e9fb4"/>
+          <rect x="366" y="452" width="22" height="22" rx="4" transform="rotate(8 377 463)" fill="#f2b3ba"/>
+        </g>
+        <g><!-- coffee table + cat -->
+          <ellipse cx="300" cy="530" rx="50" ry="4" fill="#000" opacity=".1"/>
+          <rect x="252" y="500" width="96" height="7" rx="2" fill="url(#woodG)"/>
+          <rect x="256" y="507" width="6" height="21" fill="#9a6840"/><rect x="338" y="507" width="6" height="21" fill="#9a6840"/>
+          <rect x="282" y="492" width="10" height="8" rx="1.5" fill="#d04a3a"/><path d="M298 500a6 5 0 0 1 11 0Z" fill="#fff" stroke="#c2d4de" stroke-width="1.6"/>
+          <g><!-- sleeping cat -->
+            <ellipse cx="226" cy="524" rx="18" ry="4" fill="#000" opacity=".1"/>
+            <ellipse cx="226" cy="522" rx="17" ry="8.5" fill="#e8964f"/>
+            <circle cx="212" cy="518" r="6.5" fill="#e8964f"/>
+            <path d="M207 514l-2-5 5 2ZM215 512l1-5 3 4Z" fill="#d27f3a"/>
+            <path d="M209 519q1.6 1.4 3.4 0M214 519q1.6 1.4 3.4 0" stroke="#7a4a1e" stroke-width="1.1" fill="none"/>
+            <path d="M242 522q9-2 7-10" stroke="#d27f3a" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+            <path d="M222 516q4 3 9 1M226 524q5 2 9 0" stroke="#d27f3a" stroke-width="1.6" fill="none"/>
+          </g>
+        </g>
+        <!-- TV + console -->
+        <g class="app-obj" data-id="electronics" data-label="TV / Electronics · 150 W">
+          <g id="tv-g">
+            <rect id="tv-glow" x="443" y="433" width="96" height="66" rx="10" fill="#5b8cff" filter="url(#soft)"/>
+            <rect x="452" y="438" width="78" height="54" rx="4" fill="#11151f" stroke="#2a2f3a" stroke-width="2"/>
+            <rect x="458" y="444" width="66" height="42" rx="2" class="screen"/>
+            <g class="tvc" clip-path="url(#tvclip)">
+              <rect x="458" y="444" width="66" height="42" fill="url(#tvOnG)"/>
+              <rect x="458" y="471" width="66" height="15" fill="#2f9e9e"/>
+              <circle cx="508" cy="458" r="6" fill="#ffd23e"/>
+              <path d="M474 480C471 469 477 458 473 448" stroke="#0c4d3a" stroke-width="3" fill="none"/>
+              <path d="M473 450q-6-4-10 1M473 450q-1-7-7-8M473 450q6-4 10 0M473 450q1-7 7-7" stroke="#15805f" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+              <rect x="458" y="444" width="66" height="42" fill="#fff" opacity=".06"><animate attributeName="opacity" values=".02;.1;.04;.12;.03" dur="2.6s" repeatCount="indefinite"/></rect>
+            </g>
+          </g>
+        </g>
+        <g><!-- console -->
+          <ellipse cx="489" cy="530" rx="62" ry="4" fill="#000" opacity=".12"/>
+          <rect x="428" y="492" width="122" height="36" rx="4" fill="url(#woodG)" stroke="#946437" stroke-width="2"/>
+          <line x1="489" y1="494" x2="489" y2="526" stroke="#946437" stroke-width="2"/>
+          <circle cx="480" cy="510" r="2.4" fill="#6e4a28"/><circle cx="498" cy="510" r="2.4" fill="#6e4a28"/>
+        </g>
+        <rect class="room-shade" data-room="living" x="120" y="372" width="440" height="156" fill="#0b1635" opacity=".3" pointer-events="none"/>
+      </g>
+
+      <!-- KITCHEN -->
+      <g>
+        <rect x="560" y="372" width="320" height="156" fill="#fbfaf5"/>
+        <rect x="560" y="372" width="320" height="36" fill="url(#roomGlowG)"/>
+        <rect x="560" y="502" width="320" height="26" fill="url(#floorShadeG)"/>
+        <rect x="560" y="372" width="320" height="9" fill="#efece1"/>
+        <rect x="560" y="425" width="320" height="37" fill="url(#kTile)"/>
+        <rect x="560" y="528" width="320" height="12" fill="#cdd4d8"/>
+        <g stroke="#b6bfc4" stroke-width="1"><line x1="600" y1="528" x2="600" y2="540"/><line x1="660" y1="528" x2="660" y2="540"/><line x1="720" y1="528" x2="720" y2="540"/><line x1="780" y1="528" x2="780" y2="540"/><line x1="840" y1="528" x2="840" y2="540"/></g>
+        <text x="690" y="390" font-size="9" letter-spacing="2.5" text-anchor="middle" fill="#aab3a4" font-weight="700">KITCHEN</text>
+        <!-- ceiling lights -->
+        <g class="app-obj" data-id="lights_kitchen" data-label="Kitchen Lights — 40 W">
+          <g id="lamp-kit1" class="lamp">
+            <polygon class="cone" points="700,386 716,386 730,460 686,460" fill="#ffe9a8"/>
+            <path d="M698 384h20a10 6 0 0 0-20 0Z" transform="rotate(180 708 382)" fill="#9aa8b2"/>
+            <circle class="bulbshade" cx="708" cy="384" r="4.4" fill="#e7d6a8" stroke="#c9b87e" stroke-width="1.4"/>
+          </g>
+        </g>
+        <g class="app-obj" data-id="lights_kitchen" data-label="Kitchen Lights — 40 W">
+          <g id="lamp-kit2" class="lamp">
+            <polygon class="cone" points="822,386 838,386 852,460 808,460" fill="#ffe9a8"/>
+            <path d="M812 384h20a10 6 0 0 0-20 0Z" transform="rotate(180 822 382)" fill="#9aa8b2"/>
+            <circle class="bulbshade" cx="822" cy="384" r="4.4" fill="#e7d6a8" stroke="#c9b87e" stroke-width="1.4"/>
+          </g>
+        </g>
+        <!-- wall clock -->
+        <g><circle cx="585" cy="402" r="10" fill="#fff" stroke="#9aa8b2" stroke-width="2.4"/><line x1="585" y1="402" x2="585" y2="395.5" stroke="#3a3f46" stroke-width="1.8"/><line x1="585" y1="402" x2="590" y2="404" stroke="#3a3f46" stroke-width="1.4"/></g>
+        <!-- window above sink + cabinet -->
+        <rect x="698" y="392" width="48" height="32" fill="#ffffff" rx="2"/>
+        <rect x="702" y="396" width="40" height="24" class="glass" fill="#bfe6f5"/>
+        <line x1="722" y1="396" x2="722" y2="420" stroke="#fff" stroke-width="2.6"/>
+        <g><path d="M706 420q-6-9 1-13M706 420q5-9-1-12" stroke="#2f8f4e" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M701 420h10l-2 6h-6Z" fill="#c97a4a"/></g>
+        <rect x="754" y="390" width="34" height="34" rx="3" fill="#ffffff" stroke="#d7d2c4" stroke-width="2.5"/>
+        <rect x="768" y="402" width="4" height="10" rx="2" fill="#b3ab98"/>
+        <!-- hanging pots -->
+        <g stroke="#7c8893" stroke-width="2" fill="none"><line x1="676" y1="392" x2="676" y2="400"/><line x1="688" y1="392" x2="688" y2="402"/></g>
+        <path d="M670 400h12v8q-6 3-12 0Z" fill="#aab3ba"/><path d="M683 402h11v7q-5.5 3-11 0Z" fill="#8a949c"/>
+        <g><!-- counters + base cabinets -->
+          <rect x="576" y="460" width="200" height="12" rx="2" fill="#d8b27e" stroke="#bd9760" stroke-width="2"/>
+          <rect x="576" y="460" width="200" height="3.5" fill="#e8c794"/>
+          <rect x="580" y="472" width="192" height="56" fill="#f4f1e8" stroke="#d7d2c4" stroke-width="2"/>
+          <line x1="644" y1="472" x2="644" y2="528" stroke="#d7d2c4" stroke-width="2"/><line x1="708" y1="472" x2="708" y2="528" stroke="#d7d2c4" stroke-width="2"/>
+          <circle cx="636" cy="498" r="2.4" fill="#b3ab98"/><circle cx="652" cy="498" r="2.4" fill="#b3ab98"/><circle cx="700" cy="498" r="2.4" fill="#b3ab98"/><circle cx="716" cy="498" r="2.4" fill="#b3ab98"/>
+        </g>
+        <g><!-- toaster + sink + microwave on the counter -->
+          <rect x="676" y="446" width="20" height="14" rx="4" fill="url(#steelG)" stroke="#9aa3ad" stroke-width="1.6"/><line x1="681" y1="448.5" x2="681" y2="452" stroke="#5d646c" stroke-width="2"/><line x1="688" y1="448.5" x2="688" y2="452" stroke="#5d646c" stroke-width="2"/>
+          <path d="M712 460v-12h12" stroke="#8a949c" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <rect x="700" y="459" width="42" height="5" rx="2" fill="#b9c2c8"/>
+          <rect x="748" y="436" width="42" height="24" rx="3" fill="url(#steelG)" stroke="#9aa3ad" stroke-width="2"/>
+          <rect x="752" y="440" width="24" height="16" rx="2" fill="#2a2f3a"/><line x1="756" y1="444" x2="766" y2="454" stroke="#fff" stroke-width="1.6" opacity=".25"/>
+          <circle cx="783" cy="443" r="1.6" fill="#8a949c"/><circle cx="783" cy="449" r="1.6" fill="#8a949c"/><rect x="780" y="453" width="7" height="3" rx="1" fill="#8a949c"/>
+        </g>
+        <g class="app-obj" data-id="stove" data-label="Stove / Oven · 2,500 W">
+          <g id="stove-g">
+            <ellipse cx="631" cy="530" rx="40" ry="4" fill="#000" opacity=".12"/>
+            <path d="M596 430h70l-6-26h-58Z" fill="url(#steelG)" stroke="#aab3ba" stroke-width="2"/>
+            <rect x="604" y="425" width="54" height="5" rx="2" class="hood-light"/>
+            <rect x="594" y="438" width="74" height="90" rx="4" fill="#23272e" stroke="#3a3f46" stroke-width="2.5"/>
+            <rect x="594" y="438" width="74" height="18" rx="4" fill="#2c313a"/>
+            <ellipse id="burner1" class="burner" cx="608" cy="447" rx="7" ry="5"/>
+            <ellipse id="burner2" class="burner" cx="624" cy="447" rx="7" ry="5"/>
+            <ellipse id="burner3" class="burner" cx="640" cy="447" rx="7" ry="5"/>
+            <ellipse id="burner4" class="burner" cx="655" cy="447" rx="6" ry="4.5"/>
+            <g fill="#9aa3ad"><circle cx="604" cy="463" r="3"/><circle cx="618" cy="463" r="3"/><circle cx="632" cy="463" r="3"/><circle cx="646" cy="463" r="3"/><circle cx="660" cy="463" r="3"/></g>
+            <rect x="600" y="472" width="62" height="6" rx="3" fill="#aab3ba"/>
+            <rect x="602" y="484" width="58" height="34" rx="3" class="oven-glass" stroke="#3a3f46" stroke-width="2"/>
+            <line x1="606" y1="490" x2="624" y2="510" stroke="#fff" stroke-width="2.5" opacity=".18"/>
+          </g>
+        </g>
+        <g class="app-obj" data-id="fridge" data-label="Refrigerator · 150 W">
+          <g id="fridge-g">
+            <ellipse cx="829" cy="530" rx="38" ry="4" fill="#000" opacity=".12"/>
+            <rect x="794" y="368" width="70" height="160" rx="7" fill="url(#steelG)" stroke="#9aa3ad" stroke-width="2.5"/>
+            <rect x="798" y="372" width="8" height="152" rx="4" fill="#fff" opacity=".5"/>
+            <line x1="829" y1="372" x2="829" y2="458" stroke="#aab3ba" stroke-width="2.5"/>
+            <line x1="798" y1="462" x2="860" y2="462" stroke="#9aa3ad" stroke-width="3"/>
+            <rect x="822" y="386" width="4.5" height="56" rx="2" fill="#7c8893"/><rect x="832" y="386" width="4.5" height="56" rx="2" fill="#7c8893"/>
+            <rect x="812" y="472" width="34" height="5" rx="2.5" fill="#7c8893"/>
+            <rect x="800" y="396" width="16" height="26" rx="3" fill="#3a3f46"/><rect x="803" y="400" width="10" height="12" rx="2" fill="#11151f"/>
+            <circle class="fr-led" cx="808" cy="416" r="2"/>
+            <line x1="800" y1="500" x2="858" y2="500" stroke="#aab3ba" stroke-width="2"/>
+          </g>
+        </g>
+        <rect class="room-shade" data-room="kitchen" x="560" y="372" width="320" height="156" fill="#0b1635" opacity=".3" pointer-events="none"/>
+      </g>
+      <rect x="556" y="372" width="6" height="156" fill="#e7ddcc"/>
+
+      <!-- SLAB main→mech -->
+      <rect x="100" y="540" width="800" height="16" fill="#ded7c8"/><line x1="100" y1="541.5" x2="900" y2="541.5" stroke="#f2ecdd" stroke-width="3"/><line x1="100" y1="555" x2="900" y2="555" stroke="#b9b09e" stroke-width="2"/>
+      <text x="132" y="551.5" font-size="8.5" letter-spacing="2" fill="#8a8170" font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif,monospace">MAIN FLOOR</text>
+      <text id="f1kwh" x="868" y="551.5" font-size="8.5" text-anchor="end" fill="#3f6b46" font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif,monospace" font-weight="700">0.0 kWh/day</text>
+
+      <!-- ════════ MECHANICAL ════════ -->
+      <g>
+        <rect x="120" y="556" width="760" height="62" fill="#39443b"/>
+        <rect x="120" y="592" width="760" height="26" fill="url(#floorShadeG)"/>
+        <rect x="120" y="606" width="760" height="12" fill="#4e584d"/>
+        <line x1="120" y1="566" x2="880" y2="566" stroke="#6a766a" stroke-width="5"/>
+        <circle cx="250" cy="566" r="4" fill="#7e8a7e"/><circle cx="520" cy="566" r="4" fill="#7e8a7e"/><circle cx="760" cy="566" r="4" fill="#7e8a7e"/>
+        <line x1="250" y1="566" x2="250" y2="584" stroke="#6a766a" stroke-width="4"/><line x1="760" y1="566" x2="760" y2="592" stroke="#6a766a" stroke-width="4"/>
+        <text x="640" y="582" font-size="8.5" letter-spacing="2.5" fill="#7e8f80" font-weight="700">MECHANICAL · PUMPS &amp; MAINS</text>
+        <g class="app-obj" data-id="waterpump" data-label="Water Pump · 750 W">
+          <rect x="172" y="572" width="30" height="34" rx="12" fill="#3b82c4" stroke="#5ea4dd" stroke-width="2"/>
+          <line x1="178" y1="582" x2="196" y2="582" stroke="#2a6499" stroke-width="2"/>
+          <rect x="206" y="582" width="42" height="24" rx="4" fill="#2e7d4f" stroke="#4aa873" stroke-width="2"/>
+          <line x1="212" y1="588" x2="212" y2="600" stroke="#256741" stroke-width="2"/><line x1="218" y1="588" x2="218" y2="600" stroke="#256741" stroke-width="2"/>
+          <g id="wpump-wheel"><g class="wheel-spin" transform="translate(236,594)">
+            <circle r="8.5" fill="none" stroke="#7ce0a2" stroke-width="3" stroke-dasharray="7 5"/><circle r="2.4" fill="#bef3d2"/>
+          </g></g>
+          <line x1="202" y1="596" x2="206" y2="596" stroke="#5ea4dd" stroke-width="4"/>
+        </g>
+        <g class="app-obj" data-id="poolpump" data-label="Pool Pump · 1,000 W">
+          <rect x="300" y="582" width="44" height="24" rx="4" fill="#1f6e8c" stroke="#3fa3c4" stroke-width="2"/>
+          <line x1="306" y1="588" x2="306" y2="600" stroke="#175368" stroke-width="2"/><line x1="312" y1="588" x2="312" y2="600" stroke="#175368" stroke-width="2"/>
+          <g id="ppump-wheel"><g class="wheel-spin" transform="translate(332,594)">
+            <circle r="8.5" fill="none" stroke="#67d6f0" stroke-width="3" stroke-dasharray="7 5"/><circle r="2.4" fill="#c8f1fb"/>
+          </g></g>
+          <path d="M344 594h14v-10" stroke="#3fa3c4" stroke-width="4" fill="none"/>
+        </g>
+        <g><!-- electrical panel -->
+          <rect x="470" y="572" width="46" height="34" rx="3" fill="#5a6470" stroke="#7c8893" stroke-width="2"/>
+          <g fill="#2a2f3a"><rect x="476" y="578" width="14" height="5" rx="1"/><rect x="496" y="578" width="14" height="5" rx="1"/><rect x="476" y="587" width="14" height="5" rx="1"/><rect x="496" y="587" width="14" height="5" rx="1"/><rect x="476" y="596" width="14" height="5" rx="1"/><rect x="496" y="596" width="14" height="5" rx="1"/></g>
+          <circle class="breaker-led" cx="513" cy="575.5" r="2" fill="#34d399"/>
+          <line x1="493" y1="572" x2="493" y2="566" stroke="#7c8893" stroke-width="3"/>
+        </g>
+        <rect class="room-shade" data-room="basement" x="120" y="556" width="760" height="62" fill="#0b1635" opacity=".25" pointer-events="none"/>
+      </g>
+
+      <!-- SLAB bottom -->
+      <rect x="100" y="618" width="800" height="16" fill="#ded7c8"/><line x1="100" y1="619.5" x2="900" y2="619.5" stroke="#f2ecdd" stroke-width="3"/>
+      <text x="132" y="629.5" font-size="8.5" letter-spacing="2" fill="#8a8170" font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif,monospace">GROUND · MECHANICAL</text>
+      <text id="f0kwh" x="868" y="629.5" font-size="8.5" text-anchor="end" fill="#3f6b46" font-family="'Segoe UI',Tahoma,Geneva,Verdana,sans-serif,monospace" font-weight="700">0.0 kWh/day</text>
+    </svg>
+  </div><!-- /house-svgwrap -->
+
+  <!-- CONSERVE ENERGY BANNER -->
+  <div style="background:linear-gradient(135deg,#0d3b6e,#1a5fa8);padding:7px 18px;display:flex;align-items:center;justify-content:center;gap:10px;border-top:1px solid rgba(255,255,255,.1);">
+    <span style="font-size:18px;">☀️</span>
+    <span style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:13px;font-weight:800;color:#fff;letter-spacing:.12em;text-transform:uppercase;text-shadow:0 1px 6px rgba(0,0,0,.3);">Conserve Energy and Save</span>
+    <span style="font-size:18px;">💡</span>
+  </div>
+  <!-- LIVE USAGE BAR -->
+  <div class="livebar">
+    <div class="lb"><span class="lk">Live Load</span><span class="lv" id="liveLoad2">0 W</span></div>
+    <div class="lb"><span class="lk">Daily Energy</span><span class="lv" id="hudDaily2">0.0 kWh</span></div>
+    <div class="lb"><span class="lk">Est. Monthly Bill</span><span class="lv amber" id="hudBill2">$0</span></div>
+    <div class="lb"><span class="lk">Appliances On</span><span class="lv" id="onCount2">0 / 16</span></div>
+  </div>
+</div><!-- /house-fullview -->
+
+<!-- ═══ DASHBOARD BELOW THE HOUSE ═══ -->
+<div class="grid">
+<!-- LEFT: controls -->
+<div style="display:flex;flex-direction:column;gap:13px">
+
+<!-- CONTROLS CARD -->
+<div class="card">
+  <h2>Appliance Usage Controls</h2>
+  <p class="sub">Set daily operating hours with sliders &middot; toggle Day / Night schedule &middot; click (i) for energy-saving information</p>
+  <div class="arows" id="appList"></div>
+  <div class="tot-row">
+    <b>Total Daily Usage</b>
+    <span class="v"><span id="dailyKwh">0.0</span> kWh</span>
+  </div>
+</div>
+
+<!-- SOLAR FEATURE START -->
+<!-- SOLAR FEATURE: Power Source card moved to right column -->
+
+</div><!-- /left col -->
+
+<!-- RIGHT COLUMN -->
+<div class="rcol" style="display:flex;flex-direction:column;gap:13px">
+
+  <!-- SOLAR FEATURE START — Power Source (right side, 2 options) -->
+  <div class="card">
+    <h2>Power Source <span class="tag" id="solarModeTag">Power Only</span></h2>
+    <p class="sub">Choose how the home is powered</p>
+    <div class="solar-controls">
+      <div class="mode-options" id="powerMode">
+        <button type="button" data-mode="grid" class="on">⚡ Power</button>
+        <button type="button" data-mode="solarbattery">☀️🔋 Solar &amp; Battery</button>
+      </div>
+      <div id="solarSizeWrap" class="solar-controls disabled" style="margin-top:0">
+        <p class="sub" style="margin-top:0">Rooftop PV size used for generation &amp; billing</p>
+        <div class="solar-options" id="solarOptions">
+          <button type="button" data-size="3">3 kW</button>
+          <button type="button" data-size="5" class="on">5 kW</button>
+          <button type="button" data-size="8">8 kW</button>
+          <button type="button" data-size="custom">Custom</button>
+        </div>
+        <div class="solar-custom">
+          <label for="solarCustomSize">Custom kW</label>
+          <input id="solarCustomSize" type="number" min="0" step="0.1" value="5"/>
+          <span class="sub">5.5 sunlight hours/day</span>
+        </div>
+      </div>
+      <div class="solar-shortfall" id="solarShortfall"></div>
+    </div>
+  </div>
+  <!-- SOLAR FEATURE END -->
+
+  <div class="card">
+    <h2>Monthly Bill Estimate <span class="tag" id="monthKwh">0 kWh / mo</span></h2>
+    <div class="billwrap" style="margin-top:10px">
+      <div style="text-align:center">
+        <svg viewBox="0 0 200 118" style="width:100%;max-width:195px;display:block;margin:0 auto">
+          <path id="arcG" fill="none" stroke="#4ade80" stroke-width="13" stroke-linecap="round"/>
+          <path id="arcA" fill="none" stroke="#fbbf24" stroke-width="13" stroke-linecap="round"/>
+          <path id="arcR" fill="none" stroke="#f87171" stroke-width="13" stroke-linecap="round"/>
+          <line id="needle" x1="100" y1="100" x2="100" y2="30"
+            stroke="#e2f0ff" stroke-width="3" stroke-linecap="round"
+            style="transform-origin:100px 100px;transition:transform .6s cubic-bezier(.2,.9,.25,1)"/>
+          <circle cx="100" cy="100" r="5" fill="#e2f0ff"/>
+          <text x="20" y="114" font-size="9" fill="#4a6a85" font-family='Segoe UI',Tahoma,Geneva,Verdana,sans-serif>$0</text>
+          <text x="165" y="114" font-size="9" fill="#4a6a85" font-family='Segoe UI',Tahoma,Geneva,Verdana,sans-serif>$1k+</text>
+        </svg>
+        <div class="sub">Estimated monthly bill</div>
+        <div class="bignum" id="billNum">$0.00</div>
+      </div>
+      <div class="save-card">
+        <div class="lbl">Compare &amp; Save</div>
+        <div class="sub" style="color:#4a6a85">If you reduce daily<br>usage by 20%</div>
+        <div class="amt" id="saveBill">$0.00</div>
+        <div class="save" id="saveAmt">Save $0 / month</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Bill Breakdown <span class="tag">BELCO 2026 Rates</span></h2>
+    <div id="breakdown" style="margin-top:5px"></div>
+  </div>
+
+  <div class="card">
+    <h2>Efficiency &amp; Carbon Impact</h2>
+    <div class="statgrid" style="margin-top:9px">
+      <div class="stat">
+        <div class="k">Home Score</div>
+        <div class="grade" id="grade">A</div>
+        <div class="scorebar"><i id="scoreFill"></i></div>
+        <div class="sub" id="scoreTxt" style="color:#4a6a85">—</div>
+      </div>
+      <div class="stat">
+        <div class="k">Est. Carbon</div>
+        <div class="v" id="carbonV">0</div>
+        <div class="sub" style="color:#4a6a85">kg CO₂ / month</div>
+        <div class="sub" id="carbonEq" style="margin-top:5px;color:#4a6a85">≈ 0 tree-years</div>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <div style="font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;color:#4a6a85;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif">Day vs Night Load</div>
+      <div class="dn" id="dnSplit"></div>
+    </div>
+  </div>
+
+  <!-- SOLAR FEATURE START -->
+  <div class="card">
+    <h2>Solar &amp; Battery Performance <span class="tag" id="solarProductionTag">0.0 kWh/day</span></h2>
+    <div class="solar-stats">
+      <div class="stat"><div class="k">System Size</div><div class="v" id="solarSizeV">5.0 kW</div></div>
+      <div class="stat"><div class="k">Daily Generation</div><div class="v" id="solarDailyV">0.0</div><div class="sub" style="color:#4a6a85">kWh / day</div></div>
+      <div class="stat"><div class="k">Monthly Generation</div><div class="v" id="solarMonthV">0</div><div class="sub" style="color:#4a6a85">kWh / month</div></div>
+      <div class="stat"><div class="k">Battery → Night Use</div><div class="v" id="solarBatteryV">0.0</div><div class="sub" style="color:#4a6a85">kWh / day</div></div>
+      <div class="stat"><div class="k">Monthly Savings</div><div class="v" id="solarSavingsV">$0.00</div></div>
+      <div class="stat"><div class="k">CO2 Reduction</div><div class="v" id="solarCarbonV">0</div><div class="sub" style="color:#4a6a85">kg / month</div></div>
+      <div class="stat"><div class="k">Net Grid Usage</div><div class="v" id="solarNetV">0</div><div class="sub" style="color:#4a6a85">kWh / month</div></div>
+    </div>
+  </div>
+  <!-- SOLAR FEATURE END -->
+
+  <div class="card">
+    <h2>Usage &amp; Cost Projection <span class="tag" id="simDay">Projection</span></h2>
+    <div style="display:flex;align-items:center;gap:8px;margin-top:9px;flex-wrap:wrap">
+      <button class="pill primary" id="runBtn">&#9654; Run Simulation</button>
+      <select class="speed" id="speed"><option value="120">Slow</option><option value="55" selected>Normal</option><option value="18">Fast</option></select>
+    </div>
+    <div class="legend" style="margin-top:8px"><span><i style="background:#4ade80"></i>kWh</span><span><i style="background:#fbbf24"></i>Cost ($)</span></div>
+    <svg id="chart" viewBox="0 0 440 175" preserveAspectRatio="none"></svg>
+    <div class="dayread" id="dayReadout">Press <b>Run Simulation</b> to play a 30-day bill projection.</div>
+  </div>
+
+  <div class="card">
+    <h2>Energy Efficiency Recommendations</h2>
+    <div class="insights" id="insights" style="margin-top:7px"></div>
+  </div>
+
+</div><!-- /right col -->
+</div><!-- /grid -->
+
+<div class="foot">
+  <button class="btn solid" id="reportBtn">Summary Report</button>
+  <button class="btn" id="csvBtn">Export CSV</button>
+  <button class="btn" id="pdfBtn">Save as PDF</button>
+  <span class="credit">Bermuda BELCO 2026 Tariff Rates &middot; Department of Energy</span>
+</div>
+
+<div class="modal" id="modal">
+  <div class="sheet">
+    <div class="sheet-h"><span>⚡</span><h2>Monthly Energy &amp; Bill Summary</h2><button id="closeModal">&#10005;</button></div>
+    <div class="sheet-b rep" id="reportBody"></div>
+  </div>
+</div>
+
+<script>
+const RATES={
+  daysInMonth:30,
+  // BUG FIX #1 START
+  energyTiers:[{upTo:250,rate:.15690},{upTo:700,rate:.27674},{upTo:Infinity,rate:.42685}],
+  far:.13860,raFee:.00547,
+  baseBill:25, // minimum monthly bill — applies to every customer, even at 0 kWh
+  facilities:[{over:0,fee:25.44},{over:10,fee:38.17},{over:15,fee:50.83},{over:25,fee:79.51},{over:50,fee:120.86}],
+  // BUG FIX #1 END
+  carbonKgPerKwh:.72
+};
+const SEED=[
+  {id:'ac_living',name:'Split AC (Living Room)',watts:1200,hours:6,room:'living',when:'day',tip:'Set to 24°C instead of 18°C — every degree cooler adds ~6% to run cost.'},
+  {id:'fan_living',name:'Ceiling Fan (Living Room)',watts:70,hours:6,room:'living',when:'day',tip:'A ceiling fan costs a fraction of the AC — use it to feel cooler at higher AC setpoints.'},
+  {id:'ac_bed',name:'Split AC (Bedroom)',watts:1200,hours:5,room:'bedroom',when:'night',tip:'Use the sleep timer so it eases off after you fall asleep.'},
+  {id:'fan_bed',name:'Ceiling Fan (Bedroom)',watts:50,hours:5,room:'bedroom',when:'night',tip:'Run the ceiling fan to circulate air — it allows a higher AC setpoint without discomfort.'},
+  {id:'lights_living',name:'Living Room Lights',watts:60,hours:6,room:'living',when:'both',tip:'Pendant lights on a dimmer or motion sensor avoid waste in unoccupied rooms.'},
+  {id:'lights_kitchen',name:'Kitchen Lights',watts:40,hours:5,room:'kitchen',when:'day',tip:'Task lighting over counters can replace full overhead fixtures and save energy.'},
+  {id:'lights_bed',name:'Bedroom Lights',watts:30,hours:5,room:'bedroom',when:'night',tip:'A single bedside lamp uses significantly less than a ceiling fitting for reading.'},
+  {id:'lights_bath',name:'Bathroom Vanity Lights',watts:20,hours:2,room:'bath',when:'day',tip:'Keep vanity lights off when the bathroom is unoccupied — they add up over a month.'},
+  {id:'lights_laundry',name:'Utility / Laundry Lights',watts:10,hours:1.5,room:'laundry',when:'day',tip:'A motion-sensor switch prevents lights being left on in utility areas.'},
+  {id:'fridge',name:'Refrigerator',watts:150,duty:.5,hours:24,room:'kitchen',when:'both',fixed:true,locked:true,tip:'Runs ~50% duty cycle. Keep coils dust-free and door seal tight.'},
+  {id:'stove',name:'Stove / Oven',watts:2500,hours:1.5,room:'kitchen',when:'day',tip:'Match pot to burner size; a microwave reheats for a fraction of the energy.'},
+  {id:'heater',name:'Water Heater',watts:3500,hours:2,room:'laundry',when:'both',tip:'Drop thermostat to 49°C (120°F) and insulate the tank — major bill driver.'},
+  {id:'washer',name:'Washer (1 load)',watts:500,hours:1,room:'laundry',when:'day',tip:'Wash cold — heating water is most of a wash cycle\'s energy.'},
+  {id:'dryer',name:'Dryer (1 load)',watts:3000,hours:1,room:'laundry',when:'day',tip:'Line-dry in Bermuda\'s breeze whenever you can.'},
+  {id:'waterpump',name:'Water Pump',watts:750,hours:.5,room:'basement',when:'both',fixed:true,locked:true,tip:'Fix drips — leaks make the pump cycle far more than it should.'},
+  {id:'poolpump',name:'Pool Pump',watts:1000,hours:4,room:'basement',when:'day',tip:'4–6 hrs/day is plenty; a variable-speed pump saves even more.'},
+  {id:'electronics',name:'Electronics / TV / Other',watts:150,hours:4,room:'living',when:'night',tip:'Put the entertainment centre on a switched strip to kill standby draw.'},
+  {id:'fan',name:'Bathroom Fan',watts:40,hours:2,room:'bath',when:'day',tip:'Run just long enough to clear humidity, then switch off.'}
+];
+let apps=SEED.map(a=>({...a,on:true}));
+let sim=null;
+let appListEventsBound=false;
+
+const kwhDay=a=>a.on?(a.watts/1000)*a.hours*(a.duty||1):0;
+const totalDaily=()=>apps.reduce((s,a)=>s+kwhDay(a),0);
+const money=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+// BUG FIX #1 START
+function energyCharge(m){let prev=0,s=0;for(const t of RATES.energyTiers){const b=Math.max(0,Math.min(m,t.upTo)-prev);s+=b*t.rate;prev=t.upTo;if(m<=t.upTo)break;}return s;}
+const facilitiesCharge=m=>{const dailyUsage=m/RATES.daysInMonth;return RATES.facilities.reduce((fee,f)=>dailyUsage>f.over?f.fee:fee,0);};
+// BUG FIX #1 END
+function bill(m){const e=energyCharge(m),f=m*RATES.far,fac=facilitiesCharge(m),ra=m*RATES.raFee;
+  // BASE BILL FIX START — every customer pays a $25 minimum service charge,
+  // even with zero usage / everything switched off
+  let total=e+f+fac+ra,base=0;
+  if(total<RATES.baseBill){base=RATES.baseBill-total;total=RATES.baseBill;}
+  // BASE BILL FIX END
+  return{energy:e,far:f,facilities:fac,ra,base,total:total};}
+// SOLAR FEATURE START
+// POWER MODE (2 options): 'grid' = power only, 'solarbattery' = solar PV + battery storage
+let MODE='grid';
+const SOLAR={selected:'5',customSize:5,sunlightHours:5.5};
+const isNightMode=()=>document.getElementById('houseSvg')?.classList.contains('night');
+const solarSystemSize=()=>SOLAR.selected==='custom'?Math.max(0,SOLAR.customSize):Number(SOLAR.selected);
+// Generation is a daily average (size × 5.5 sun hrs); the Night visual toggle never affects billing.
+const solarDailyGeneration=()=>MODE==='grid'?0:solarSystemSize()*SOLAR.sunlightHours;
+// Day/night usage split (Both schedules count half to each)
+function dayNightUsage(){let day=0,night=0;apps.forEach(a=>{const k=kwhDay(a);if(a.when==='day')day+=k;else if(a.when==='night')night+=k;else{day+=k/2;night+=k/2;}});return{day,night};}
+// Battery: daytime surplus solar is stored and discharged at night,
+// so the FULL daily generation offsets the FULL daily usage.
+// Any remainder is drawn from the grid and billed (with the $25 base bill floor).
+const netDailyUsage=(grossDaily=totalDaily())=>MODE==='grid'?grossDaily:Math.max(0,grossDaily-solarDailyGeneration());
+// kWh/day the battery shifts from daytime generation into night-time loads
+function batteryShifted(){
+  if(MODE==='grid')return 0;
+  const{day,night}=dayNightUsage();
+  const surplus=Math.max(0,solarDailyGeneration()-day);
+  return Math.min(surplus,night);
+}
+const solarMonthlyGeneration=()=>solarDailyGeneration()*RATES.daysInMonth;
+const solarSavings=(grossDaily=totalDaily())=>bill(grossDaily*RATES.daysInMonth).total-bill(netDailyUsage(grossDaily)*RATES.daysInMonth).total;
+function renderSolar(){
+  const size=solarSystemSize(),daily=solarDailyGeneration(),month=daily*RATES.daysInMonth,gross=totalDaily(),net=netDailyUsage(gross);
+  document.querySelectorAll('#solarOptions button').forEach(b=>b.classList.toggle('on',b.dataset.size===SOLAR.selected));
+  document.querySelectorAll('#powerMode button').forEach(b=>b.classList.toggle('on',b.dataset.mode===MODE));
+  const sizeWrap=document.getElementById('solarSizeWrap');if(sizeWrap)sizeWrap.classList.toggle('disabled',MODE==='grid');
+  const modeTag=document.getElementById('solarModeTag');
+  if(modeTag)modeTag.textContent=MODE==='grid'?'⚡ Power Only':'☀️🔋 Solar & Battery';
+  const prodTag=document.getElementById('solarProductionTag');if(prodTag)prodTag.textContent=daily.toFixed(1)+' kWh/day';
+  const roofText=document.getElementById('solarRoofText');if(roofText)roofText.textContent=MODE==='grid'?'Solar OFF':'Solar '+daily.toFixed(1)+' kWh/day';
+  const roof=document.getElementById('solarRoof');if(roof)roof.style.opacity=MODE==='grid'?.25:1;
+  const flow=document.getElementById('solarFlow');if(flow)flow.style.opacity=(daily>0&&!isNightMode())?.95:0;
+  // Shortfall: solar + battery can't cover the whole load → remainder comes from grid
+  const short=document.getElementById('solarShortfall');
+  if(short){
+    if(MODE==='solarbattery'&&gross>daily){
+      short.style.display='block';
+      short.textContent='⚠ Solar & battery cover '+daily.toFixed(1)+' of '+gross.toFixed(1)+' kWh/day — the remaining '+(gross-daily).toFixed(1)+' kWh/day is drawn from the grid and billed.';
+    }else short.style.display='none';
+  }
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('solarSizeV',MODE==='grid'?'—':size.toFixed(1)+' kW');
+  set('solarDailyV',daily.toFixed(1));
+  set('solarMonthV',Math.round(month).toLocaleString());
+  set('solarBatteryV',batteryShifted().toFixed(1));
+  set('solarSavingsV',money(solarSavings(gross)));
+  set('solarCarbonV',Math.round(Math.min(gross*RATES.daysInMonth,month)*RATES.carbonKgPerKwh).toLocaleString());
+  set('solarNetV',Math.round(net*RATES.daysInMonth).toLocaleString());
+}
+// SOLAR FEATURE END
+// BUG FIX #3 START
+const minValidHours=.5;
+// SCHEDULE HOUR CAP: Day = 12 hrs max, Night = 12 hrs max, Both = 24 hrs max
+const maxHoursFor=a=>a.when==='both'?24:12;
+function syncApplianceState(a){
+  if(!a)return;
+  if(a.hours>maxHoursFor(a))a.hours=maxHoursFor(a);
+  if(a.hours<=0){a.hours=0;a.on=false;}
+  else if(!a.on){a.hours=0;}
+}
+function turnAppliance(a,on){
+  if(!a)return;
+  a.on=on;
+  if(!on)a.hours=0;
+  else if(a.hours<=0)a.hours=minValidHours;
+}
+// BUG FIX #3 END
+function scoreOf(daily){
+  const s=Math.max(0,Math.min(100,Math.round(100-(daily-15)/(55-15)*100)));
+  const g=s>=85?'A':s>=70?'B':s>=55?'C':s>=40?'D':'F';
+  const col=s>=70?'#16a34a':s>=40?'#d97706':'#dc2626';
+  return{s,g,col};
+}
+
+/* chip + in-house appliance click handlers */
+function buildHouse(){
+  document.querySelectorAll('.app-obj[data-id]').forEach(el=>{
+    el.addEventListener('click',e=>{
+      e.stopPropagation();
+      const a=apps.find(x=>x.id===el.dataset.id);
+      // BUG FIX #3 START
+      if(a){if(!a.locked)turnAppliance(a,!a.on);render();}
+      // BUG FIX #3 END
+    });
+  });
+  // floating tooltip that follows the cursor
+  let tipEl=document.querySelector('.svg-tip');
+  if(!tipEl){tipEl=document.createElement('div');tipEl.className='svg-tip';document.body.appendChild(tipEl);}
+  document.querySelectorAll('.app-obj[data-label]').forEach(el=>{
+    el.addEventListener('mousemove',e=>{
+      tipEl.textContent=(el.classList.contains('is-off')?'▶ Turn ON — ':'⏻ Turn OFF — ')+el.dataset.label;
+      tipEl.style.left=e.clientX+'px';tipEl.style.top=(e.clientY-12)+'px';tipEl.classList.add('show');
+    });
+    el.addEventListener('mouseleave',()=>tipEl.classList.remove('show'));
+  });
+  // day / night scene toggle
+  const dn=document.getElementById('dnBtn');
+  if(dn)dn.onclick=()=>{
+    const s=document.getElementById('houseSvg');s.classList.toggle('night');
+    const hf=document.querySelector('.house-fullview');if(hf)hf.classList.toggle('night-bg');
+    dn.textContent=s.classList.contains('night')?'Day Mode':'Night Mode';
+    render();
+  };
+}
+
+/* appliance list */
+function buildAppliances(){
+  const wrap=document.getElementById('appList');wrap.innerHTML='';
+  apps.forEach(a=>{
+    const row=document.createElement('div');row.className='arow';row.dataset.id=a.id;
+    row.innerHTML=`
+      <div class="atop">
+        <div class="sw ${a.on?'on':''}" data-act="toggle" style="${a.locked?'opacity:.4;cursor:not-allowed;pointer-events:none':''}"></div>
+        <div class="aname">${a.name}${a.locked?' 🔒':''}<small>${a.watts} W${a.duty?' · ~50% duty cycle':''}</small></div>
+        <div class="akwh"><span>kWh/day</span><b class="kv">0.00</b></div>
+        <button class="infob" data-act="info">i</button>
+      </div>
+      <div class="actrl">
+        <input type="range" min="0" max="${maxHoursFor(a)}" step="0.5" value="${a.hours}" ${a.fixed?'disabled':''} data-act="hours">
+        <span class="hrs"></span>
+        <div class="mseg">
+          <button data-w="day" class="${a.when==='day'?'on':''}">Day</button>
+          <button data-w="night" class="${a.when==='night'?'on':''}">Night</button>
+          <button data-w="both" class="${a.when==='both'?'on':''}">Both</button>
+        </div>
+      </div>
+      <div class="tip">${a.tip}</div>`;
+    wrap.appendChild(row);
+  });
+  if(!appListEventsBound){
+    appListEventsBound=true;
+    wrap.addEventListener('input',e=>{
+      if(e.target.dataset.act!=='hours')return;
+      const a=apps.find(x=>x.id===e.target.closest('.arow').dataset.id);
+      // BUG FIX #3 START
+      if(a){a.hours=parseFloat(e.target.value);a.on=a.hours>0;syncApplianceState(a);render();}
+      // BUG FIX #3 END
+    });
+    wrap.addEventListener('click',e=>{
+      const row=e.target.closest('.arow');if(!row)return;
+      const a=apps.find(x=>x.id===row.dataset.id);
+      const act=e.target.dataset.act;
+      // BUG FIX #3 START
+      if(act==='toggle'){if(!a.locked)turnAppliance(a,!a.on);render();}
+      // BUG FIX #3 END
+      else if(act==='info'){row.querySelector('.tip').classList.toggle('show');}
+      else if(e.target.dataset.w){
+        a.when=e.target.dataset.w;
+        // SCHEDULE HOUR CAP: clamp hours to new max (Day/Night = 12, Both = 24)
+        if(a.hours>maxHoursFor(a))a.hours=maxHoursFor(a);
+        render();
+      }
+    });
+  }
+}
+
+// SOLAR FEATURE START
+function buildSolarControls(){
+  // POWER MODE (3 phases) selector
+  const modes=document.getElementById('powerMode');
+  if(modes)modes.addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-mode]');
+    if(!btn)return;
+    MODE=btn.dataset.mode;
+    render();
+  });
+  const opts=document.getElementById('solarOptions');
+  if(opts)opts.addEventListener('click',e=>{
+    const btn=e.target.closest('button[data-size]');
+    if(!btn)return;
+    SOLAR.selected=btn.dataset.size;
+    render();
+  });
+  const custom=document.getElementById('solarCustomSize');
+  if(custom)custom.addEventListener('input',e=>{
+    SOLAR.customSize=parseFloat(e.target.value)||0;
+    SOLAR.selected='custom';
+    render();
+  });
+}
+// SOLAR FEATURE END
+
+function render(){
+  let on=0;
+  apps.forEach(a=>{
+    // dashboard list row
+    const row=document.querySelector(`.arow[data-id="${a.id}"]`);
+    if(row){
+      row.querySelector('.sw').classList.toggle('on',a.on);
+      row.querySelector('.kv').textContent=kwhDay(a).toFixed(2);
+      const sl=row.querySelector('input[type=range]');
+      // BUG FIX #3 START
+      // SCHEDULE HOUR CAP: keep slider range in sync with Day/Night/Both selection
+      if(sl){
+        const mx=maxHoursFor(a);
+        if(a.hours>mx)a.hours=mx;
+        sl.max=mx;
+        sl.value=a.hours;
+        sl.style.setProperty('--p',(a.hours/mx*100)+'%');
+      }
+      const hrs=row.querySelector('.hrs');
+      if(hrs)hrs.textContent=a.hours+(a.hours===1?' hr':' hrs');
+      row.querySelectorAll('.mseg button').forEach(b=>b.classList.toggle('on',b.dataset.w===a.when));
+      // BUG FIX #3 END
+    }
+    // dim the in-house graphic when switched off
+    document.querySelectorAll(`.app-obj[data-id="${a.id}"]`).forEach(el=>el.classList.toggle('is-off',!a.on));
+    if(a.on)on++;
+    // drive the in-house animation (follows the switch directly)
+    const C=(id,c)=>{const el=document.getElementById(id);if(el)el.classList.toggle(c,a.on);};
+    switch(a.id){
+      case 'stove': ['burner1','burner2','burner3','burner4'].forEach(id=>C(id,'on')); C('stove-g','on'); break;
+      case 'washer': C('washer-drum','on'); break;
+      case 'dryer': C('dryer-drum','on'); break;
+      case 'heater': C('wh-light','on'); break;
+      case 'waterpump': C('wpump-wheel','on'); break;
+      case 'poolpump': C('ppump-wheel','on'); C('pool-g','on'); break;
+      // BUG FIX #2 START
+      case 'electronics': C('tv-g','on'); break;
+      // BUG FIX #2 END
+      case 'fridge': C('fridge-g','on'); break;
+      case 'ac_living': C('acu-living','on'); break;
+      case 'fan_living': C('fan-living','spinning'); break;
+      case 'ac_bed': C('acu-bed','on'); break;
+      case 'fan_bed': C('fan-bedroom','spinning'); break;
+      // BUG FIX #2 START
+      case 'lights_living': ['lf-living','lf-living2'].forEach(id=>C(id,'on')); C('sofa-scene','lit'); break;
+      // BUG FIX #2 END
+      case 'lights_kitchen': ['lamp-kit1','lamp-kit2'].forEach(id=>C(id,'on')); break;
+      case 'lights_bed': C('lamp-bed','on'); C('bed-scene','lit'); break;
+      // BUG FIX #2 START
+      case 'lights_bath': C('lamp-bath','on'); C('tub-person','show'); break;
+      // BUG FIX #2 END
+      case 'lights_laundry': C('lamp-laundry','on'); break;
+      // BUG FIX #2 START
+      case 'fan': C('bath-vent','spinning'); break;
+      // BUG FIX #2 END
+    }
+  });
+  document.getElementById('onCount').textContent=on+' ONLINE';
+  const oc2=document.getElementById('onCount2');if(oc2)oc2.textContent=on+' / '+apps.length;
+
+  // BUG FIX #2 START
+  const isNight=document.getElementById('houseSvg')?.classList.contains('night');
+  const lightForRoom={bedroom:'lights_bed',bath:'lights_bath',laundry:'lights_laundry',living:'lights_living',kitchen:'lights_kitchen'};
+  document.querySelectorAll('.room-shade[data-room]').forEach(sh=>{
+    const lightId=lightForRoom[sh.dataset.room];
+    const lightOn=apps.some(a=>a.id===lightId&&a.on);
+    sh.style.opacity=lightOn?0:(isNight?.62:.3);
+  });
+  // BUG FIX #2 END
+
+  // HUD
+  const liveW=Math.round(apps.filter(a=>a.on).reduce((s,a)=>s+a.watts*(a.duty||1),0));
+  const liveTxt=liveW>=1000?(liveW/1000).toFixed(1)+' kW':liveW+' W';
+  const lv=document.getElementById('liveLoad');if(lv)lv.textContent=liveTxt;
+  const lv2=document.getElementById('liveLoad2');if(lv2)lv2.textContent=liveTxt;
+  const rw=document.getElementById('roofWatts');if(rw)rw.textContent=liveW.toLocaleString()+' W active';
+  const daily=totalDaily(),netDaily=netDailyUsage(daily),month=daily*RATES.daysInMonth,netMonth=netDaily*RATES.daysInMonth;
+  const hd=document.getElementById('hudDaily');if(hd)hd.textContent=daily.toFixed(1);
+  const hd2=document.getElementById('hudDaily2');if(hd2)hd2.textContent=daily.toFixed(1)+' kWh';
+  const b=bill(netMonth);
+  const hb=document.getElementById('hudBill');if(hb)hb.textContent='$'+Math.round(b.total);
+  const hb2=document.getElementById('hudBill2');if(hb2)hb2.textContent='$'+Math.round(b.total);
+
+  // floor kWh
+  const fm={f2:['bedroom','bath','laundry'],f1:['living','kitchen'],f0:['basement']};
+  Object.entries(fm).forEach(([fid,floorRooms])=>{
+    const kwh=apps.reduce((s,a)=>{const rl=a.rooms||[a.room];const share=floorRooms.filter(r=>rl.includes(r)).length/rl.length;return s+kwhDay(a)*share;},0);
+    const el=document.getElementById(fid+'kwh');if(el)el.textContent=kwh.toFixed(1)+' kWh/day';
+  });
+
+  document.getElementById('dailyKwh').textContent=daily.toFixed(2);
+  document.getElementById('monthKwh').textContent=Math.round(netMonth).toLocaleString()+' net kWh / mo';
+  const bn=document.getElementById('billNum');
+  bn.textContent=money(b.total);
+  bn.className='bignum'+(b.total>650?' bad':b.total>400?' warn':'');
+  setGauge(b.total);
+  const b20=bill(netDailyUsage(daily*.8)*RATES.daysInMonth);
+  document.getElementById('saveBill').textContent=money(b20.total);
+  document.getElementById('saveAmt').textContent='You Save '+money(b.total-b20.total)+' / month';
+  document.getElementById('breakdown').innerHTML=
+    bl('Energy / Usage Charges',b.energy)+bl('Facilities Charge',b.facilities)+
+    bl('Fuel Adjustment Rate (FAR)',b.far)+bl('Regulatory Authority (RA) Fee',b.ra)+
+    (b.base>0?bl('Base Service Charge (min. bill)',b.base):'')+
+    `<div class="bdgrand"><b>Total Monthly Bill</b><span class="mono">${money(b.total)}</span></div>`;
+  const sc=scoreOf(daily);
+  document.getElementById('grade').textContent=sc.g;
+  document.getElementById('grade').style.color=sc.col;
+  document.getElementById('scoreFill').style.width=sc.s+'%';
+  document.getElementById('scoreFill').style.background=sc.col;
+  document.getElementById('scoreTxt').textContent=sc.s+' / 100 · '+(sc.s>=70?'Efficient':sc.s>=40?'Improving':'Heavy usage');
+  const co2=netMonth*RATES.carbonKgPerKwh;
+  document.getElementById('carbonV').textContent=Math.round(co2).toLocaleString();
+  document.getElementById('carbonEq').textContent='≈ '+(co2/21).toFixed(1)+' tree-years';
+  renderSolar();
+  renderDN();
+  if(!sim)renderChart(projection());
+  renderInsights(daily,netMonth,b);
+}
+const bl=(l,v)=>`<div class="bdline"><span>${l}</span><span style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;font-size:11.5px;font-weight:700;color:#4ade80">${money(v)}</span></div>`;
+
+function gpt(f){const a=Math.PI*(1-f);return[100+78*Math.cos(a),100-78*Math.sin(a)];}
+function arc(f0,f1){const[x0,y0]=gpt(f0),[x1,y1]=gpt(f1);return`M${x0.toFixed(1)} ${y0.toFixed(1)} A78 78 0 0 1 ${x1.toFixed(1)} ${y1.toFixed(1)}`;}
+function setGauge(total){
+  document.getElementById('arcG').setAttribute('d',arc(0,.5));
+  document.getElementById('arcA').setAttribute('d',arc(.5,.8));
+  document.getElementById('arcR').setAttribute('d',arc(.8,1));
+  const f=Math.max(0,Math.min(1,total/1000));
+  document.getElementById('needle').style.transform=`rotate(${(-90+f*180).toFixed(1)}deg)`;
+}
+function renderDN(){
+  let day=0,night=0;
+  apps.forEach(a=>{const k=kwhDay(a);if(a.when==='day')day+=k;else if(a.when==='night')night+=k;else{day+=k/2;night+=k/2;}});
+  const mx=Math.max(day,night,.001);
+  document.getElementById('dnSplit').innerHTML=
+    `<div class="dnrow"><span class="nm">Daytime</span><div class="dnbar"><i style="width:${day/mx*100}%;background:#fbbf24"></i></div><span class="vv">${day.toFixed(1)} kWh</span></div>`+
+    `<div class="dnrow"><span class="nm">Night</span><div class="dnbar"><i style="width:${night/mx*100}%;background:#38bdf8"></i></div><span class="vv">${night.toFixed(1)} kWh</span></div>`;
+}
+function projection(){
+  const daily=netDailyUsage(totalDaily()),month=daily*RATES.daysInMonth,b=bill(month);
+  const kwh=[],cost=[];
+  for(let d=0;d<30;d++){const v=1+.1*Math.sin(d*1.7)+.04*Math.cos(d*.6);kwh.push(daily*v);}
+  const sumK=kwh.reduce((s,x)=>s+x,0)||1;
+  kwh.forEach(dk=>cost.push(dk/sumK*b.total));
+  return{kwh,cost};
+}
+function renderChart(data,upto){
+  const W=440,H=175,pL=8,pR=8,pT=12,pB=20,n=data.kwh.length,lim=upto==null?n:upto;
+  const maxK=Math.max(...data.kwh,.001),maxC=Math.max(...data.cost,.001);
+  const X=i=>pL+(n>1?i/(n-1):0)*(W-pL-pR),YK=v=>pT+(1-v/maxK)*(H-pT-pB),YC=v=>pT+(1-v/maxC)*(H-pT-pB);
+  const line=(arr,Y)=>{let p='';for(let i=0;i<lim;i++){p+=(i?'L':'M')+X(i).toFixed(1)+' '+Y(arr[i]).toFixed(1)+' ';}return p;};
+  let grid='';for(let g=0;g<=3;g++){const y=pT+g/3*(H-pT-pB);grid+=`<line x1="${pL}" y1="${y}" x2="${W-pR}" y2="${y}" stroke="rgba(255,255,255,.07)"/>`;}
+  let wks='';for(let w=0;w<4;w++){const x=X(w*7+3);wks+=`<text x="${x}" y="${H-5}" font-size="8.5" fill="#4a6a85" text-anchor="middle" font-family="Inter">Wk ${w+1}</text>`;}
+  const dot=(i,arr,Y,c)=>i>0&&i===lim-1?`<circle cx="${X(i)}" cy="${Y(arr[i])}" r="3.5" fill="${c}"/>`:'';
+  document.getElementById('chart').innerHTML=grid+wks+
+    `<path d="${line(data.kwh,YK)}" fill="none" stroke="#4ade80" stroke-width="2.2" stroke-linejoin="round"/>`+
+    `<path d="${line(data.cost,YC)}" fill="none" stroke="#fbbf24" stroke-width="2.2" stroke-linejoin="round"/>`+
+    dot(lim-1,data.kwh,YK,'#4ade80')+dot(lim-1,data.cost,YC,'#fbbf24');
+}
+function runMonth(){
+  if(sim){stopSim();return;}
+  const data=projection(),speed=+document.getElementById('speed').value;
+  sim={data,idx:1,timer:null};
+  document.getElementById('runBtn').textContent='|| Pause';
+  const step=()=>{
+    renderChart(data,sim.idx);
+    const cumK=data.kwh.slice(0,sim.idx).reduce((s,x)=>s+x,0);
+    const cumC=data.cost.slice(0,sim.idx).reduce((s,x)=>s+x,0);
+    document.getElementById('simDay').textContent='Day '+sim.idx+' / 30';
+    document.getElementById('dayReadout').innerHTML=`Day <b>${sim.idx}</b> · <b>${cumK.toFixed(0)} kWh</b> used · running cost <b>${money(cumC)}</b>`;
+    sim.idx++;if(sim.idx>30)stopSim(true);
+  };
+  step();sim.timer=setInterval(step,speed);
+}
+function stopSim(done){
+  if(sim?.timer)clearInterval(sim.timer);
+  document.getElementById('runBtn').textContent='▶ Run Simulation';
+  if(done)document.getElementById('simDay').textContent='Month complete ✓';
+  if(!done){sim=null;document.getElementById('simDay').textContent='Projection';render();}
+  else sim=null;
+}
+function renderInsights(daily,month,b){
+  const out=[];
+  const topThr=700/RATES.daysInMonth;   // 23.33 kWh/day → >700 kWh/mo = 42.7¢ tier
+  const midThr=250/RATES.daysInMonth;   // 8.33  kWh/day → >250 kWh/mo = 27.7¢ tier
+  if(daily>topThr)out.push(['bad','Heavy load — '+daily.toFixed(1)+' kWh/day ('+Math.round(month)+' kWh/mo) puts you in the top tier at 42.7¢/kWh.']);
+  else if(daily>midThr)out.push(['warn','Usage of '+Math.round(month)+' kWh/month crosses into the 27.7¢/kWh tier. Reducing big loads pays off.']);
+  else out.push(['','Efficient — all usage stays in the lowest 15.7¢/kWh tier (under 250 kWh/month).']);
+  const top=[...apps].filter(a=>a.on).sort((x,y)=>kwhDay(y)-kwhDay(x))[0];
+  if(top)out.push(['','Biggest draw: '+top.name+' at '+kwhDay(top).toFixed(1)+' kWh/day. '+top.tip]);
+  const h=apps.find(a=>a.id==='heater');if(h?.on&&h.hours>2.5)out.push(['warn','Water heater at '+h.hours+' hrs/day — a timer is one of the cheapest fixes.']);
+  const d=apps.find(a=>a.id==='dryer');if(d?.on&&d.hours>=1)out.push(['warn','Each dryer load is ~3 kWh. Line-dry in Bermuda\'s breeze when you can.']);
+  document.getElementById('insights').innerHTML=out.slice(0,4).map(([c,t])=>`<div class="ins ${c}"><span class="dot"></span><div>${t}</div></div>`).join('');
+}
+function openReport(){
+  const daily=totalDaily(),netDaily=netDailyUsage(daily),month=daily*RATES.daysInMonth,netMonth=netDaily*RATES.daysInMonth,b=bill(netMonth),sc=scoreOf(daily);
+  const co2=netMonth*RATES.carbonKgPerKwh,b20=bill(netDailyUsage(daily*.8)*RATES.daysInMonth),solarMonth=solarMonthlyGeneration();
+  const ranked=[...apps].filter(a=>a.on).sort((x,y)=>kwhDay(y)-kwhDay(x));
+  document.getElementById('reportBody').innerHTML=`
+    <div class="rs">
+      <div class="rb"><div class="k">Monthly</div><div class="v">${Math.round(netMonth).toLocaleString()}</div><div style="font-size:9px;color:var(--muted)">net kWh</div></div>
+      <div class="rb"><div class="k">Est. Bill</div><div class="v">${money(b.total)}</div></div>
+      <div class="rb"><div class="k">Score</div><div class="v" style="color:${sc.col}">${sc.g}</div></div>
+      <div class="rb"><div class="k">Carbon</div><div class="v">${Math.round(co2)}</div><div style="font-size:9px;color:var(--muted)">kg CO₂</div></div>
+    </div>
+    <h3>Bill components — 2026 Bermuda rates</h3>
+    <table>
+      <tr><td>Energy / Usage Charges</td><td>${money(b.energy)}</td></tr>
+      <tr><td>Facilities Charge</td><td>${money(b.facilities)}</td></tr>
+      <tr><td>Fuel Adjustment Rate (FAR)</td><td>${money(b.far)}</td></tr>
+      <tr><td>Regulatory Authority (RA) Fee</td><td>${money(b.ra)}</td></tr>
+      ${b.base>0?`<tr><td>Base Service Charge (min. bill)</td><td>${money(b.base)}</td></tr>`:''}
+      <tr style="font-weight:700"><td>Total Monthly Bill</td><td>${money(b.total)}</td></tr>
+    </table>
+    <!-- SOLAR FEATURE START -->
+    <h3>Solar performance</h3>
+    <table>
+      <tr><td>System Size</td><td>${solarSystemSize().toFixed(1)} kW</td></tr>
+      <tr><td>Daily Generation</td><td>${solarDailyGeneration().toFixed(1)} kWh/day</td></tr>
+      <tr><td>Monthly Generation</td><td>${Math.round(solarMonth).toLocaleString()} kWh/mo</td></tr>
+      <tr><td>Battery → Night Use</td><td>${batteryShifted().toFixed(1)} kWh/day</td></tr>
+      <tr><td>Monthly Savings</td><td>${money(solarSavings(daily))}</td></tr>
+      <tr><td>CO2 Reduction</td><td>${Math.round(Math.min(month,solarMonth)*RATES.carbonKgPerKwh).toLocaleString()} kg/mo</td></tr>
+    </table>
+    <!-- SOLAR FEATURE END -->
+    <h3>Where the energy goes</h3>
+    <table>${ranked.map(a=>`<tr><td>${a.name}</td><td>${(kwhDay(a)*30).toFixed(1)} kWh/mo</td></tr>`).join('')}</table>
+    <h3>If you trimmed 20%</h3>
+    <p style="font-size:11.5px;color:var(--muted)">Bill drops to <b style="color:var(--neon)">${money(b20.total)}</b> — saving <b style="color:var(--neon)">${money(b.total-b20.total)}</b>/month, ${money((b.total-b20.total)*12)}/year.</p>
+    <h3>Top recommendations</h3>
+    <ul>
+      <li>Water heater on a timer, thermostat down to 49°C (120°F).</li>
+      <li>Raise AC setpoints a degree or two and use sleep timers overnight.</li>
+      <li>Air-dry laundry; run pool pump only 4–6 hrs/day.</li>
+      <li>Rooftop solar could offset a large share of this daytime load.</li>
+    </ul>`;
+  document.getElementById('modal').classList.add('show');
+}
+function exportCSV(){
+  const daily=totalDaily(),netMonth=netDailyUsage(daily)*RATES.daysInMonth,b=bill(netMonth);
+  let csv='Appliance,Watts,Hours/day,kWh/day,kWh/month,When\n';
+  apps.forEach(a=>{csv+=`"${a.name}",${a.watts},${a.hours},${kwhDay(a).toFixed(3)},${(kwhDay(a)*30).toFixed(2)},${a.when}\n`;});
+  csv+=`\nSolar PV,System Size (kW),Daily Generation (kWh),Monthly Generation (kWh),Monthly Savings ($),CO2 Reduction (kg)\nSolar PV,${solarSystemSize().toFixed(1)},${solarDailyGeneration().toFixed(2)},${solarMonthlyGeneration().toFixed(2)},${solarSavings(daily).toFixed(2)},${(Math.min(daily*RATES.daysInMonth,solarMonthlyGeneration())*RATES.carbonKgPerKwh).toFixed(0)}\n`;
+  csv+=`\nPower Mode,${MODE==='grid'?'Power Only':'Solar & Battery'}\n`;
+  csv+=`\nBill Component,Amount ($)\nEnergy / Usage Charges,${b.energy.toFixed(2)}\nFacilities Charge,${b.facilities.toFixed(2)}\nFuel Adjustment Rate (FAR),${b.far.toFixed(2)}\nRegulatory Authority (RA) Fee,${b.ra.toFixed(2)}\nBase Service Charge,${(b.base||0).toFixed(2)}\nTotal Monthly Bill,${b.total.toFixed(2)}\n`;
+  try{
+    const url=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
+    const a=document.createElement('a');a.href=url;a.download='energy.csv';
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),500);
+  }catch(err){alert('Download is blocked in this preview — open the file in your browser to export the CSV.');}
+}
+document.getElementById('runBtn').onclick=runMonth;
+// BUG FIX #3 START
+document.getElementById('allOffBtn').onclick=()=>{
+  // ALL ON/OFF BILLING SYNC FIX START
+  apps.forEach(a=>turnAppliance(a,false));
+  buildAppliances();
+  render();
+  // ALL ON/OFF BILLING SYNC FIX END
+};
+document.getElementById('allOnBtn').onclick=()=>{
+  // ALL ON/OFF BILLING SYNC FIX START
+  apps=SEED.map(a=>({...a,on:true}));
+  buildAppliances();
+  render();
+  // ALL ON/OFF BILLING SYNC FIX END
+};
+// BUG FIX #3 END
+document.getElementById('resetBtn').onclick=()=>{
+  apps=SEED.map(a=>({...a,on:true}));
+  // SOLAR FEATURE START
+  MODE='grid';
+  SOLAR.selected='5';
+  SOLAR.customSize=5;
+  const solarCustom=document.getElementById('solarCustomSize');if(solarCustom)solarCustom.value=5;
+  // SOLAR FEATURE END
+  if(sim?.timer)clearInterval(sim.timer);
+  sim=null;
+  document.getElementById('runBtn').textContent='▶ Run Simulation';
+  document.getElementById('simDay').textContent='Projection';
+  buildAppliances();render();
+};
+document.getElementById('reportBtn').onclick=openReport;
+document.getElementById('csvBtn').onclick=exportCSV;
+document.getElementById('pdfBtn').onclick=()=>{
+  if(!window.jspdf?.jsPDF){alert('PDF library is still loading — please try again in a moment.');return;}
+  const daily=totalDaily(),netDaily=netDailyUsage(daily),month=daily*RATES.daysInMonth,netMonth=netDaily*RATES.daysInMonth,b=bill(netMonth),sc=scoreOf(daily);
+  const co2=netMonth*RATES.carbonKgPerKwh,b20=bill(netDailyUsage(daily*.8)*RATES.daysInMonth),solarMonth=solarMonthlyGeneration();
+  const ranked=[...apps].filter(a=>a.on).sort((x,y)=>kwhDay(y)-kwhDay(x));
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({unit:'mm',format:'a4'});
+  const PW=doc.internal.pageSize.getWidth(),PH=doc.internal.pageSize.getHeight(),M=14;
+  let y=M;
+  const chk=(h=8)=>{if(y+h>PH-18){doc.addPage();y=M;}};
+  const sec=(title)=>{
+    chk(12);
+    doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(22,163,74);
+    doc.text(title,M,y);
+    doc.setDrawColor(22,163,74);doc.setLineWidth(0.5);doc.line(M,y+1.8,PW-M,y+1.8);
+    doc.setLineWidth(0.2);y+=8;
+  };
+
+  /* ── Header bar ── */
+  doc.setFillColor(15,30,42);doc.rect(0,0,PW,14,'F');
+  doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(10);
+  doc.text('BERMUDA DEPARTMENT OF ENERGY',M,9);
+  doc.setFont('helvetica','normal');doc.setFontSize(8);
+  doc.text('Home Energy Consumption Simulator  |  2026 BELCO Rates',PW-M,9,'right');
+  y=22;
+
+  /* ── Title ── */
+  doc.setTextColor(30,41,59);doc.setFont('helvetica','bold');doc.setFontSize(16);
+  doc.text('Monthly Energy & Bill Summary',M,y);y+=12;
+
+  /* ── Summary boxes ── */
+  const bw=(PW-M*2-6)/4;
+  [[Math.round(netMonth).toLocaleString(),'Monthly','net kWh'],[money(b.total),'Est. Bill',''],[sc.g,'Score',''],[Math.round(co2)+'','Carbon (kg CO2)','']].forEach(([v,lbl,sub],i)=>{
+    const bx=M+i*(bw+2);
+    doc.setFillColor(248,250,252);doc.setDrawColor(226,232,240);
+    doc.roundedRect(bx,y,bw,22,2,2,'FD');
+    doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(100,116,139);
+    doc.text(lbl.toUpperCase(),bx+bw/2,y+6,'center');
+    doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(22,163,74);
+    doc.text(v,bx+bw/2,y+15,'center');
+    if(sub){doc.setFont('helvetica','normal');doc.setFontSize(7);doc.setTextColor(100,116,139);doc.text(sub,bx+bw/2,y+20,'center');}
+  });
+  y+=30;
+
+  /* ── Bill breakdown ── */
+  sec('BILL COMPONENTS — 2026 BERMUDA RATES');
+  [['Energy / Usage Charges',money(b.energy),false],
+   ['Facilities Charge',money(b.facilities),false],
+   ['Fuel Adjustment Rate (FAR)',money(b.far),false],
+   ['Regulatory Authority (RA) Fee',money(b.ra),false],
+   ...(b.base>0?[['Base Service Charge (min. bill)',money(b.base),false]]:[]),
+   ['Total Monthly Bill',money(b.total),true]
+  ].forEach(([lbl,val,bold],i,arr)=>{
+    chk(7);
+    if(bold){doc.setDrawColor(200,210,220);doc.line(M,y-1,PW-M,y-1);y+=1;}
+    doc.setFont('helvetica',bold?'bold':'normal');doc.setFontSize(bold?11:10);
+    doc.setTextColor(bold?22:50,bold?163:60,bold?74:75);
+    doc.text(lbl,M,y);doc.text(val,PW-M,y,'right');
+    y+=bold?9:6;
+  });
+  y+=5;
+
+  /* ── Energy table ── */
+  /* SOLAR FEATURE START */
+  sec('SOLAR & BATTERY PERFORMANCE');
+  [['System Size',solarSystemSize().toFixed(1)+' kW'],
+   ['Daily Generation',solarDailyGeneration().toFixed(1)+' kWh/day'],
+   ['Monthly Generation',Math.round(solarMonth).toLocaleString()+' kWh/mo'],
+   ['Battery → Night Use',batteryShifted().toFixed(1)+' kWh/day'],
+   ['Monthly Savings',money(solarSavings(daily))],
+   ['CO2 Reduction',Math.round(Math.min(month,solarMonth)*RATES.carbonKgPerKwh).toLocaleString()+' kg/mo']
+  ].forEach(([lbl,val])=>{
+    chk(6);
+    doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(30,41,59);
+    doc.text(lbl,M,y);doc.text(val,PW-M,y,'right');
+    y+=6;
+  });
+  y+=5;
+  /* SOLAR FEATURE END */
+
+  sec('WHERE THE ENERGY GOES');
+  ranked.forEach((a,i)=>{
+    chk(6);
+    if(i%2===0){doc.setFillColor(248,250,252);doc.rect(M,y-4,PW-M*2,6,'F');}
+    doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(30,41,59);
+    doc.text(a.name,M+2,y);doc.text((kwhDay(a)*30).toFixed(1)+' kWh/mo',PW-M,y,'right');
+    y+=6;
+  });
+  y+=6;
+
+  /* ── 20% saving ── */
+  chk(14);sec('IF YOU TRIMMED 20%');
+  doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(100,116,139);
+  const saveLine='Bill drops to '+money(b20.total)+' — saving '+money(b.total-b20.total)+'/month, '+money((b.total-b20.total)*12)+'/year.';
+  doc.text(doc.splitTextToSize(saveLine,PW-M*2),M,y);y+=14;
+
+  /* ── Recommendations ── */
+  chk(14);sec('TOP RECOMMENDATIONS');
+  ['Water heater on a timer, thermostat down to 49°C (120°F).',
+   'Raise AC setpoints a degree or two and use sleep timers overnight.',
+   'Air-dry laundry; run pool pump only 4–6 hrs/day.',
+   'Rooftop solar could offset a large share of this daytime load.'
+  ].forEach(r=>{
+    chk(8);
+    doc.setFont('helvetica','normal');doc.setFontSize(10);doc.setTextColor(30,41,59);
+    const lines=doc.splitTextToSize('•  '+r,PW-M*2-4);
+    doc.text(lines,M+2,y);y+=lines.length*6+1;
+  });
+
+  /* ── Footer on every page ── */
+  const np=doc.internal.getNumberOfPages();
+  for(let p=1;p<=np;p++){
+    doc.setPage(p);
+    doc.setFillColor(248,250,252);doc.rect(0,PH-12,PW,13,'F');
+    doc.setDrawColor(226,232,240);doc.line(0,PH-12,PW,PH-12);
+    doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(148,163,184);
+    doc.text('Bermuda Department of Energy  ·  Home Energy Consumption Simulator  ·  2026 BELCO Rates',PW/2,PH-5,'center');
+    doc.text('Page '+p+' of '+np,PW-M,PH-5,'right');
+  }
+  doc.save('Bermuda-Energy-Report.pdf');
+};
+document.getElementById('closeModal').onclick=()=>document.getElementById('modal').classList.remove('show');
+document.getElementById('modal').addEventListener('click',e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('show');});
+// INITIALIZATION BUG FIX START
+function initializeApplicationState(){
+  apps.forEach(a=>turnAppliance(a,a.on));
+  SOLAR.selected=SOLAR.selected||'5';
+  SOLAR.customSize=parseFloat(SOLAR.customSize)||5;
+  const solarCustom=document.getElementById('solarCustomSize');if(solarCustom)solarCustom.value=SOLAR.customSize;
+  buildAppliances();
+  buildSolarControls();
+  render();
+}
+buildHouse();
+initializeApplicationState();
+// INITIALIZATION BUG FIX END
+</script>
+
+<script>
+if (window.parent !== window) {
+  let heightTimer;
+  const notifyHeight = () => {
+    clearTimeout(heightTimer);
+    heightTimer = setTimeout(() => {
+      const height = Math.max(
+        document.body.scrollHeight,
+        document.documentElement.scrollHeight,
+        document.body.offsetHeight,
+      );
+      parent.postMessage({ type: 'simulator-height', height }, '*');
+    }, 150);
+  };
+  window.addEventListener('load', notifyHeight);
+  window.addEventListener('resize', notifyHeight);
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(notifyHeight).observe(document.body);
+  }
+  notifyHeight();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+import { PAGE_IMAGES } from '../constants/branding'
+
+const INSTALLER_IMAGES = [
+  PAGE_IMAGES.solar,
+  PAGE_IMAGES.solarRooftop,
+  PAGE_IMAGES.solarCommercial,
+  PAGE_IMAGES.charging,
+  PAGE_IMAGES.registry,
+]
+
+export const certifiedInstallers = [
+  {
+    id: 'ins-be-solar',
+    name: 'BE Solar',
+    parish: 'Hamilton',
+    website: 'https://www.besolar.bm',
+    certifications: ['Registered Solar PV Installer', 'Battery Storage'],
+    projects: 420,
+    rating: 4.9,
+    description: 'Leading residential and commercial solar installer serving Bermuda since 2010.',
+    image: INSTALLER_IMAGES[0],
+  },
+  {
+    id: 'ins-sunnyside',
+    name: 'Sunnyside Solar',
+    parish: 'Warwick',
+    website: 'https://www.sunnysidesolar.bm',
+    certifications: ['Registered Solar PV Installer', 'Residential Systems'],
+    projects: 285,
+    rating: 4.8,
+    description: 'Specialists in rooftop solar for homes and small businesses across the island.',
+    image: INSTALLER_IMAGES[1],
+  },
+  {
+    id: 'ins-aes',
+    name: 'AES Solar',
+    parish: 'Devonshire',
+    website: 'https://www.aessolar.bm',
+    certifications: ['Registered Solar PV Installer', 'Commercial Systems'],
+    projects: 198,
+    rating: 4.7,
+    description: 'Commercial and utility-scale solar solutions for Bermuda\'s energy transition.',
+    image: INSTALLER_IMAGES[2],
+  },
+  {
+    id: 'ins-greenlight',
+    name: 'Greenlight Energy',
+    parish: 'Pembroke',
+    website: 'https://www.greenlightenergy.bm',
+    certifications: ['Registered Solar PV Installer', 'EV Charging'],
+    projects: 156,
+    rating: 4.6,
+    description: 'Integrated renewable energy and electric vehicle charging infrastructure.',
+    image: INSTALLER_IMAGES[3],
+  },
+  {
+    id: 'ins-bac',
+    name: 'BAC Group / Bermuda Alternative Energy',
+    parish: 'Sandys',
+    website: 'https://www.bacgroup.bm',
+    certifications: ['Registered Solar PV Installer', 'Community Solar'],
+    projects: 312,
+    rating: 4.8,
+    description: 'Bermuda Alternative Energy — community solar and government project specialist.',
+    image: INSTALLER_IMAGES[4],
+  },
+]
+
+export const registryEntries = [
+  { id: 'REG-2024-001', name: 'Hamilton Residence', parish: 'Hamilton', type: 'Residential', capacity: 8.5, status: 'Active', installDate: '2024-03-15', installer: 'BE Solar' },
+  { id: 'REG-2024-002', name: 'Devonshire Commercial Park', parish: 'Devonshire', type: 'Commercial', capacity: 125.0, status: 'Active', installDate: '2024-05-22', installer: 'AES Solar' },
+  { id: 'REG-2024-003', name: 'Warwick Family Home', parish: 'Warwick', type: 'Residential', capacity: 6.2, status: 'Active', installDate: '2024-06-10', installer: 'Sunnyside Solar' },
+  { id: 'REG-2024-004', name: 'Pembroke Office Complex', parish: 'Pembroke', type: 'Commercial', capacity: 45.8, status: 'Active', installDate: '2024-07-18', installer: 'BE Solar' },
+  { id: 'REG-2024-005', name: 'Southampton Retail Centre', parish: 'Southampton', type: 'Commercial', capacity: 32.0, status: 'Active', installDate: '2024-08-05', installer: 'Greenlight Energy' },
+  { id: 'REG-2024-006', name: 'BHC Community Solar Site', parish: 'Sandys', type: 'Community', capacity: 500.0, status: 'Active', installDate: '2024-09-12', installer: 'BAC Group' },
+  { id: 'REG-2024-007', name: 'St. George\'s Heritage Site', parish: 'St. George\'s', type: 'Commercial', capacity: 18.5, status: 'Active', installDate: '2024-10-01', installer: 'Sunnyside Solar' },
+  { id: 'REG-2025-001', name: 'Paget Residence', parish: 'Paget', type: 'Residential', capacity: 10.2, status: 'Active', installDate: '2025-01-20', installer: 'BE Solar' },
+  { id: 'REG-2025-002', name: 'Balcony Solar Pilot Unit', parish: 'Hamilton', type: 'Residential', capacity: 2.4, status: 'Active', installDate: '2025-02-14', installer: 'Greenlight Energy' },
+  { id: 'REG-2025-003', name: 'Devonshire Solar Farm', parish: 'Devonshire', type: 'Utility', capacity: 5000.0, status: 'Pending', installDate: '2027-12-31', installer: 'AES Solar' },
+]
+
+export const gisInstallations = [
+  { id: 'gis-001', name: 'Hamilton Residence', parish: 'Hamilton', capacity: 8.5, type: 'Residential', lat: 32.2952, lng: -64.782 },
+  { id: 'gis-002', name: 'Devonshire Commercial', parish: 'Devonshire', capacity: 125.0, type: 'Commercial', lat: 32.3045, lng: -64.758 },
+  { id: 'gis-003', name: 'Warwick Home', parish: 'Warwick', capacity: 6.2, type: 'Residential', lat: 32.267, lng: -64.8065 },
+  { id: 'gis-004', name: 'Pembroke Office', parish: 'Pembroke', capacity: 45.8, type: 'Commercial', lat: 32.292, lng: -64.7695 },
+  { id: 'gis-005', name: 'Southampton Retail', parish: 'Southampton', capacity: 32.0, type: 'Commercial', lat: 32.252, lng: -64.821 },
+  { id: 'gis-006', name: 'BHC Community Solar', parish: 'Sandys', capacity: 500.0, type: 'Community', lat: 32.293, lng: -64.857 },
+  { id: 'gis-007', name: 'St. George\'s Site', parish: 'St. George\'s', capacity: 18.5, type: 'Commercial', lat: 32.384, lng: -64.677 },
+  { id: 'gis-008', name: 'Paget Residence', parish: 'Paget', capacity: 10.2, type: 'Residential', lat: 32.2795, lng: -64.777 },
+  { id: 'gis-009', name: 'Balcony Solar Pilot', parish: 'Hamilton', capacity: 2.4, type: 'Residential', lat: 32.2945, lng: -64.7805 },
+  { id: 'gis-010', name: 'Dockyard Centre', parish: 'Sandys', capacity: 28.4, type: 'Commercial', lat: 32.325, lng: -64.834 },
+  { id: 'gis-011', name: 'Hamilton Hotel', parish: 'Hamilton', capacity: 95.0, type: 'Commercial', lat: 32.296, lng: -64.779 },
+  { id: 'gis-012', name: 'Devonshire Farm Site', parish: 'Devonshire', capacity: 5000.0, type: 'Utility', lat: 32.312, lng: -64.748 },
+]

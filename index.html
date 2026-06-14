@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bermuda Department of Energy - Central CMS Admin Portal</title>
+  <link rel="icon" href="/logo.png" type="image/png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+  <!-- SECURE STAFF LOGIN PANEL -->
+  <div id="login-container">
+    <div class="login-card">
+      <img src="/logo.png" alt="Government of Bermuda Logo" class="login-logo">
+      <h2>Department of Energy</h2>
+      <h3>CMS Admin Portal</h3>
+      <p class="login-instruction">Please enter your authorized credentials to access national content management
+        functions.</p>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label for="login-email">Authorized Email Address</label>
+          <input type="email" id="login-email" placeholder="e.g. energy@gov.bm" required autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label for="login-password">Security Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+        </div>
+        <div class="form-group" style="text-align: right; margin-top: -0.5rem; margin-bottom: 1.5rem;">
+          <a href="#" id="forgot-password-link" style="color: #0d9488; font-size: 0.875rem; text-decoration: none; font-weight: 500;">Forgot Password?</a>
+        </div>
+        <div class="login-error" id="login-error-msg">Invalid authorized credentials. Please try again.</div>
+        <button type="submit" class="login-submit-btn">Secure Staff Sign-In</button>
+      </form>
+
+      <!-- FORGOT PASSWORD FORM -->
+      <form id="forgot-password-form" style="display: none; text-align: left;">
+        <div class="form-group">
+          <label for="forgot-email">Authorized Email Address</label>
+          <input type="email" id="forgot-email" placeholder="e.g. energy@gov.bm" required>
+        </div>
+        <div id="forgot-error-msg" style="color: #ef4444; margin-bottom: 1rem; font-size: 0.875rem; display: none; text-align: center;"></div>
+        <div id="forgot-success-msg" style="color: #10b981; margin-bottom: 1rem; font-size: 0.875rem; display: none; text-align: center;"></div>
+        <button type="submit" class="login-submit-btn">Send Reset Link</button>
+        <div style="text-align: center; margin-top: 1.5rem;">
+          <a href="#" id="back-to-login-link" style="color: #0d9488; font-size: 0.875rem; text-decoration: none; font-weight: 500;">Back to Login</a>
+        </div>
+      </form>
+
+      <!-- RESET PASSWORD FORM -->
+      <form id="reset-password-form" style="display: none; text-align: left;">
+        <div class="form-group">
+          <label for="reset-token-input">Reset Security Token</label>
+          <input type="text" id="reset-token-input" placeholder="Enter security token" required>
+        </div>
+        <div class="form-group">
+          <label for="reset-new-password">New Security Password</label>
+          <input type="password" id="reset-new-password" placeholder="••••••••" required>
+        </div>
+        <div id="reset-error-msg" style="color: #ef4444; margin-bottom: 1rem; font-size: 0.875rem; display: none; text-align: center;"></div>
+        <div id="reset-success-msg" style="color: #10b981; margin-bottom: 1rem; font-size: 0.875rem; display: none; text-align: center;"></div>
+        <button type="submit" class="login-submit-btn">Reset Password</button>
+        <div style="text-align: center; margin-top: 1.5rem;">
+          <a href="#" id="reset-back-to-login-link" style="color: #0d9488; font-size: 0.875rem; text-decoration: none; font-weight: 500;">Back to Login</a>
+        </div>
+      </form>
+      <div class="login-footer">
+        Bermuda Personal Information Protection Act (PIPA) Enforced &bull; Secure Session
+      </div>
+    </div>
+  </div>
+
+  <div id="app-container">
+
+    <!-- LEFT SIDEBAR NAVIGATION -->
+    <aside id="sidebar" role="complementary" aria-label="Sidebar Navigation">
+      <div class="logo-container">
+        <img src="/logo.png" alt="Bermuda Crest Logo">
+        <div>
+          <div class="logo-text">Department of Energy</div>
+          <div class="logo-subtitle">CMS Admin Portal</div>
+        </div>
+      </div>
+
+      <nav>
+        <a class="active" data-view="dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="9"></rect>
+            <rect x="14" y="3" width="7" height="5"></rect>
+            <rect x="14" y="12" width="7" height="9"></rect>
+            <rect x="3" y="16" width="7" height="5"></rect>
+          </svg>
+          Dashboard
+        </a>
+
+        <div class="section-title">Content Management</div>
+        <div class="submenu">
+          <a data-view="news">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2z">
+              </path>
+              <path d="M16 11h6"></path>
+              <path d="M16 15h6"></path>
+              <path d="M10 8H6v6h4V8z"></path>
+            </svg>
+            News & Media Publications
+          </a>
+          <a data-view="policies">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            Policies & Legislation
+          </a>
+          <a data-view="consultations">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            Official Consultations
+          </a>
+        </div>
+
+        <div class="section-title">Department Modules</div>
+        <a data-view="projects">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Energy Projects & Initiatives
+        </a>
+        <a data-view="tracker">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          Policy Progress & Tracker
+        </a>
+        <a data-view="kpis">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M3 3v18h18"></path>
+            <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+          </svg>
+          Renewable Dashboard KPIs
+        </a>
+        <a data-view="installers">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+          </svg>
+          Solar Installers Directory
+        </a>
+        <a data-view="solarInstallations">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <path d="M9 3v18"></path>
+            <path d="M15 3v18"></path>
+            <path d="M3 9h18"></path>
+            <path d="M3 15h18"></path>
+          </svg>
+          Solar Installation Registry
+        </a>
+        <a data-view="education">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5v-15z"></path>
+          </svg>
+          Education & STEM Resources
+        </a>
+        <a data-view="innovation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M12 22V12"></path>
+            <path d="M17 12h-5"></path>
+            <circle cx="12" cy="12" r="9"></circle>
+          </svg>
+          Innovation & Emerging Technologies
+        </a>
+
+        <div class="section-title">Governance & Auditing</div>
+        <a data-view="logs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+            <path d="M12 6v6l4 2"></path>
+          </svg>
+          Security Audit Logs
+        </a>
+        <a data-view="recycleBin">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Recycle Bin
+        </a>
+
+        <div class="section-title">Testing & Config</div>
+        <a data-view="preview"
+          style="background: rgba(6, 182, 212, 0.1); border: 1px solid rgba(6, 182, 212, 0.3); color: var(--accent-cyan);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+          Live Portal Preview
+        </a>
+        <a data-view="settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.5 1z">
+            </path>
+          </svg>
+          Settings
+        </a>
+      </nav>
+
+      <!-- User profile in sidebar footer -->
+      <div class="sidebar-footer" style="flex-direction:column; gap:0.75rem; align-items:stretch; padding-top:0.75rem;">
+        <div style="display:flex; align-items:center; gap:0.75rem;">
+          <img
+            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+            alt="Adrian Dil" style="width:36px; height:36px; border-radius:50%;">
+          <div class="user-info">
+            <div class="user-name" style="font-size:0.85rem; font-weight:600; color:#fff;">Adrian Dil</div>
+            <div class="user-role" style="font-size:0.72rem; color:#94a3b8;">Department Admin</div>
+          </div>
+        </div>
+        <button id="cms-logout-btn" class="btn btn-secondary"
+          style="width:100%; padding:0.4rem; font-size:0.8rem; display:flex; justify-content:center; align-items:center; gap:0.35rem; background:rgba(255,255,255,0.05); color:#cbd5e1; border:1px solid rgba(255,255,255,0.1); border-radius:4px; cursor:pointer;">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" style="width:14px; height:14px; color:#cbd5e1;">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Secure Sign Out
+        </button>
+      </div>
+    </aside>
+
+    <!-- RIGHT MAIN CONTENT WORKSPACE -->
+    <main id="main-wrap" role="main">
+
+      <!-- SIDEBAR OVERLAY for mobile -->
+      <div id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+      <!-- TOP HEADER BAR -->
+      <header id="top-header" role="banner">
+        <div class="header-left">
+          <!-- Hamburger for mobile -->
+          <button id="sidebar-toggle" class="sidebar-toggle-btn" onclick="toggleSidebar()" aria-label="Toggle Navigation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+          <div class="page-title-badge">
+            <h1 id="header-title-text">Dashboard Overview</h1>
+            <div class="channel-status"><span class="dot"></span><span class="status-label">Live Feed API Active</span></div>
+          </div>
+        </div>
+
+        <div class="header-right">
+
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="global-search" placeholder="Search entries..." onkeyup="renderCurrentView()">
+          </div>
+        </div>
+      </header>
+
+      <!-- CMS DYNAMIC VIEWS -->
+
+      <!-- 1. DASHBOARD VIEW -->
+      <section id="dashboard-view" class="content-view active">
+        <!-- Summary Cards Grid -->
+        <div class="stats-grid">
+          <div class="stat-card energy">
+            <div class="icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="dash-kpi-policies">0</span>
+              <span class="stat-label">Total Policies & Acts</span>
+            </div>
+          </div>
+          <div class="stat-card news">
+            <div class="icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 20H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v1h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2z">
+                </path>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="dash-kpi-news">0</span>
+              <span class="stat-label">News Releases</span>
+            </div>
+          </div>
+          <div class="stat-card consultation">
+            <div class="icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="dash-kpi-consultations">0</span>
+              <span class="stat-label">Consultation Papers</span>
+            </div>
+          </div>
+          <div class="stat-card project">
+            <div class="icon-wrapper">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+              </svg>
+            </div>
+            <div class="stat-info">
+              <span class="stat-value" id="dash-kpi-projects">0</span>
+              <span class="stat-label">Active Programmes</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Columns for Updates & Actions -->
+        <div class="dashboard-columns">
+          <div style="display:flex; flex-direction:column; gap:1.5rem;">
+            <!-- Recent updates -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h2>Recent Content Updates</h2>
+              </div>
+              <ul class="card-list" id="dashboard-recent-updates">
+                <!-- Injected by JS -->
+              </ul>
+            </div>
+            <!-- Documents -->
+            <div class="dashboard-card">
+              <div class="card-header">
+                <h2>Recently Uploaded Documents (Registry)</h2>
+              </div>
+              <ul class="card-list" id="dashboard-recent-docs">
+                <!-- Injected by JS -->
+              </ul>
+            </div>
+            <!-- System Health & Gap Analysis -->
+            <div class="dashboard-card" style="border: 1px solid rgba(245, 158, 11, 0.3); background: rgba(245, 158, 11, 0.02);">
+              <div class="card-header" style="border-bottom-color: rgba(245, 158, 11, 0.15);">
+                <h2 style="color: var(--accent-orange); display:flex; align-items:center; gap:0.5rem;">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent-orange);">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                    <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                  </svg>
+                  CMS Health & Content Gap Analysis
+                </h2>
+              </div>
+              <ul class="card-list" id="dashboard-health-warnings" style="padding: 1rem; font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary); display:flex; flex-direction:column; gap:0.5rem;">
+                <!-- Injected by JS -->
+              </ul>
+            </div>
+          </div>
+
+          <!-- Quick action side-card -->
+          <div class="dashboard-card">
+            <div class="card-header">
+              <h2>Quick Actions</h2>
+            </div>
+            <div class="quick-actions-panel">
+              <div class="quick-action-btn" onclick="openNewsForm()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span>Add News</span>
+              </div>
+              <div class="quick-action-btn" onclick="openPolicyForm()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span>Add Policy</span>
+              </div>
+              <div class="quick-action-btn" onclick="openProjectForm()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                <span>Add Project</span>
+              </div>
+              <div class="quick-action-btn"
+                onclick="switchView('media'); document.getElementById('media-library-uploader').click();">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"></path>
+                </svg>
+                <span>Upload Doc</span>
+              </div>
+            </div>
+            <div style="padding:0 1.5rem 1.5rem 1.5rem; text-align:center;">
+              <button class="btn btn-secondary" style="width:100%; justify-content:center;"
+                onclick="switchView('preview')">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                  <path d="M12 17v4M8 21h8"></path>
+                </svg>
+                Preview live in frontends
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. NEWS & MEDIA MODULE -->
+      <section id="news-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>News Articles</h2>
+          <button class="btn btn-primary" onclick="openNewsForm()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Create News Article
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="cms-table" id="news-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Summary</th>
+                <th>Publish Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. POLICIES & PUBLICATIONS MODULE -->
+      <section id="policies-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Department Policies & Legislation Registry</h2>
+          <button class="btn btn-primary" onclick="openPolicyForm()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Policy
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="cms-table" id="policies-table">
+            <thead>
+              <tr>
+                <th>Policy Document Title</th>
+                <th>Category</th>
+                <th>Effective Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 4. CONSULTATIONS MODULE -->
+      <section id="consultations-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Official Consultation Papers</h2>
+          <button class="btn btn-primary" onclick="openConsultationForm()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Create Consultation Form
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="cms-table" id="consultations-table">
+            <thead>
+              <tr>
+                <th>Consultation Name</th>
+                <th>Open Date</th>
+                <th>Close Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 6. PROJECTS & INITIATIVES MODULE -->
+      <section id="projects-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Government Clean Energy Initiatives</h2>
+          <button class="btn btn-primary" onclick="openProjectForm()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add New Initiative
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="cms-table" id="projects-table">
+            <thead>
+              <tr>
+                <th>Project Name</th>
+                <th>Description</th>
+                <th>Implementation Timeline</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 7. POLICY & LEGISLATION PROGRESS TRACKER -->
+      <section id="tracker-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>National Policy & Legislation Progress Tracker</h2>
+          <button class="btn btn-primary" onclick="openTrackerForm()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Policy/Bill to Tracker
+          </button>
+        </div>
+        <div style="margin-top:1.5rem;" id="tracker-list-container">
+          <!-- Timelines injected dynamically by JS -->
+        </div>
+      </section>
+
+      <!-- 8. DASHBOARD METRICS (KPIs) -->
+      <section id="kpis-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Homepage Performance Statistics (KPIs)</h2>
+        </div>
+        <p style="margin-top: 1rem; color:var(--text-secondary); font-size:0.9rem;">
+          These values drive the main dashboards on the public portal. Changing a value here updates the
+          portal immediately.
+        </p>
+        <div class="table-container">
+          <table class="cms-table" id="kpis-table">
+            <thead>
+              <tr>
+                <th>KPI Metric Name</th>
+                <th>Value</th>
+                <th>Unit</th>
+                <th>Last Updated</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 9. SOLAR INSTALLER DIRECTORY -->
+      <section id="installers-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Registered Solar PV Installer Registry</h2>
+          <button class="btn btn-primary" onclick="openInstallerForm()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Register Installer
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="cms-table" id="installers-table">
+            <thead>
+              <tr>
+                <th>Company Name</th>
+                <th>Contact Information</th>
+                <th>Website URL</th>
+                <th>Registry Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 9b. SOLAR PV REGISTRY & GIS -->
+      <section id="solarInstallations-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Solar PV Registry & GIS Map Locations</h2>
+          <button class="btn btn-primary" onclick="openSolarInstallationForm()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Register Installation
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="cms-table" id="solarInstallations-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Site Name</th>
+                <th>Parish</th>
+                <th>Type</th>
+                <th>Capacity (kW)</th>
+                <th>Installer</th>
+                <th>GIS Coordinates (X, Y)</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 10. EDUCATION & PUBLIC AWARENESS -->
+      <section id="education-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Educational Resources & Fact Sheets</h2>
+          <button class="btn btn-primary" onclick="openEducationForm()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Create Educational Resource
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="cms-table" id="education-table">
+            <thead>
+              <tr>
+                <th>Resource Title</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Attachment Path</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 12. LIVE PORTAL PREVIEW -->
+      <section id="preview-view" class="content-view">
+        <div
+          style="background:var(--info-bg); border:1px solid var(--primary-light); padding:1rem; border-radius:var(--border-radius-md); font-size:0.9rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.75rem;">
+          <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"
+            style="color:var(--primary-light); flex-shrink:0;">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+          <div>
+            <strong>Live Public Portal Preview:</strong> Below is a real-time interactive preview of the official
+            Department of Energy portal (<code>/portal</code>). Any modifications you make to news, KPIs, or policies in
+            the CMS back-office tabs will reflect on this portal instantly.
+          </div>
+        </div>
+
+        <div class="preview-layout" style="grid-template-columns: 1fr;">
+          <div class="preview-container">
+            <div class="preview-bar">
+              <div class="site-title site-a">
+                <span class="dot" style="background:#10b981;"></span>
+                <span>Official Live Portal: http://localhost:8000/portal</span>
+              </div>
+              <div class="device-tabs">
+                <button class="device-btn active" title="Desktop View"><svg viewBox="0 0 24 24" width="14" height="14"
+                    fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                  </svg></button>
+              </div>
+            </div>
+            <div class="preview-frame" id="preview-portal-frame" style="height: 600px;">
+              <!-- Portal injects here -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 12b. ENERGY INNOVATION & EMERGING TECHNOLOGIES VIEW -->
+      <section id="innovation-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Energy Innovation & Emerging Technologies</h2>
+          <button class="btn btn-primary" onclick="openInnovationForm()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Add Innovation Topic
+          </button>
+        </div>
+        <div class="table-container">
+          <table class="cms-table" id="innovation-table">
+            <thead>
+              <tr>
+                <th>Topic Title</th>
+                <th>Status</th>
+                <th>Link Destination</th>
+                <th>Link Label</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 13. SETTINGS VIEW -->
+      <section id="settings-view" class="content-view">
+        <div class="dashboard-card" style="max-width: 800px; margin: 0 auto;">
+          <div class="card-header">
+            <h2>Site Settings & Configurations</h2>
+          </div>
+          <div style="padding:2rem;">
+            <form id="global-settings-form" onsubmit="event.preventDefault(); saveSettings();">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Department CMS Name</label>
+                  <input type="text" id="settings-site-name" required>
+                </div>
+                <div class="form-group">
+                  <label>Official Contact Email</label>
+                  <input type="text" id="settings-contact-email" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Official Contact Phone</label>
+                  <input type="text" id="settings-contact-phone">
+                </div>
+                <div class="form-group">
+                  <label>Office Public Hours</label>
+                  <input type="text" id="settings-contact-hours">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Office Physical Location Address</label>
+                <input type="text" id="settings-contact-location">
+              </div>
+              <div class="form-group">
+                <label>Department Role Contacts List (Format: Role: email | ...)</label>
+                <textarea id="settings-contact-dept-list" placeholder="Space Enquiries: space@gov.bm | Clean Energy: energy@gov.bm" style="min-height: 80px; width:100%; padding:0.625rem 0.88rem; border:1px solid var(--border-color); border-radius:var(--border-radius-sm); font-family:inherit; font-size:0.9rem; outline:none; transition:all var(--transition-fast);"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Footer Information Notice</label>
+                <input type="text" id="settings-footer-info" required>
+              </div>
+
+              <div
+                style="font-weight:600; color:var(--text-secondary); margin: 1.5rem 0 0.5rem 0; font-size:0.9rem; border-bottom:1px solid var(--border-color); padding-bottom:0.25rem;">
+                Media Upload Governance Settings
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Allowed Upload File Extensions (comma separated)</label>
+                  <input type="text" id="settings-allowed-file-types" placeholder="pdf,docx,xlsx,png,jpg,jpeg,mp4" required>
+                </div>
+                <div class="form-group">
+                  <label>Maximum File Upload Size (MB)</label>
+                  <input type="number" id="settings-max-upload-size" placeholder="10" min="1" required>
+                </div>
+              </div>
+
+              <div
+                style="font-weight:600; color:var(--text-secondary); margin: 1.5rem 0 0.5rem 0; font-size:0.9rem; border-bottom:1px solid var(--border-color); padding-bottom:0.25rem;">
+                Featured Learning & Resources Hub
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Guide of the Month (Guide Title or ID)</label>
+                  <input type="text" id="settings-featured-guide">
+                </div>
+                <div class="form-group">
+                  <label>Energy Tip of the Week</label>
+                  <input type="text" id="settings-featured-tip">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Featured Resource Link/ID</label>
+                  <input type="text" id="settings-featured-resource">
+                </div>
+                <div class="form-group">
+                  <label>Featured Infographic URL/ID</label>
+                  <input type="text" id="settings-featured-infographic">
+                </div>
+              </div>
+
+              <div
+                style="font-weight:600; color:var(--text-secondary); margin: 1.5rem 0 0.5rem 0; font-size:0.9rem; border-bottom:1px solid var(--border-color); padding-bottom:0.25rem;">
+                Social Media Feed Channels
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Facebook Page</label>
+                  <input type="url" id="settings-social-fb">
+                </div>
+                <div class="form-group">
+                  <label>Twitter / X Profile</label>
+                  <input type="url" id="settings-social-tw">
+                </div>
+              </div>
+
+              <div style="margin-top:2rem; display:flex; justify-content:flex-end;">
+                <button type="submit" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Save Settings</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- 16. SECURITY AUDIT LOGS MODULE -->
+      <section id="logs-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Security Action Audit Log</h2>
+          <button class="btn btn-secondary" onclick="exportLogsToCSV()">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"></path>
+            </svg>
+            Export to CSV
+          </button>
+        </div>
+        <div style="margin: 1rem 0; display: flex; gap: 1rem; flex-wrap: wrap;">
+          <input type="text" id="log-filter-search" class="filter-select" placeholder="Search logs..." oninput="renderLogs()">
+          <select id="log-filter-type" class="filter-select" onchange="renderLogs()">
+            <option value="all">All Content Types</option>
+            <option value="news">News</option>
+            <option value="policies">Policies</option>
+            <option value="consultations">Consultations</option>
+            <option value="staticPages">Static Pages</option>
+            <option value="projects">Projects</option>
+            <option value="media">Media</option>
+            <option value="bursaries">Bursaries</option>
+            <option value="spaceContent">Space Content</option>
+          </select>
+          <select id="log-filter-action" class="filter-select" onchange="renderLogs()">
+            <option value="all">All Actions</option>
+            <option value="Created">Created</option>
+            <option value="Updated">Updated</option>
+            <option value="Soft deleted">Deleted</option>
+            <option value="Restored">Restored</option>
+          </select>
+        </div>
+        <div class="table-container">
+          <table class="cms-table" id="logs-table">
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>User Agent</th>
+                <th>Operation</th>
+                <th>Content Type</th>
+                <th>Content Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 17. RECYCLE BIN MODULE -->
+      <section id="recycleBin-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>System Recycle Bin (Soft Deleted Contents)</h2>
+        </div>
+        <div class="table-container">
+          <table class="cms-table" id="recycleBin-table">
+            <thead>
+              <tr>
+                <th>Deleted On</th>
+                <th>Original Collection</th>
+                <th>Item Title / Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 18. GLOBAL SEARCH RESULTS VIEW -->
+      <section id="search-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Global Content Search Results</h2>
+          <div style="font-size:0.9rem; color:var(--text-secondary);" id="search-stats-text">0 results found</div>
+        </div>
+        <div style="margin:1rem 0; display:flex; gap:1rem; flex-wrap:wrap;">
+          <select id="search-filter-type" class="filter-select" onchange="performGlobalSearch()">
+            <option value="all">All Content Categories</option>
+            <option value="news">News</option>
+            <option value="policies">Policies</option>
+            <option value="consultations">Consultations</option>
+            <option value="projects">Projects</option>
+            <option value="education">Education</option>
+            <option value="bursaries">Bursaries</option>
+            <option value="staticPages">Static Pages</option>
+            <option value="media">Media Library</option>
+            <option value="spaceContent">Space & Satellite</option>
+          </select>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:1.25rem;" id="search-results-container">
+          <!-- Styled Results Injected Here -->
+        </div>
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- GENERIC DYNAMIC SLIDE-IN MODAL FOR FORMS -->
+  <div class="modal-overlay" id="cms-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Create Content Entry</h3>
+        <button class="close-btn">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Form injected dynamically by JS -->
+      </div>
+      <div class="form-footer">
+        <button class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+        <button class="btn btn-primary" id="modal-save-btn">Publish to Channels</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Database and Application Scripts -->
+  <script src="mockData.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>

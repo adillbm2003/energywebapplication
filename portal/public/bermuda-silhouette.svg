@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img" aria-label="Bermuda island outline">
+  <defs>
+    <linearGradient id="sea" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0b1f3a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#123052;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="land" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a4068;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0b1f3a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#sea)" rx="8"/>
+  <path fill="url(#land)" stroke="#33b0e0" stroke-width="1.5" opacity="0.9"
+    d="M 48 118 C 55 95, 78 82, 105 78 C 130 74, 155 70, 185 72 C 220 74, 255 76, 290 80 C 320 84, 345 92, 355 108 C 360 118, 352 132, 335 142 C 310 155, 275 162, 240 165 C 200 168, 160 170, 125 168 C 90 166, 65 158, 52 142 C 42 130, 40 128, 48 118 Z"/>
+  <text x="200" y="210" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="11">Bermuda</text>
+</svg>
