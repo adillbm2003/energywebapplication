@@ -538,6 +538,7 @@ header#top-header .header-right {
   transition: all var(--transition-normal);
   position: relative;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .stat-card::before {

@@ -165,9 +165,40 @@ function getFriendlyViewName(viewId) {
   return names[viewId] || 'CMS Admin';
 }
 
-function renderCurrentView() {
+function getMatchingViewId(query) {
+  const q = query.toLowerCase().trim();
+  if (['dashboard', 'home', 'main', 'main dashboard'].includes(q)) return 'dashboard';
+  if (['news', 'news & media', 'media', 'articles'].includes(q)) return 'news';
+  if (['policies', 'policy', 'acts', 'policies & acts'].includes(q)) return 'policies';
+  if (['consultations', 'consultation', 'public consultations'].includes(q)) return 'consultations';
+  if (['projects', 'programmes', 'initiatives', 'active programmes', 'energy projects'].includes(q)) return 'projects';
+  if (['tracker', 'policy progress tracker', 'progress'].includes(q)) return 'tracker';
+  if (['kpis', 'renewable dashboard kpis', 'metrics', 'dashboard metrics'].includes(q)) return 'kpis';
+  if (['installers', 'solar installers', 'installers directory', 'solar pv installers directory'].includes(q)) return 'installers';
+  if (['solarinstallations', 'registry', 'solar installation registry', 'pv registry', 'solar pv registry'].includes(q)) return 'solarInstallations';
+  if (['education', 'education & stem', 'stem', 'resources'].includes(q)) return 'education';
+  if (['innovation', 'innovation & emerging technologies', 'emerging technologies', 'energy innovation'].includes(q)) return 'innovation';
+  if (['settings', 'system settings'].includes(q)) return 'settings';
+  if (['logs', 'audit logs', 'system audit logs'].includes(q)) return 'logs';
+  if (['recycle bin', 'recycle', 'bin', 'trash'].includes(q)) return 'recycleBin';
+  return null;
+}
+
+function renderCurrentView(event) {
   const searchInput = document.getElementById('global-search');
   if (searchInput && searchInput.value.trim() !== '') {
+    const query = searchInput.value.trim().toLowerCase();
+    
+    // Intercept Enter key for direct page navigation
+    if (event && event.key === 'Enter') {
+      const targetView = getMatchingViewId(query);
+      if (targetView) {
+        searchInput.value = ''; // Clear search input
+        switchView(targetView);
+        return;
+      }
+    }
+
     if (currentActiveView !== 'search') {
       currentActiveView = 'search';
       const views = document.querySelectorAll('.content-view');
@@ -2318,7 +2349,7 @@ async function restoreVersion(versionId, itemId, collection) {
 
 // --- GLOBAL CMS CROSS-COLLECTION SEARCH ---
 function performGlobalSearch() {
-  const query = document.getElementById('cms-global-search').value.toLowerCase().trim();
+  const query = document.getElementById('global-search').value.toLowerCase().trim();
   const searchResultsView = document.getElementById('search-view');
   
   if (!query) {
@@ -2334,6 +2365,61 @@ function performGlobalSearch() {
   
   const resultsContainer = document.getElementById('search-results-container');
   resultsContainer.innerHTML = '';
+  
+  // Navigation shortcut card if query matches a page
+  const matchedView = getMatchingViewId(query);
+  if (matchedView) {
+    const viewLabels = {
+      dashboard: 'Dashboard',
+      news: 'News & Media',
+      policies: 'Policies',
+      consultations: 'Consultations',
+      projects: 'Energy Projects & Initiatives',
+      tracker: 'Policy Progress Tracker',
+      kpis: 'Dashboard Metrics',
+      installers: 'Solar PV Installers Directory',
+      solarInstallations: 'Solar PV Registry',
+      education: 'Education & STEM',
+      innovation: 'Energy Innovation',
+      settings: 'Settings',
+      logs: 'System Audit Logs',
+      recycleBin: 'Recycle Bin'
+    };
+    const shortcutCard = document.createElement('div');
+    shortcutCard.className = 'dashboard-card';
+    shortcutCard.style.cursor = 'pointer';
+    shortcutCard.style.border = '1px solid var(--accent-cyan)';
+    shortcutCard.style.background = 'rgba(6, 182, 212, 0.05)';
+    shortcutCard.style.padding = '1.25rem';
+    shortcutCard.style.marginBottom = '0.5rem';
+    shortcutCard.style.transition = 'transform 0.2s, box-shadow 0.2s';
+    shortcutCard.style.borderRadius = 'var(--border-radius-md)';
+    shortcutCard.innerHTML = `
+      <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+        <div>
+          <span class="badge" style="background:var(--accent-cyan); color:var(--bg-primary); font-weight:600; padding:0.25rem 0.5rem; border-radius:4px; font-size:0.75rem;">PAGE LINK DIRECT SHORTCUT</span>
+          <h3 style="font-size:1.15rem; font-weight:600; color:var(--text-primary); margin-top:0.4rem; margin-bottom:0.25rem;">Go to ${viewLabels[matchedView]}</h3>
+          <p style="font-size:0.85rem; color:var(--text-secondary); margin:0;">Switch CMS panel view to the full page for "${escapeHTML(query)}".</p>
+        </div>
+        <div style="color:var(--accent-cyan); display:flex; align-items:center; gap:0.25rem; font-weight:600; font-size:0.9rem; flex-shrink:0;">
+          Open Page &rarr;
+        </div>
+      </div>
+    `;
+    shortcutCard.onclick = () => {
+      document.getElementById('global-search').value = '';
+      switchView(matchedView);
+    };
+    shortcutCard.onmouseenter = () => {
+      shortcutCard.style.transform = 'translateY(-2px)';
+      shortcutCard.style.boxShadow = 'var(--shadow-md)';
+    };
+    shortcutCard.onmouseleave = () => {
+      shortcutCard.style.transform = 'translateY(0)';
+      shortcutCard.style.boxShadow = 'none';
+    };
+    resultsContainer.appendChild(shortcutCard);
+  }
   
   const typeFilter = document.getElementById('search-filter-type').value;
   
@@ -2378,12 +2464,15 @@ function performGlobalSearch() {
   document.getElementById('search-results-count').textContent = matches.length;
   
   if (matches.length === 0) {
-    resultsContainer.innerHTML = `
-      <div style="text-align:center; padding:3rem; color:var(--text-secondary);">
-        <p style="font-size:1.1rem; margin-bottom:0.5rem;">No results found for "${escapeHTML(query)}"</p>
-        <p style="font-size:0.85rem;">Try refining your filter settings or spelling search terms differently.</p>
-      </div>
+    const emptyDiv = document.createElement('div');
+    emptyDiv.style.textAlign = 'center';
+    emptyDiv.style.padding = '3rem';
+    emptyDiv.style.color = 'var(--text-secondary)';
+    emptyDiv.innerHTML = `
+      <p style="font-size:1.1rem; margin-bottom:0.5rem;">No content entries found matching "${escapeHTML(query)}"</p>
+      <p style="font-size:0.85rem;">Try refining your filter settings or spelling search terms differently.</p>
     `;
+    resultsContainer.appendChild(emptyDiv);
     return;
   }
   
