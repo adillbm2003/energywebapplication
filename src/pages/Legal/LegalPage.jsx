@@ -2,15 +2,17 @@ import { useLocation, Navigate } from 'react-router-dom'
 import PageBanner from '../../components/common/PageBanner'
 import { PAGE_IMAGES } from '../../constants/branding'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
+import { useAsyncData } from '../../hooks/useAsyncData'
+import { fetchFromAPI } from '../../services/api'
 
-const LEGAL_CONTENT = {
+const LEGAL_FALLBACK = {
   privacy: {
     title: 'Privacy Policy',
     content: [
       'The Department of Energy, Government of Bermuda, is committed to protecting your personal information in accordance with the Personal Information Protection Act (PIPA).',
       'This website collects limited personal information when you submit enquiry forms or subscribe to updates. Information is used solely for responding to your requests and providing Department services.',
       'We do not sell personal information to third parties. Data is retained within the Department of Energy in accordance with government records management policies.',
-      'You have the right to access, correct, or request deletion of your personal information. Contact info@energy.bm for privacy enquiries.',
+      'You have the right to access, correct, or request deletion of your personal information. Contact energy@gov.bm for privacy enquiries.',
     ],
   },
   terms: {
@@ -27,7 +29,7 @@ const LEGAL_CONTENT = {
     content: [
       'The Department of Energy is committed to ensuring energy.bm is accessible to all users, including people with disabilities.',
       'We aim to conform to WCAG 2.1 Level AA standards, including keyboard navigation, screen reader compatibility, sufficient colour contrast, and resizable text.',
-      'If you encounter accessibility barriers on this website, please contact us at info@energy.bm or +1 (441) 295-5000. We will endeavour to provide information in an alternative format.',
+      'If you encounter accessibility barriers on this website, please contact us at energy@gov.bm or +1 (441) 295-5000. We will endeavour to provide information in an alternative format.',
       'This statement will be reviewed and updated as the website evolves.',
     ],
   },
@@ -37,15 +39,43 @@ const LEGAL_CONTENT = {
       'This website uses essential cookies required for basic functionality and security. We may use analytics cookies to understand how visitors use the site.',
       'Essential cookies cannot be disabled as they are necessary for the website to function. Analytics cookies help us improve content and user experience.',
       'You can control cookie preferences through your browser settings. Disabling cookies may affect some website functionality.',
-      'For questions about our use of cookies, contact info@energy.bm.',
+      'For questions about our use of cookies, contact energy@gov.bm.',
     ],
   },
 }
 
+function parseCmsContent(raw) {
+  if (!raw) return null
+  // CMS may store content as a string with paragraph separators or as JSON array
+  if (Array.isArray(raw)) return raw
+  if (typeof raw === 'string') {
+    try {
+      const parsed = JSON.parse(raw)
+      if (Array.isArray(parsed)) return parsed
+    } catch { /* not JSON — split on double newlines */ }
+    return raw.split(/\n\n+/).filter(Boolean)
+  }
+  return null
+}
+
 export default function LegalPage() {
   const { pathname } = useLocation()
-  const type = pathname.replace('/', '')
-  const page = LEGAL_CONTENT[type]
+  // pathname is e.g. "/privacy" — strip leading slash to get the type key
+  const type = pathname.replace(/^\//, '')
+  const fallback = LEGAL_FALLBACK[type]
+
+  const { data: cmsPage } = useAsyncData(
+    () => fetchFromAPI(`/api/staticPages/by-route?route=${encodeURIComponent(pathname)}`, null),
+    [pathname]
+  )
+
+  const page = (() => {
+    if (cmsPage && cmsPage.title) {
+      const content = parseCmsContent(cmsPage.content)
+      if (content && content.length > 0) return { title: cmsPage.title, content }
+    }
+    return fallback
+  })()
 
   useDocumentTitle(page?.title || 'Legal')
 

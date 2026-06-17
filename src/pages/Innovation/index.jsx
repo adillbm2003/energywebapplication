@@ -4,7 +4,8 @@ import { PAGE_IMAGES } from '../../constants/branding'
 import SectionHeading from '../../components/ui/SectionHeading'
 import Button from '../../components/ui/Button'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
-import { innovationTopics, digitalCurrencyPlaceholder } from '../../data/innovation'
+import { useAsyncData } from '../../hooks/useAsyncData'
+import { innovationService } from '../../services/innovationService'
 import { ROUTES } from '../../constants/routes'
 
 const RELATED_LINKS = [
@@ -15,6 +16,9 @@ const RELATED_LINKS = [
 
 export default function Innovation() {
   useDocumentTitle('Energy Innovation')
+
+  const { data: topics = [] } = useAsyncData(() => innovationService.getTopics(), [])
+  const { data: digitalCurrency } = useAsyncData(() => innovationService.getDigitalCurrency(), [])
 
   return (
     <>
@@ -33,7 +37,7 @@ export default function Innovation() {
           </p>
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {innovationTopics.map((item) => (
+            {topics.map((item) => (
               <article key={item.title} className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow transition-all hover:-translate-y-1 hover:card-shadow-hover">
                 {item.image && (
                   <div className="aspect-[16/10] overflow-hidden">
@@ -41,30 +45,32 @@ export default function Innovation() {
                   </div>
                 )}
                 <div className="card-padding">
-                <span className="inline-block rounded-full bg-teal-50 px-2.5 py-0.5 text-caption font-semibold text-teal-700">{item.status}</span>
-                <h3 className="mt-2">{item.title}</h3>
-                <p className="mt-1.5 text-body-small text-slate-600">{item.description}</p>
-                {item.linkTo && (
-                  <Button to={item.linkTo} variant="outline" size="sm" className="mt-3">
-                    {item.linkLabel || 'Learn more'}
-                  </Button>
-                )}
+                  <span className="inline-block rounded-full bg-teal-50 px-2.5 py-0.5 text-caption font-semibold text-teal-700">{item.status}</span>
+                  <h3 className="mt-2">{item.title}</h3>
+                  <p className="mt-1.5 text-body-small text-slate-600">{item.description}</p>
+                  {item.linkTo && (
+                    <Button to={item.linkTo} variant="outline" size="sm" className="mt-3">
+                      {item.linkLabel || 'Learn more'}
+                    </Button>
+                  )}
                 </div>
               </article>
             ))}
           </div>
 
-          <div className="mt-8 overflow-hidden rounded-xl border-2 border-dashed border-gold-300 bg-gold-50/50">
-            {digitalCurrencyPlaceholder.image && (
-              <img src={digitalCurrencyPlaceholder.image} alt="" className="h-48 w-full object-cover opacity-90" loading="lazy" />
-            )}
-            <div className="card-padding">
-              <span className="rounded-lg bg-gold-500 px-3 py-1 text-caption font-semibold uppercase text-navy-900">{digitalCurrencyPlaceholder.status}</span>
-              <h3 className="mt-3">{digitalCurrencyPlaceholder.title}</h3>
-              <p className="mt-2 text-body-small text-slate-600">{digitalCurrencyPlaceholder.description}</p>
-              <p className="mt-2 text-body-small italic text-slate-500">{digitalCurrencyPlaceholder.note}</p>
+          {digitalCurrency && (
+            <div className="mt-8 overflow-hidden rounded-xl border-2 border-dashed border-gold-300 bg-gold-50/50">
+              {digitalCurrency.image && (
+                <img src={digitalCurrency.image} alt="" className="h-48 w-full object-cover opacity-90" loading="lazy" />
+              )}
+              <div className="card-padding">
+                <span className="rounded-lg bg-gold-500 px-3 py-1 text-caption font-semibold uppercase text-navy-900">{digitalCurrency.status}</span>
+                <h3 className="mt-3">{digitalCurrency.title}</h3>
+                <p className="mt-2 text-body-small text-slate-600">{digitalCurrency.description}</p>
+                <p className="mt-2 text-body-small italic text-slate-500">{digitalCurrency.note}</p>
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="mt-8 flex flex-wrap gap-4">
             {RELATED_LINKS.map((link) => (

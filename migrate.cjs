@@ -603,6 +603,106 @@ const migrations = [
       console.log("Migration 5 rollback: Dropping solar_installations table...");
       await client.query("DROP TABLE IF EXISTS solar_installations CASCADE;");
     }
+  },
+  {
+    version: 6,
+    name: 'create_missing_content_tables',
+    up: async (client) => {
+      console.log("Migration 6: Creating bursaries, space_content, energy_guides, infographics, roadmaps tables...");
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS bursaries (
+          id VARCHAR(50) PRIMARY KEY,
+          name TEXT,
+          school TEXT,
+          field_of_study TEXT,
+          academic_year VARCHAR(50),
+          status VARCHAR(50) DEFAULT 'Active',
+          amount VARCHAR(50),
+          photo_url TEXT,
+          guidelines_url TEXT,
+          bio TEXT,
+          target_site VARCHAR(50),
+          modified_by VARCHAR(100),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS space_content (
+          id VARCHAR(50) PRIMARY KEY,
+          title TEXT,
+          slug VARCHAR(100),
+          category VARCHAR(100),
+          content TEXT,
+          summary TEXT,
+          pdf_link TEXT,
+          image TEXT,
+          status VARCHAR(50) DEFAULT 'Published',
+          target_site VARCHAR(50),
+          modified_by VARCHAR(100),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS energy_guides (
+          id VARCHAR(50) PRIMARY KEY,
+          title TEXT,
+          category VARCHAR(100),
+          summary TEXT,
+          cover_image TEXT,
+          pdf_attachment TEXT,
+          featured_image TEXT,
+          key_takeaways TEXT,
+          estimated_savings VARCHAR(100),
+          publish_date DATE,
+          featured_flag BOOLEAN DEFAULT FALSE,
+          status VARCHAR(50) DEFAULT 'Published',
+          target_site VARCHAR(50),
+          modified_by VARCHAR(100)
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS infographics (
+          id VARCHAR(50) PRIMARY KEY,
+          title TEXT,
+          image TEXT,
+          description TEXT,
+          category VARCHAR(100),
+          publish_date DATE,
+          status VARCHAR(50) DEFAULT 'Published',
+          target_site VARCHAR(50),
+          modified_by VARCHAR(100)
+        );
+      `);
+
+      await client.query(`
+        CREATE TABLE IF NOT EXISTS roadmaps (
+          id VARCHAR(50) PRIMARY KEY,
+          title TEXT,
+          description TEXT,
+          timeline_type VARCHAR(100),
+          milestones JSONB,
+          status VARCHAR(50) DEFAULT 'Active',
+          target_site VARCHAR(50),
+          modified_by VARCHAR(100),
+          created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+      `);
+    },
+    down: async (client) => {
+      if (isProduction) {
+        throw new Error("Catastrophic Action Prevented: DROP TABLE is strictly prohibited in production.");
+      }
+      console.log("Migration 6 rollback: Dropping content tables...");
+      await client.query("DROP TABLE IF EXISTS bursaries CASCADE;");
+      await client.query("DROP TABLE IF EXISTS space_content CASCADE;");
+      await client.query("DROP TABLE IF EXISTS energy_guides CASCADE;");
+      await client.query("DROP TABLE IF EXISTS infographics CASCADE;");
+      await client.query("DROP TABLE IF EXISTS roadmaps CASCADE;");
+    }
   }
 ];
 

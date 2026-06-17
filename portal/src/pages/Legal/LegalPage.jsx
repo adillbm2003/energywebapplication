@@ -10,7 +10,7 @@ const LEGAL_CONTENT = {
       'The Department of Energy, Government of Bermuda, is committed to protecting your personal information in accordance with the Personal Information Protection Act (PIPA).',
       'This website collects limited personal information when you submit enquiry forms or subscribe to updates. Information is used solely for responding to your requests and providing Department services.',
       'We do not sell personal information to third parties. Data is retained within the Department of Energy in accordance with government records management policies.',
-      'You have the right to access, correct, or request deletion of your personal information. Contact info@energy.bm for privacy enquiries.',
+      'You have the right to access, correct, or request deletion of your personal information. Contact energy@gov.bm for privacy enquiries.',
     ],
   },
   terms: {
@@ -27,7 +27,7 @@ const LEGAL_CONTENT = {
     content: [
       'The Department of Energy is committed to ensuring energy.bm is accessible to all users, including people with disabilities.',
       'We aim to conform to WCAG 2.1 Level AA standards, including keyboard navigation, screen reader compatibility, sufficient colour contrast, and resizable text.',
-      'If you encounter accessibility barriers on this website, please contact us at info@energy.bm or +1 (441) 295-5000. We will endeavour to provide information in an alternative format.',
+      'If you encounter accessibility barriers on this website, please contact us at energy@gov.bm or +1 (441) 295-5000. We will endeavour to provide information in an alternative format.',
       'This statement will be reviewed and updated as the website evolves.',
     ],
   },
@@ -37,7 +37,7 @@ const LEGAL_CONTENT = {
       'This website uses essential cookies required for basic functionality and security. We may use analytics cookies to understand how visitors use the site.',
       'Essential cookies cannot be disabled as they are necessary for the website to function. Analytics cookies help us improve content and user experience.',
       'You can control cookie preferences through your browser settings. Disabling cookies may affect some website functionality.',
-      'For questions about our use of cookies, contact info@energy.bm.',
+      'For questions about our use of cookies, contact energy@gov.bm.',
     ],
   },
 }

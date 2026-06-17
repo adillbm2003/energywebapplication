@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import MainLayout from '../layouts/MainLayout'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
+import ErrorBoundary from '../components/ErrorBoundary'
 import { ROUTES } from '../constants/routes'
 
 const Home = lazy(() => import('../pages/Home'))
@@ -38,7 +39,8 @@ function PageLoader() {
 
 export default function AppRoutes() {
   return (
-    <Suspense fallback={<PageLoader />}>
+    <ErrorBoundary>
+      <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route element={<MainLayout />}>
           <Route index element={<Home />} />
@@ -75,6 +77,7 @@ export default function AppRoutes() {
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
-    </Suspense>
+      </Suspense>
+    </ErrorBoundary>
   )
 }

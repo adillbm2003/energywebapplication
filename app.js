@@ -1,6 +1,6 @@
-// Content Management System Logic for Department of Energy Website (energy.bm)
+﻿// Content Management System Logic for Department of Energy Website (energy.bm)
 // Updated for Full-Stack Dynamic Server Integration
-// ── Responsive Sidebar Toggle ────────────────────────────────────────────────
+// â”€â”€ Responsive Sidebar Toggle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const MOBILE_BREAKPOINT = 900;
 
 function toggleSidebar() {
@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.innerWidth > MOBILE_BREAKPOINT) closeSidebar();
   });
 });
-// ─────────────────────────────────────────────────────────────────────────────
+// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function isFutureDate(dateStr) {
   if (!dateStr) return false;
@@ -120,7 +120,7 @@ function setupNavigation() {
     });
   });
   
-  // Site selector removed — single-site CMS
+  // Site selector removed â€” single-site CMS
 }
 
 async function switchView(viewId) {
@@ -389,7 +389,7 @@ function renderHealthWarnings() {
       li.style.gap = '0.5rem';
       li.style.color = '#cbd5e1';
       li.innerHTML = `
-        <span style="color:#f59e0b; flex-shrink:0;">⚠️</span>
+        <span style="color:#f59e0b; flex-shrink:0;">âš ï¸</span>
         <span>${escapeHTML(w.text)}</span>
       `;
       container.appendChild(li);
@@ -408,7 +408,7 @@ function renderHealthWarnings() {
           li.style.gap = '0.5rem';
           li.style.color = '#cbd5e1';
           li.innerHTML = `
-            <span style="color:var(--accent-cyan); flex-shrink:0;">ℹ️</span>
+            <span style="color:var(--accent-cyan); flex-shrink:0;">â„¹ï¸</span>
             <span>Recycle Bin contains ${binItems.length} soft-deleted items. <a href="#" onclick="switchView('recycleBin'); return false;" style="color:var(--accent-cyan); text-decoration:underline;">View Recycle Bin</a></span>
           `;
           container.appendChild(li);
@@ -474,7 +474,7 @@ function handleRealFileUpload(inputId, targetInputId) {
         if (result.success) {
           document.getElementById(targetInputId).value = result.url;
           if (statusText) {
-            statusText.innerHTML = `<span style="color:var(--success); font-weight:600;">✓ Uploaded: ${escapeHTML(file.name)}</span>`;
+            statusText.innerHTML = `<span style="color:var(--success); font-weight:600;">âœ“ Uploaded: ${escapeHTML(file.name)}</span>`;
           }
         } else {
           if (statusText) {
@@ -594,7 +594,7 @@ function openNewsForm(id = null) {
           <input type="text" name="image" id="news-image-url-input" value="${escapeHTML(item.image)}" placeholder="https://images.unsplash.com/...">
           <input type="file" id="news-image-file-input" style="display:none;" onchange="handleRealFileUpload('news-image-file-input', 'news-image-url-input')">
           <div class="file-upload-mock" style="margin-top:0.4rem; padding:0.6rem;" onclick="document.getElementById('news-image-file-input').click()">
-            <p id="news-image-upload-status">📸 Click to upload article photo</p>
+            <p id="news-image-upload-status">ðŸ“¸ Click to upload article photo</p>
           </div>
         </div>
       </div>
@@ -624,7 +624,7 @@ function openNewsForm(id = null) {
       scheduledPublishDate: computedStatus === 'Scheduled' ? pubDate : null,
       status: computedStatus,
       targetSite: 'all',
-      modifiedBy: 'Adrian Dil',
+      modifiedBy: currentUser?.username || 'CMS Editor',
       category: formData.get('category'),
       featured: document.getElementById('news-featured-checkbox').checked
     };
@@ -809,7 +809,7 @@ function openPolicyForm(id = null) {
       pdfLink: formData.get('pdfLink') || '#',
       status: computedStatus,
       targetSite: 'all',
-      modifiedBy: 'Adrian Dil'
+      modifiedBy: currentUser?.username || 'CMS Editor'
     };
     
     try {
@@ -975,7 +975,7 @@ function openConsultationForm(id = null) {
       supportingDocs: '',
       status: computedStatus,
       targetSite: 'all',
-      modifiedBy: 'Adrian Dil'
+      modifiedBy: currentUser?.username || 'CMS Editor'
     };
     
     try {
@@ -1102,7 +1102,7 @@ function openProjectForm(id = null) {
           <input type="text" name="image" id="project-image-url-input" value="${escapeHTML(item.image)}" placeholder="https://images.unsplash.com/...">
           <input type="file" id="project-image-file-input" style="display:none;" onchange="handleRealFileUpload('project-image-file-input', 'project-image-url-input')">
           <div class="file-upload-mock" style="margin-top:0.4rem; padding:0.6rem;" onclick="document.getElementById('project-image-file-input').click()">
-            <p id="project-image-upload-status">🖼 Click to upload project photo</p>
+            <p id="project-image-upload-status">ðŸ–¼ Click to upload project photo</p>
           </div>
         </div>
       </div>
@@ -1318,7 +1318,7 @@ function openTrackerForm(id = null) {
         <input type="text" name="relatedDocs" id="tracker-doc-input" value="${escapeHTML(item.relatedDocs)}" placeholder="e.g. /uploads/amendment.pdf">
         <input type="file" id="tracker-file-input" style="display:none;" onchange="handleRealFileUpload('tracker-file-input', 'tracker-doc-input')">
         <div class="file-upload-mock" style="margin-top:0.4rem; padding:0.6rem;" onclick="document.getElementById('tracker-file-input').click()">
-          <p id="tracker-file-upload-status">📄 Upload policy/bill PDF</p>
+          <p id="tracker-file-upload-status">ðŸ“„ Upload policy/bill PDF</p>
         </div>
       </div>
     </form>
@@ -1963,7 +1963,7 @@ function openEducationForm(id = null) {
         <input type="text" name="attachment" id="edu-file-link-input" value="${escapeHTML(item.attachment)}" placeholder="e.g. /uploads/guide.pdf">
         <input type="file" id="edu-file-input" style="display:none;" onchange="handleRealFileUpload('edu-file-input', 'edu-file-link-input')">
         <div class="file-upload-mock" style="margin-top:0.4rem; padding:0.6rem;" onclick="document.getElementById('edu-file-input').click()">
-          <p id="edu-file-upload-status">📄 Upload resource attachment</p>
+          <p id="edu-file-upload-status">ðŸ“„ Upload resource attachment</p>
         </div>
       </div>
     </form>
@@ -2249,7 +2249,7 @@ async function restoreRecycleItem(id) {
     const response = await fetch(`/api/recycleBin/${id}/restore`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ modifiedBy: 'Adrian Dil' })
+      body: JSON.stringify({ modifiedBy: currentUser?.username || 'CMS Editor' })
     });
     const result = await response.json();
     if (result.success) {
@@ -2264,11 +2264,11 @@ async function restoreRecycleItem(id) {
 }
 
 async function permanentlyDeleteRecycleItem(id) {
-  if (!confirm("⚠️ WARNING: This will permanently purge this record from the system. This action is irreversible and compliant under document destruction policies. Proceed?")) return;
+  if (!confirm("âš ï¸ WARNING: This will permanently purge this record from the system. This action is irreversible and compliant under document destruction policies. Proceed?")) return;
   try {
     const response = await fetch(`/api/recycleBin/${id}`, {
       method: 'DELETE',
-      headers: { 'x-user-name': 'Adrian Dil' }
+      headers: { 'x-user-name': currentUser?.username || 'CMS Editor' }
     });
     const result = await response.json();
     if (result.success) {
@@ -2330,7 +2330,7 @@ async function restoreVersion(versionId, itemId, collection) {
     const response = await fetch(`/api/versions/${versionId}/restore`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ modifiedBy: 'Adrian Dil' })
+      body: JSON.stringify({ modifiedBy: currentUser?.username || 'CMS Editor' })
     });
     const result = await response.json();
     if (result.success) {
@@ -2866,7 +2866,7 @@ async function initApp() {
   }
 }
 
-// ── DATA FILE MANAGER ─────────────────────────────────────────────────────────
+// â”€â”€ DATA FILE MANAGER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 function switchStatTab(tab) {
   document.getElementById('stat-panel-files').style.display = tab === 'files' ? '' : 'none';
@@ -2882,7 +2882,7 @@ function switchStatTab(tab) {
 
 async function loadDataFiles() {
   const container = document.getElementById('data-files-list');
-  container.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-secondary);">Loading…</div>';
+  container.innerHTML = '<div style="text-align:center; padding:2rem; color:var(--text-secondary);">Loadingâ€¦</div>';
   try {
     const res = await fetch('/api/data-files');
     if (!res.ok) throw new Error(await res.text());
@@ -2897,7 +2897,7 @@ function renderDataFiles(files) {
   const container = document.getElementById('data-files-list');
   container.innerHTML = '';
   files.forEach(f => {
-    const sizeKB = f.file ? (f.file.size / 1024).toFixed(1) + ' KB' : '—';
+    const sizeKB = f.file ? (f.file.size / 1024).toFixed(1) + ' KB' : 'â€”';
     const lastMod = f.file ? new Date(f.file.lastModified).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : 'File not found';
     const card = document.createElement('div');
     card.className = 'dashboard-card';
@@ -2909,8 +2909,8 @@ function renderDataFiles(files) {
           <p style="margin:0.25rem 0 0; font-size:0.8rem; color:var(--text-secondary);">${escapeHTML(f.description)}</p>
         </div>
         ${f.file
-          ? `<span style="background:var(--success-muted,#ecfdf5); color:var(--success,#16a34a); border:1px solid #bbf7d0; border-radius:999px; padding:0.25rem 0.75rem; font-size:0.75rem; font-weight:600;">✓ File present</span>`
-          : `<span style="background:#fef2f2; color:#dc2626; border:1px solid #fecaca; border-radius:999px; padding:0.25rem 0.75rem; font-size:0.75rem; font-weight:600;">⚠ Missing</span>`}
+          ? `<span style="background:var(--success-muted,#ecfdf5); color:var(--success,#16a34a); border:1px solid #bbf7d0; border-radius:999px; padding:0.25rem 0.75rem; font-size:0.75rem; font-weight:600;">âœ“ File present</span>`
+          : `<span style="background:#fef2f2; color:#dc2626; border:1px solid #fecaca; border-radius:999px; padding:0.25rem 0.75rem; font-size:0.75rem; font-weight:600;">âš  Missing</span>`}
       </div>
       <div style="padding:1.25rem; display:grid; grid-template-columns:1fr auto; gap:1rem; align-items:end;">
         <div>
@@ -2924,10 +2924,10 @@ function renderDataFiles(files) {
           ${f.file ? `
           <a href="/portal/documents/${encodeURIComponent(f.filename)}" download
             style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.5rem 0.875rem; border-radius:var(--border-radius-sm); background:var(--surface-secondary); color:var(--text-primary); border:1px solid var(--border-color); font-size:0.82rem; font-weight:500; cursor:pointer; text-decoration:none;">
-            ⬇ Download Current
+            â¬‡ Download Current
           </a>` : ''}
           <label style="display:inline-flex; align-items:center; gap:0.5rem; padding:0.5rem 0.875rem; border-radius:var(--border-radius-sm); background:var(--accent-cyan); color:#fff; border:none; font-size:0.82rem; font-weight:600; cursor:pointer;">
-            ⬆ Upload New File
+            â¬† Upload New File
             <input type="file" accept=".xls,.xlsx" style="display:none;"
               onchange="uploadDataFile('${f.key}', this)">
           </label>
@@ -2952,20 +2952,20 @@ async function uploadDataFile(key, input) {
   const file = input.files[0];
   if (!file) return;
   const statusEl = document.getElementById(`upload-status-${key}`);
-  statusEl.innerHTML = '<span style="color:var(--accent-cyan);">⏳ Uploading…</span>';
+  statusEl.innerHTML = '<span style="color:var(--accent-cyan);">â³ Uploadingâ€¦</span>';
   const formData = new FormData();
   formData.append('file', file);
   try {
     const res = await fetch(`/api/data-files/${key}`, { method: 'POST', body: formData });
     const result = await res.json();
     if (res.ok && result.success) {
-      statusEl.innerHTML = `<span style="color:var(--success);">✓ Uploaded: ${escapeHTML(result.filename)} (${(result.size/1024).toFixed(1)} KB)</span>`;
+      statusEl.innerHTML = `<span style="color:var(--success);">âœ“ Uploaded: ${escapeHTML(result.filename)} (${(result.size/1024).toFixed(1)} KB)</span>`;
       setTimeout(() => loadDataFiles(), 1500);
     } else {
-      statusEl.innerHTML = `<span style="color:var(--danger);">✗ ${escapeHTML(result.error || 'Upload failed')}</span>`;
+      statusEl.innerHTML = `<span style="color:var(--danger);">âœ— ${escapeHTML(result.error || 'Upload failed')}</span>`;
     }
   } catch (err) {
-    statusEl.innerHTML = `<span style="color:var(--danger);">✗ Connection error</span>`;
+    statusEl.innerHTML = `<span style="color:var(--danger);">âœ— Connection error</span>`;
   }
   input.value = '';
 }
@@ -2989,7 +2989,7 @@ async function loadFleetPreview() {
             <div style="font-size:0.72rem; color:var(--text-secondary);">${escapeHTML(cat)}</div>
           </div>`).join('')}
       </div>
-      <p style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.5rem;">As at ${data.asOf} · Top makes: ${data.topMakes.slice(0,3).map(m=>m.make.trim()).join(', ')}</p>
+      <p style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.5rem;">As at ${data.asOf} Â· Top makes: ${data.topMakes.slice(0,3).map(m=>m.make.trim()).join(', ')}</p>
     `;
   } catch {}
 }
@@ -3017,10 +3017,10 @@ async function loadSolarPreview() {
         </div>
         <div style="background:var(--surface-secondary); border-radius:8px; padding:0.75rem 1rem; min-width:120px; text-align:center;">
           <div style="font-size:1.5rem; font-weight:700; color:#7c3aed;">${data.byYear.slice(-1)[0]?.count || 0}</div>
-          <div style="font-size:0.75rem; color:var(--text-secondary);">Permits in ${data.byYear.slice(-1)[0]?.year || '—'}</div>
+          <div style="font-size:0.75rem; color:var(--text-secondary);">Permits in ${data.byYear.slice(-1)[0]?.year || 'â€”'}</div>
         </div>
       </div>
-      <p style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.5rem;">Top district: ${data.byDistrict[0]?.district || '—'} (${data.byDistrict[0]?.count || 0} permits) · Residential: ${data.byWorkClass.find(w=>w.type==='Residential')?.count || 0} / Commercial: ${data.byWorkClass.find(w=>w.type==='Commercial')?.count || 0}</p>
+      <p style="font-size:0.75rem; color:var(--text-secondary); margin-top:0.5rem;">Top district: ${data.byDistrict[0]?.district || 'â€”'} (${data.byDistrict[0]?.count || 0} permits) Â· Residential: ${data.byWorkClass.find(w=>w.type==='Residential')?.count || 0} / Commercial: ${data.byWorkClass.find(w=>w.type==='Commercial')?.count || 0}</p>
     `;
   } catch {}
 }

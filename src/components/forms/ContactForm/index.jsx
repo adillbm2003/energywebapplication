@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import Button from '../../ui/Button'
 import Input from '../../ui/Input'
 import Select from '../../ui/Select'
+import { apiClient } from '../../../services/client'
 
 function getInitialForm(searchParams) {
   const enquiry = searchParams.get('enquiry')
@@ -33,7 +34,9 @@ export default function ContactForm() {
   const [searchParams] = useSearchParams()
   const [form, setForm] = useState(() => getInitialForm(searchParams))
   const [submitted, setSubmitted] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [errors, setErrors] = useState({})
+  const [serverError, setServerError] = useState(null)
 
   const validate = () => {
     const next = {}
@@ -46,10 +49,20 @@ export default function ContactForm() {
     return Object.keys(next).length === 0
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validate()) return
-    setSubmitted(true)
+
+    setSubmitting(true)
+    setServerError(null)
+    try {
+      await apiClient.post('/api/contact', form)
+      setSubmitted(true)
+    } catch (err) {
+      setServerError(err.message ?? 'Failed to send message. Please try again.')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   const update = (field) => (e) => setForm((prev) => ({ ...prev, [field]: e.target.value }))
@@ -67,6 +80,11 @@ export default function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+      {serverError && (
+        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          {serverError}
+        </div>
+      )}
       <div className="grid gap-4 sm:grid-cols-2">
         <Input label="Full Name" name="name" value={form.name} onChange={update('name')} error={errors.name} required />
         <Input label="Email" name="email" type="email" value={form.email} onChange={update('email')} error={errors.email} required />
@@ -87,8 +105,8 @@ export default function ContactForm() {
         />
         {errors.message && <p className="mt-1 text-sm text-danger" role="alert">{errors.message}</p>}
       </div>
-      <Button type="submit" variant="primary" size="lg">
-        Send Message
+      <Button type="submit" variant="primary" size="lg" disabled={submitting}>
+        {submitting ? 'Sending…' : 'Send Message'}
       </Button>
     </form>
   )

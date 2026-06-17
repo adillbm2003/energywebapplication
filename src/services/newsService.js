@@ -1,10 +1,39 @@
 import { news } from '../data/news'
-import { fetchMock, fetchMockById } from './api'
+import { fetchFromAPI, fetchMockById } from './api'
 import { sortByNewest } from '../utils/sortContent'
 
 export const newsService = {
-  getAll: () => fetchMock(sortByNewest(news, ['publishDate'])),
-  getFeatured: () => fetchMock(sortByNewest(news.filter((item) => item.featured), ['publishDate'])),
-  getBySlug: (slug) => fetchMockById(news, slug, 'slug'),
-  getCategories: () => fetchMock([...new Set(news.map((item) => item.category))]),
+  getAll: async () => {
+    const items = await fetchFromAPI('/api/news', sortByNewest(news, ['publishDate']))
+    return sortByNewest(items.map(n => ({
+      id: n.id,
+      slug: n.slug || String(n.id),
+      title: n.title,
+      excerpt: n.excerpt || n.summary,
+      category: n.category || 'Renewable Energy',
+      featured: n.featured ?? false,
+      author: n.author || 'Department of Energy',
+      publishDate: n.publishDate || n.publishDate || n.publish_date,
+      image: n.image,
+      content: n.content,
+    })), ['publishDate'])
+  },
+  getFeatured: async () => {
+    const all = await newsService.getAll()
+    return all.filter(n => n.featured).slice(0, 3)
+  },
+  getBySlug: async (slug) => {
+    const all = await newsService.getAll()
+    const item = all.find(n => String(n.slug) === String(slug) || String(n.id) === String(slug))
+    if (!item) {
+      const err = new Error('Resource not found')
+      err.status = 404
+      throw err
+    }
+    return item
+  },
+  getCategories: async () => {
+    const all = await newsService.getAll()
+    return [...new Set(all.map(n => n.category))]
+  },
 }
