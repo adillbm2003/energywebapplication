@@ -3,6 +3,8 @@ import ContentBlock from '../../components/common/ContentBlock'
 import SectionHeading from '../../components/ui/SectionHeading'
 import { PAGE_IMAGES } from '../../constants/branding'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
+import { useAsyncData } from '../../hooks/useAsyncData'
+import { leadershipService } from '../../services'
 
 const VALUES = [
   { title: 'Transparency', description: 'Open, accountable governance in energy policy and public engagement.', image: PAGE_IMAGES.government },
@@ -11,15 +13,9 @@ const VALUES = [
   { title: 'Equity', description: 'Ensuring fair access to clean energy benefits for all Bermudians.', image: PAGE_IMAGES.solar },
 ]
 
-const TEAM = [
-  { role: 'Minister of Energy', name: 'The Honourable Minister', image: PAGE_IMAGES.portrait },
-  { role: 'Permanent Secretary', name: 'Permanent Secretary for Energy', image: PAGE_IMAGES.portrait },
-  { role: 'Director of Energy Policy', name: 'Director of Energy Policy', image: PAGE_IMAGES.portrait },
-  { role: 'Director of Renewable Energy', name: 'Director of Renewable Energy', image: PAGE_IMAGES.portrait },
-]
-
 export default function About() {
   useDocumentTitle('About the Department')
+  const { data: team } = useAsyncData(() => leadershipService.getAll(), [])
 
   return (
     <>
@@ -84,17 +80,18 @@ export default function About() {
         <div className="container-page">
           <SectionHeading title="Leadership" subtitle="Department leadership structure" />
           <div className="grid gap-4 sm:grid-cols-2">
-            {TEAM.map((member) => (
-              <div key={member.role} className="flex gap-4 overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
-                <img src={member.image} alt="" className="hidden h-full w-24 shrink-0 object-cover sm:block" loading="lazy" />
+            {(team ?? []).map((member) => (
+              <div key={member.id} className="flex gap-4 overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
+                <img src={member.imageUrl} alt="" className="hidden h-full w-24 shrink-0 object-cover sm:block" loading="lazy" />
                 <div className="card-padding flex gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#2E5496] text-sm font-bold text-white sm:hidden" aria-hidden="true">
-                  {member.role.charAt(0)}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-teal-700">{member.role}</p>
-                  <p className="mt-0.5 font-semibold text-navy-900">{member.name}</p>
-                </div>
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#2E5496] text-sm font-bold text-white sm:hidden" aria-hidden="true">
+                    {member.name.charAt(0)}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-teal-700">{member.role}</p>
+                    <p className="mt-0.5 font-semibold text-navy-900">{member.name}</p>
+                    {member.bio && <p className="mt-1 text-xs text-slate-500">{member.bio}</p>}
+                  </div>
                 </div>
               </div>
             ))}

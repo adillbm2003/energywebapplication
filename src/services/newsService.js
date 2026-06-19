@@ -16,7 +16,7 @@ export const newsService = {
       publishedAt: n.publishedAt || n.publish_date,
       publishDate: n.publishDate || n.publishedAt || n.publish_date,
       image: n.image,
-      content: n.content,
+      content: Array.isArray(n.content) ? n.content : (n.content ? n.content.split('\n\n') : []),
     })), ['publishDate'])
   },
   getFeatured: async () => {

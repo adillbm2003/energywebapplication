@@ -208,6 +208,7 @@ const collectionToTable = {
   innovation: 'innovation_topics',
   staticPages: 'static_pages',
   bursaries: 'bursaries',
+  leadership: 'leadership',
   spaceContent: 'space_content',
   energyGuides: 'energy_guides',
   infographics: 'infographics',
@@ -227,6 +228,7 @@ const collectionSortOrder = {
   innovation: 'id DESC',
   staticPages: 'title ASC',
   bursaries: 'academic_year DESC NULLS LAST, id DESC',
+  leadership: 'display_order ASC, id ASC',
   spaceContent: 'id DESC',
   energyGuides: 'publish_date DESC NULLS LAST, id DESC',
   infographics: 'publish_date DESC NULLS LAST, id DESC',
@@ -1736,7 +1738,10 @@ async function runMigrationsInline() {
     await client.query(`CREATE TABLE IF NOT EXISTS energy_guides (id VARCHAR(50) PRIMARY KEY, title TEXT, category VARCHAR(100), summary TEXT, cover_image TEXT, pdf_attachment TEXT, featured_image TEXT, key_takeaways TEXT, estimated_savings VARCHAR(100), publish_date DATE, featured_flag BOOLEAN DEFAULT FALSE, status VARCHAR(50), target_site VARCHAR(50), modified_by VARCHAR(100));`);
     await client.query(`CREATE TABLE IF NOT EXISTS infographics (id VARCHAR(50) PRIMARY KEY, title TEXT, image TEXT, description TEXT, category VARCHAR(100), publish_date DATE, status VARCHAR(50), target_site VARCHAR(50), modified_by VARCHAR(100));`);
     await client.query(`CREATE TABLE IF NOT EXISTS roadmaps (id VARCHAR(50) PRIMARY KEY, title TEXT, description TEXT, timeline_type VARCHAR(100), milestones JSONB, status VARCHAR(50) DEFAULT 'Active', target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS bursaries (id VARCHAR(50) PRIMARY KEY, name TEXT, school TEXT, field_of_study TEXT, academic_year VARCHAR(50), status VARCHAR(50) DEFAULT 'Active', amount VARCHAR(50), photo_url TEXT, guidelines_url TEXT, bio TEXT, target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
+    await client.query(`CREATE TABLE IF NOT EXISTS bursaries (id VARCHAR(50) PRIMARY KEY, name TEXT, school TEXT, field_of_study TEXT, academic_year VARCHAR(50), status VARCHAR(50) DEFAULT 'Active', amount VARCHAR(50), photo_url TEXT, guidelines_url TEXT, bio TEXT, achievement TEXT, focus TEXT, target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
+    await client.query(`ALTER TABLE bursaries ADD COLUMN IF NOT EXISTS achievement TEXT;`);
+    await client.query(`ALTER TABLE bursaries ADD COLUMN IF NOT EXISTS focus TEXT;`);
+    await client.query(`CREATE TABLE IF NOT EXISTS leadership (id VARCHAR(50) PRIMARY KEY, name TEXT NOT NULL, role TEXT NOT NULL, image_url TEXT, bio TEXT, display_order INT DEFAULT 0, status VARCHAR(50) DEFAULT 'Active', target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
     await client.query(`CREATE TABLE IF NOT EXISTS space_content (id VARCHAR(50) PRIMARY KEY, title TEXT, slug VARCHAR(100), category VARCHAR(100), content TEXT, summary TEXT, pdf_link TEXT, image TEXT, status VARCHAR(50) DEFAULT 'Published', target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
     await client.query(`CREATE TABLE IF NOT EXISTS recycle_bin (id VARCHAR(50) PRIMARY KEY, deleted_at DATE DEFAULT CURRENT_DATE, original_collection VARCHAR(50), item_data JSONB);`);
     await client.query(`CREATE TABLE IF NOT EXISTS versions (id VARCHAR(50) PRIMARY KEY, item_id VARCHAR(50), collection_name VARCHAR(50), version_number INT, title TEXT, modified_at TIMESTAMP, modified_by VARCHAR(100), data TEXT);`);
@@ -1830,6 +1835,64 @@ async function runMigrationsInline() {
         await client.query(
           `INSERT INTO innovation_topics (id, title, description, status, link_to, link_label) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING`,
           [id, title, description, status, linkTo, linkLabel]
+        );
+      }
+    }
+    // Seed bursary recipients
+    const bursaryCheck = await client.query("SELECT COUNT(*) FROM bursaries");
+    if (parseInt(bursaryCheck.rows[0].count, 10) === 0) {
+      const recipients = [
+        ['bur-001','Neriah Bean','Oakwood University','Applied Mathematics and Engineering','2025','Active','/images/portraits/neriah-bean.jpg',
+          'Selected for his strong academic record, leadership potential, and an essay analysing Bermuda\'s energy future and the public\'s role in it.',
+          'Developing foundational engineering and mathematical expertise to contribute to climate resilience and clean energy transformation.'],
+        ['bur-002','Benjamin Crofton','Virginia Tech','Mechanical Engineering','2025','Active','/images/portraits/benjamin-crofton.jpg',
+          'Awarded for his technical acumen and analytical essay on Bermuda\'s energy transition.',
+          'Acquiring hands-on mechanical engineering insights to support independent energy infrastructure and modern technical planning on the island.'],
+      ];
+      for (const [id, name, school, fieldOfStudy, academicYear, status, photoUrl, achievement, focus] of recipients) {
+        await client.query(
+          `INSERT INTO bursaries (id, name, school, field_of_study, academic_year, status, photo_url, achievement, focus) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT DO NOTHING`,
+          [id, name, school, fieldOfStudy, academicYear, status, photoUrl, achievement, focus]
+        );
+      }
+    }
+    // Seed leadership team
+    const leadershipCheck = await client.query("SELECT COUNT(*) FROM leadership");
+    if (parseInt(leadershipCheck.rows[0].count, 10) === 0) {
+      const team = [
+        ['lead-001','The Honourable Minister','Minister of Energy','/images/portrait.jpg','',1],
+        ['lead-002','Permanent Secretary for Energy','Permanent Secretary','/images/portrait.jpg','',2],
+        ['lead-003','Director of Energy Policy','Director of Energy Policy','/images/portrait.jpg','',3],
+        ['lead-004','Director of Renewable Energy','Director of Renewable Energy','/images/portrait.jpg','',4],
+      ];
+      for (const [id, name, role, imageUrl, bio, displayOrder] of team) {
+        await client.query(
+          `INSERT INTO leadership (id, name, role, image_url, bio, display_order) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING`,
+          [id, name, role, imageUrl, bio, displayOrder]
+        );
+      }
+    }
+    // Seed news articles
+    const newsCheck = await client.query("SELECT COUNT(*) FROM news");
+    if (parseInt(newsCheck.rows[0].count, 10) === 0) {
+      const articles = [
+        ['news-007','career-fair-expo-june-2026','Department of Energy at Bermuda Government Career Fair Expo 2026',
+          'The Department of Energy showcased Bermuda\'s energy transition at the Government Career Fair Expo on 18 June 2026.',
+          'The Department of Energy participated in the Bermuda Government Career Fair Expo held on 18 June 2026, bringing its digital engagement platform and Energy Simulator directly to students and career-seekers.\n\nAttendees had the opportunity to interact with the live Energy Simulator, exploring how household appliance choices and solar adoption affect monthly energy costs.\n\nDepartment representatives engaged in one-on-one conversations with students and young professionals about career pathways in energy, the 2026 Energy Bursary Programme, and Bermuda\'s clean energy transition goals.',
+          '/images/events/career-fair-expo-1.jpg','2026-06-18','Published','Events',true,'Department of Energy'],
+        ['news-001','bermuda-renewable-energy-milestone','Bermuda Reaches New Renewable Energy Milestone',
+          'Installed solar capacity across the island has surpassed 25 MW, marking significant progress toward Bermuda\'s 2030 energy targets.',
+          'The Department of Energy is pleased to announce that Bermuda has surpassed 25 megawatts of installed solar photovoltaic capacity.\n\nThis achievement reflects sustained investment in distributed generation, supportive regulatory frameworks, and growing public awareness of the benefits of renewable energy.',
+          '/images/solar.jpg','2026-05-15','Published','Renewable Energy',true,'Department of Energy'],
+        ['news-004','2026-energy-bursary-recipients','2026 Energy Bursary Recipients Announced',
+          'Two Bermudian students have been awarded the inaugural Energy Bursary for studies in engineering and applied mathematics.',
+          'The Department of Energy is pleased to announce the recipients of the inaugural 2026 Energy Bursary Programme.\n\nNeriah Bean and Benjamin Crofton have been selected for their academic excellence and commitment to contributing to Bermuda\'s clean energy future.',
+          '/images/education.jpg','2026-05-10','Published','Education',false,'Department of Energy'],
+      ];
+      for (const [id, slug, title, excerpt, content, image, publishDate, status, category, featured, author] of articles) {
+        await client.query(
+          `INSERT INTO news (id, slug, title, excerpt, content, image, publish_date, status, category, featured, author) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT DO NOTHING`,
+          [id, slug, title, excerpt, content, image, publishDate, status, category, featured, author]
         );
       }
     }

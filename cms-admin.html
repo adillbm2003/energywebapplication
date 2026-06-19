@@ -215,6 +215,22 @@
           </svg>
           Innovation & Emerging Technologies
         </a>
+        <a data-view="bursaries">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
+            <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
+          </svg>
+          Bursary Recipients
+        </a>
+        <a data-view="leadership">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Leadership Team
+        </a>
 
         <div class="section-title">Governance & Auditing</div>
         <a data-view="logs">
@@ -790,6 +806,161 @@
               <!-- Dynamic Rows -->
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <!-- BURSARY RECIPIENTS VIEW -->
+      <section id="bursaries-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Bursary Recipients</h2>
+          <button class="btn btn-primary" onclick="openBursaryForm()">+ Add Recipient</button>
+        </div>
+        <p style="color:var(--text-secondary); margin-bottom:1.5rem; font-size:0.875rem;">Manage bursary award recipients. Changes appear on the public Bursary page.</p>
+        <div class="table-container">
+          <table class="data-table" id="bursaries-table">
+            <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>School</th>
+                <th>Field of Study</th>
+                <th>Year</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="bursaries-tbody">
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Bursary Recipient Form Modal -->
+        <div id="bursary-modal" class="modal-overlay" style="display:none;">
+          <div class="modal-panel" style="max-width:600px;">
+            <div class="modal-header">
+              <h3 id="bursary-modal-title">Add Bursary Recipient</h3>
+              <button onclick="closeBursaryForm()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="bursary-id">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Full Name *</label>
+                  <input type="text" id="bursary-name" placeholder="e.g. Neriah Bean" required>
+                </div>
+                <div class="form-group">
+                  <label>Academic Year *</label>
+                  <input type="text" id="bursary-year" placeholder="e.g. 2025">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>School / University *</label>
+                  <input type="text" id="bursary-school" placeholder="e.g. Oakwood University">
+                </div>
+                <div class="form-group">
+                  <label>Field of Study</label>
+                  <input type="text" id="bursary-field" placeholder="e.g. Applied Mathematics and Engineering">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Photo URL</label>
+                <input type="text" id="bursary-photo" placeholder="/images/portraits/name.jpg">
+              </div>
+              <div class="form-group">
+                <label>Achievement / Award Reason</label>
+                <textarea id="bursary-achievement" rows="3" placeholder="Why they were selected..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Focus / Goals</label>
+                <textarea id="bursary-focus" rows="3" placeholder="Their study focus and career aims..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Status</label>
+                <select id="bursary-status">
+                  <option value="Active">Active (shown on site)</option>
+                  <option value="Inactive">Inactive (hidden)</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button onclick="closeBursaryForm()" class="btn btn-secondary">Cancel</button>
+              <button onclick="saveBursaryRecipient()" class="btn btn-primary">Save Recipient</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- LEADERSHIP TEAM VIEW -->
+      <section id="leadership-view" class="content-view">
+        <div class="table-header-bar">
+          <h2>Leadership Team</h2>
+          <button class="btn btn-primary" onclick="openLeadershipForm()">+ Add Member</button>
+        </div>
+        <p style="color:var(--text-secondary); margin-bottom:1.5rem; font-size:0.875rem;">Manage the leadership team displayed on the About page. Order by Display Order number (lower = first).</p>
+        <div class="table-container">
+          <table class="data-table" id="leadership-table">
+            <thead>
+              <tr>
+                <th>Photo</th>
+                <th>Name</th>
+                <th>Role / Title</th>
+                <th>Order</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="leadership-tbody">
+              <!-- Dynamic Rows -->
+            </tbody>
+          </table>
+        </div>
+        <!-- Leadership Form Modal -->
+        <div id="leadership-modal" class="modal-overlay" style="display:none;">
+          <div class="modal-panel" style="max-width:600px;">
+            <div class="modal-header">
+              <h3 id="leadership-modal-title">Add Leadership Member</h3>
+              <button onclick="closeLeadershipForm()" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+              <input type="hidden" id="leadership-id">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Full Name *</label>
+                  <input type="text" id="leadership-name" placeholder="e.g. The Honourable Minister" required>
+                </div>
+                <div class="form-group">
+                  <label>Role / Title *</label>
+                  <input type="text" id="leadership-role" placeholder="e.g. Minister of Energy" required>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Photo URL</label>
+                  <input type="text" id="leadership-image" placeholder="/images/portraits/name.jpg">
+                </div>
+                <div class="form-group">
+                  <label>Display Order</label>
+                  <input type="number" id="leadership-order" placeholder="1" min="1">
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Biography</label>
+                <textarea id="leadership-bio" rows="4" placeholder="Brief bio..."></textarea>
+              </div>
+              <div class="form-group">
+                <label>Status</label>
+                <select id="leadership-status">
+                  <option value="Active">Active (shown on site)</option>
+                  <option value="Inactive">Inactive (hidden)</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button onclick="closeLeadershipForm()" class="btn btn-secondary">Cancel</button>
+              <button onclick="saveLeadershipMember()" class="btn btn-primary">Save Member</button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -1581,21 +1752,213 @@
       if (viewName === 'media') setTimeout(renderMediaView, 50);
       if (viewName === 'staticPages') setTimeout(renderStaticPagesView, 50);
       if (viewName === 'statistics') setTimeout(renderStatisticsView, 50);
+      if (viewName === 'bursaries') setTimeout(loadBursaryRecipients, 50);
+      if (viewName === 'leadership') setTimeout(loadLeadershipTeam, 50);
     };
 
     // Also hook sidebar nav clicks for new views
-    document.querySelectorAll('[data-view="media"],[data-view="staticPages"],[data-view="statistics"]').forEach(link => {
+    document.querySelectorAll('[data-view="media"],[data-view="staticPages"],[data-view="statistics"],[data-view="bursaries"],[data-view="leadership"]').forEach(link => {
       link.addEventListener('click', () => {
         const v = link.getAttribute('data-view');
-        // Ensure the section is shown (existing switchView handles class toggling)
         setTimeout(() => {
           if (v === 'media') renderMediaView();
           if (v === 'staticPages') renderStaticPagesView();
           if (v === 'statistics') renderStatisticsView();
+          if (v === 'bursaries') loadBursaryRecipients();
+          if (v === 'leadership') loadLeadershipTeam();
         }, 100);
       });
     });
   });
+
+  // ===== BURSARY RECIPIENTS =====
+  let editingBursaryId = null;
+
+  async function loadBursaryRecipients() {
+    const tbody = document.getElementById('bursaries-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-secondary)">Loading...</td></tr>';
+    try {
+      const res = await fetch('/api/bursaries');
+      const items = res.ok ? await res.json() : [];
+      if (!items.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--text-secondary)">No recipients yet. Click "+ Add Recipient" to begin.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = items.map(r => `
+        <tr>
+          <td>${r.photo_url ? `<img src="${r.photo_url}" alt="${r.name}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">` : '<span style="color:var(--text-secondary)">—</span>'}</td>
+          <td style="font-weight:600">${r.name || '—'}</td>
+          <td>${r.school || '—'}</td>
+          <td>${r.field_of_study || '—'}</td>
+          <td>${r.academic_year || '—'}</td>
+          <td><span class="status-badge ${(r.status||'Active')==='Active'?'badge-active':'badge-inactive'}">${r.status||'Active'}</span></td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="editBursaryRecipient(${JSON.stringify(JSON.stringify(r))})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteBursaryRecipient('${r.id}','${r.name}')">Delete</button>
+          </td>
+        </tr>`).join('');
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--error)">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  function openBursaryForm() {
+    editingBursaryId = null;
+    document.getElementById('bursary-modal-title').textContent = 'Add Bursary Recipient';
+    ['id','name','year','school','field','photo','achievement','focus'].forEach(f => {
+      const el = document.getElementById('bursary-'+f);
+      if (el) el.value = '';
+    });
+    document.getElementById('bursary-status').value = 'Active';
+    document.getElementById('bursary-modal').style.display = 'flex';
+  }
+
+  function editBursaryRecipient(jsonStr) {
+    const r = JSON.parse(jsonStr);
+    editingBursaryId = r.id;
+    document.getElementById('bursary-modal-title').textContent = 'Edit Bursary Recipient';
+    document.getElementById('bursary-id').value = r.id || '';
+    document.getElementById('bursary-name').value = r.name || '';
+    document.getElementById('bursary-year').value = r.academic_year || '';
+    document.getElementById('bursary-school').value = r.school || '';
+    document.getElementById('bursary-field').value = r.field_of_study || '';
+    document.getElementById('bursary-photo').value = r.photo_url || '';
+    document.getElementById('bursary-achievement').value = r.achievement || '';
+    document.getElementById('bursary-focus').value = r.focus || '';
+    document.getElementById('bursary-status').value = r.status || 'Active';
+    document.getElementById('bursary-modal').style.display = 'flex';
+  }
+
+  function closeBursaryForm() {
+    document.getElementById('bursary-modal').style.display = 'none';
+  }
+
+  async function saveBursaryRecipient() {
+    const name = document.getElementById('bursary-name').value.trim();
+    if (!name) { alert('Name is required'); return; }
+    const payload = {
+      id: editingBursaryId || ('bur-' + Date.now()),
+      name,
+      academic_year: document.getElementById('bursary-year').value.trim(),
+      school: document.getElementById('bursary-school').value.trim(),
+      field_of_study: document.getElementById('bursary-field').value.trim(),
+      photo_url: document.getElementById('bursary-photo').value.trim(),
+      achievement: document.getElementById('bursary-achievement').value.trim(),
+      focus: document.getElementById('bursary-focus').value.trim(),
+      status: document.getElementById('bursary-status').value,
+    };
+    try {
+      const method = editingBursaryId ? 'PUT' : 'POST';
+      const url = editingBursaryId ? `/api/bursaries/${editingBursaryId}` : '/api/bursaries';
+      const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if (!res.ok) throw new Error(await res.text());
+      closeBursaryForm();
+      loadBursaryRecipients();
+    } catch (e) { alert('Save failed: ' + e.message); }
+  }
+
+  async function deleteBursaryRecipient(id, name) {
+    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`/api/bursaries/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(await res.text());
+      loadBursaryRecipients();
+    } catch (e) { alert('Delete failed: ' + e.message); }
+  }
+
+  // ===== LEADERSHIP TEAM =====
+  let editingLeadershipId = null;
+
+  async function loadLeadershipTeam() {
+    const tbody = document.getElementById('leadership-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-secondary)">Loading...</td></tr>';
+    try {
+      const res = await fetch('/api/leadership');
+      const items = res.ok ? await res.json() : [];
+      if (!items.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-secondary)">No members yet. Click "+ Add Member" to begin.</td></tr>';
+        return;
+      }
+      tbody.innerHTML = items.map(m => `
+        <tr>
+          <td>${m.image_url ? `<img src="${m.image_url}" alt="${m.name}" style="width:44px;height:44px;border-radius:50%;object-fit:cover;">` : '<span style="color:var(--text-secondary)">—</span>'}</td>
+          <td style="font-weight:600">${m.name || '—'}</td>
+          <td>${m.role || '—'}</td>
+          <td style="text-align:center">${m.display_order || 0}</td>
+          <td><span class="status-badge ${(m.status||'Active')==='Active'?'badge-active':'badge-inactive'}">${m.status||'Active'}</span></td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="editLeadershipMember(${JSON.stringify(JSON.stringify(m))})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteLeadershipMember('${m.id}','${m.name}')">Delete</button>
+          </td>
+        </tr>`).join('');
+    } catch (e) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--error)">Error: ${e.message}</td></tr>`;
+    }
+  }
+
+  function openLeadershipForm() {
+    editingLeadershipId = null;
+    document.getElementById('leadership-modal-title').textContent = 'Add Leadership Member';
+    ['id','name','role','image','bio'].forEach(f => {
+      const el = document.getElementById('leadership-'+f);
+      if (el) el.value = '';
+    });
+    document.getElementById('leadership-order').value = '';
+    document.getElementById('leadership-status').value = 'Active';
+    document.getElementById('leadership-modal').style.display = 'flex';
+  }
+
+  function editLeadershipMember(jsonStr) {
+    const m = JSON.parse(jsonStr);
+    editingLeadershipId = m.id;
+    document.getElementById('leadership-modal-title').textContent = 'Edit Leadership Member';
+    document.getElementById('leadership-id').value = m.id || '';
+    document.getElementById('leadership-name').value = m.name || '';
+    document.getElementById('leadership-role').value = m.role || '';
+    document.getElementById('leadership-image').value = m.image_url || '';
+    document.getElementById('leadership-order').value = m.display_order || '';
+    document.getElementById('leadership-bio').value = m.bio || '';
+    document.getElementById('leadership-status').value = m.status || 'Active';
+    document.getElementById('leadership-modal').style.display = 'flex';
+  }
+
+  function closeLeadershipForm() {
+    document.getElementById('leadership-modal').style.display = 'none';
+  }
+
+  async function saveLeadershipMember() {
+    const name = document.getElementById('leadership-name').value.trim();
+    const role = document.getElementById('leadership-role').value.trim();
+    if (!name || !role) { alert('Name and Role are required'); return; }
+    const payload = {
+      id: editingLeadershipId || ('lead-' + Date.now()),
+      name,
+      role,
+      image_url: document.getElementById('leadership-image').value.trim(),
+      display_order: parseInt(document.getElementById('leadership-order').value) || 0,
+      bio: document.getElementById('leadership-bio').value.trim(),
+      status: document.getElementById('leadership-status').value,
+    };
+    try {
+      const method = editingLeadershipId ? 'PUT' : 'POST';
+      const url = editingLeadershipId ? `/api/leadership/${editingLeadershipId}` : '/api/leadership';
+      const res = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+      if (!res.ok) throw new Error(await res.text());
+      closeLeadershipForm();
+      loadLeadershipTeam();
+    } catch (e) { alert('Save failed: ' + e.message); }
+  }
+
+  async function deleteLeadershipMember(id, name) {
+    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    try {
+      const res = await fetch(`/api/leadership/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(await res.text());
+      loadLeadershipTeam();
+    } catch (e) { alert('Delete failed: ' + e.message); }
+  }
   </script>
 </body>
 
