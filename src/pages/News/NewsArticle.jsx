@@ -55,6 +55,29 @@ export default function NewsArticle() {
             ))}
           </div>
 
+          {article.attachmentUrl && (
+            <div className="mt-8 rounded-xl border border-teal-200 bg-teal-50 p-5 flex items-center gap-4">
+              <svg className="h-10 w-10 shrink-0 text-teal-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="12" y1="18" x2="12" y2="12"/>
+                <polyline points="9 15 12 18 15 15"/>
+              </svg>
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-navy-900">Attached Document</p>
+                <p className="text-sm text-slate-500 truncate">{article.attachmentName || 'Download document'}</p>
+              </div>
+              <a
+                href={article.attachmentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800 transition-colors"
+              >
+                Download
+              </a>
+            </div>
+          )}
+
           <Button to={ROUTES.news} variant="outline" className="mt-8">
             ← Back to News
           </Button>

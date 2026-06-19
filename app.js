@@ -518,13 +518,16 @@ function renderNews() {
     const statusClass = item.status === 'Published' ? 'badge-published' : 'badge-draft';
     
     tr.innerHTML = `
-      <td style="font-weight:600; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHTML(item.title)}</td>
-      <td>${escapeHTML(item.summary)}</td>
-      <td>${item.publishDate}</td>
-      <td><span class="badge ${statusClass}">${item.status}</span></td>
+      <td style="font-weight:600; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${escapeHTML(item.title)}</td>
+      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHTML(item.summary || item.excerpt || '')}</td>
+      <td>${item.publishDate || item.publish_date || ''}</td>
+      <td><span class="badge ${statusClass}">${item.status}</span>${item.attachment_url || item.attachmentUrl ? ' <span style="font-size:0.7rem;background:#dbeafe;color:#1e40af;padding:1px 6px;border-radius:4px;">📎 Doc</span>' : ''}</td>
       <td class="action-buttons">
         <button class="action-btn edit" onclick="openNewsForm('${item.id}')" title="Edit Article">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        </button>
+        <button class="action-btn" onclick="duplicateNews('${item.id}')" title="Duplicate for next month" style="background:rgba(16,185,129,0.1);color:#059669;border:1px solid rgba(16,185,129,0.3);">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         </button>
         <button class="action-btn delete" onclick="deleteNews('${item.id}')" title="Delete Article">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
@@ -539,120 +542,228 @@ function openNewsForm(id = null) {
   const modal = document.getElementById('cms-modal');
   const modalBody = modal.querySelector('.modal-body');
   const modalTitle = modal.querySelector('.modal-header h3');
-  
-  let item = { title: '', summary: '', content: '', image: '', publishDate: new Date().toISOString().split('T')[0], status: 'Draft', targetSite: 'all', category: 'Renewable Energy', featured: true };
-  
+
+  let item = {
+    title: '', summary: '', content: '', image: '', excerpt: '',
+    publishDate: new Date().toISOString().split('T')[0],
+    status: 'Draft', targetSite: 'all', category: 'Renewable Energy',
+    featured: true, attachment_url: '', attachment_name: ''
+  };
+
   if (id) {
-    item = db.news.find(n => n.id === id);
-    modalTitle.textContent = "Edit News Article";
+    item = db.news.find(n => n.id === id) || item;
+    modalTitle.textContent = 'Edit News Article';
   } else {
-    modalTitle.textContent = "Create News Article";
+    modalTitle.textContent = 'Create News Article';
   }
-  
+
+  const existingAttachment = item.attachment_url || item.attachmentUrl || '';
+  const existingAttachmentName = item.attachment_name || item.attachmentName || '';
+
   modalBody.innerHTML = `
-    <form id="news-form">
-      <input type="hidden" name="id" value="${id || ''}">
-      <div class="form-group">
-        <label>Article Title*</label>
-        <input type="text" name="title" value="${escapeHTML(item.title)}" required placeholder="e.g., Department of Energy Announces Solar Grant">
+    <style>
+      .news-tab-btn { padding:0.5rem 1.1rem; font-size:0.875rem; font-weight:600; border:none; background:none; cursor:pointer; border-bottom:3px solid transparent; color:var(--text-secondary); transition:all 0.15s; }
+      .news-tab-btn.active { border-bottom-color:var(--primary-light); color:var(--primary-light); }
+      #news-doc-panel, #news-manual-panel { display:none; }
+      #news-doc-panel.active, #news-manual-panel.active { display:block; }
+      .doc-drop-zone { border:2px dashed var(--border-color); border-radius:var(--border-radius-md); padding:2.5rem 1rem; text-align:center; cursor:pointer; transition:all 0.2s; background:var(--surface-secondary); }
+      .doc-drop-zone:hover, .doc-drop-zone.drag-over { border-color:var(--primary-light); background:rgba(var(--primary-rgb,30,116,255),0.04); }
+      .doc-attached { display:flex; align-items:center; gap:0.75rem; padding:0.875rem 1rem; background:var(--surface-secondary); border:1px solid var(--border-color); border-radius:var(--border-radius-sm); margin-top:0.75rem; }
+    </style>
+    <form id=”news-form”>
+      <input type=”hidden” name=”id” value=”${id || ''}”>
+      <input type=”hidden” id=”news-attachment-url” name=”attachmentUrl” value=”${escapeHTML(existingAttachment)}”>
+      <input type=”hidden” id=”news-attachment-name” name=”attachmentName” value=”${escapeHTML(existingAttachmentName)}”>
+
+      <!-- Tab Bar -->
+      <div style=”display:flex; gap:0; border-bottom:2px solid var(--border-color); margin-bottom:1.5rem;”>
+        <button type=”button” class=”news-tab-btn ${!existingAttachment ? 'active' : ''}” id=”tab-manual” onclick=”switchNewsTab('manual')”>✏️ Write Manually</button>
+        <button type=”button” class=”news-tab-btn ${existingAttachment ? 'active' : ''}” id=”tab-doc” onclick=”switchNewsTab('doc')”>📎 Attach Document (PDF / DOC)</button>
       </div>
-      <div class="form-group">
-        <label>Brief Summary*</label>
-        <input type="text" name="summary" value="${escapeHTML(item.summary)}" required placeholder="Short summary displaying on list cards">
+
+      <!-- COMMON FIELDS (always visible) -->
+      <div class=”form-group”>
+        <label>Article Title *</label>
+        <input type=”text” name=”title” id=”news-title” value=”${escapeHTML(item.title)}” required placeholder=”e.g. Department of Energy Announces Solar Grant”>
       </div>
-      <div class="form-group">
-        <label>Article Content (HTML supported)*</label>
-        <textarea name="content" required placeholder="Type the main article content here...">${escapeHTML(item.content)}</textarea>
+      <div class=”form-group”>
+        <label>Brief Summary *</label>
+        <input type=”text” name=”summary” id=”news-summary” value=”${escapeHTML(item.summary || item.excerpt || '')}” required placeholder=”Short summary shown on list cards and homepage”>
       </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Category*</label>
-          <input type="text" name="category" value="${escapeHTML(item.category || 'Renewable Energy')}" required placeholder="e.g. Renewable Energy">
-        </div>
-        <div class="form-group" style="display:flex; align-items:center; gap:0.5rem; margin-top:1.8rem;">
-          <input type="checkbox" name="featured" id="news-featured-checkbox" ${item.featured !== false ? 'checked' : ''} style="width:auto; margin:0;">
-          <label for="news-featured-checkbox" style="margin:0; cursor:pointer;">Featured Article (Show on Homepage)</label>
-        </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Publish Status*</label>
-          <select name="status">
-            <option value="Draft" ${item.status === 'Draft' ? 'selected' : ''}>Draft / Hidden</option>
-            <option value="Published" ${item.status === 'Published' ? 'selected' : ''}>Published</option>
-            <option value="Scheduled" ${item.status === 'Scheduled' ? 'selected' : ''}>Scheduled</option>
+      <div class=”form-row”>
+        <div class=”form-group”>
+          <label>Category</label>
+          <select name=”category”>
+            <option value=”Renewable Energy” ${(item.category||'Renewable Energy')==='Renewable Energy'?'selected':''}>Renewable Energy</option>
+            <option value=”Events” ${item.category==='Events'?'selected':''}>Events</option>
+            <option value=”Policy” ${item.category==='Policy'?'selected':''}>Policy</option>
+            <option value=”Education” ${item.category==='Education'?'selected':''}>Education</option>
+            <option value=”GIS & Data” ${item.category==='GIS & Data'?'selected':''}>GIS & Data</option>
+            <option value=”Announcement” ${item.category==='Announcement'?'selected':''}>Announcement</option>
           </select>
         </div>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Publish Date*</label>
-          <input type="date" name="publishDate" value="${item.publishDate}" required>
+        <div class=”form-group”>
+          <label>Publish Date *</label>
+          <input type=”date” name=”publishDate” value=”${item.publishDate || item.publish_date || ''}” required>
         </div>
-        <div class="form-group">
-          <label>Featured Image (URL or Upload below)</label>
-          <input type="text" name="image" id="news-image-url-input" value="${escapeHTML(item.image)}" placeholder="https://images.unsplash.com/...">
-          <input type="file" id="news-image-file-input" style="display:none;" onchange="handleRealFileUpload('news-image-file-input', 'news-image-url-input')">
-          <div class="file-upload-mock" style="margin-top:0.4rem; padding:0.6rem;" onclick="document.getElementById('news-image-file-input').click()">
-            <p id="news-image-upload-status">ðŸ“¸ Click to upload article photo</p>
+      </div>
+      <div class=”form-row”>
+        <div class=”form-group”>
+          <label>Status</label>
+          <select name=”status”>
+            <option value=”Draft” ${item.status==='Draft'?'selected':''}>Draft (hidden)</option>
+            <option value=”Published” ${item.status==='Published'?'selected':''}>Published</option>
+            <option value=”Scheduled” ${item.status==='Scheduled'?'selected':''}>Scheduled</option>
+          </select>
+        </div>
+        <div class=”form-group” style=”display:flex; align-items:center; gap:0.5rem; margin-top:1.8rem;”>
+          <input type=”checkbox” name=”featured” id=”news-featured-checkbox” ${item.featured!==false?'checked':''} style=”width:auto;margin:0;”>
+          <label for=”news-featured-checkbox” style=”margin:0;cursor:pointer;”>Featured (show on Homepage)</label>
+        </div>
+      </div>
+
+      <!-- MANUAL TAB PANEL -->
+      <div id=”news-manual-panel” class=”${!existingAttachment?'active':''}”>
+        <div class=”form-group”>
+          <label>Article Content</label>
+          <textarea name=”content” id=”news-content” rows=”8” placeholder=”Write the full article body here. Use blank lines between paragraphs.”>${escapeHTML(item.content || '')}</textarea>
+        </div>
+        <div class=”form-group”>
+          <label>Featured Image</label>
+          <input type=”text” name=”image” id=”news-image-url-input” value=”${escapeHTML(item.image||'')}” placeholder=”/images/events/photo.jpg or https://...”>
+          <input type=”file” id=”news-image-file-input” accept=”image/*” style=”display:none;” onchange=”handleRealFileUpload('news-image-file-input','news-image-url-input')”>
+          <div class=”file-upload-mock” style=”margin-top:0.4rem;padding:0.6rem;” onclick=”document.getElementById('news-image-file-input').click()”>
+            <p id=”news-image-upload-status”>📸 Click to upload article photo (JPG, PNG)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCUMENT TAB PANEL -->
+      <div id=”news-doc-panel” class=”${existingAttachment?'active':''}”>
+        <p style=”font-size:0.875rem;color:var(--text-secondary);margin-bottom:1rem;”>Upload a PDF or Word document. It will be attached to the article and available for readers to download. Use the Monthly Update workflow to track recurring publications.</p>
+        <div class=”doc-drop-zone” id=”news-doc-dropzone” onclick=”document.getElementById('news-doc-file').click()” ondragover=”event.preventDefault();this.classList.add('drag-over');” ondragleave=”this.classList.remove('drag-over');” ondrop=”handleNewsDocDrop(event)”>
+          <svg viewBox=”0 0 24 24” width=”40” height=”40” fill=”none” stroke=”#94a3b8” stroke-width=”1.5” style=”margin:0 auto 0.75rem;display:block;”>
+            <path d=”M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z”/>
+            <polyline points=”14 2 14 8 20 8”/>
+            <line x1=”12” y1=”18” x2=”12” y2=”12”/>
+            <polyline points=”9 15 12 18 15 15”/>
+          </svg>
+          <p style=”font-weight:600;color:var(--text-primary);margin:0;”>Click to upload or drag & drop here</p>
+          <p style=”font-size:0.8rem;color:var(--text-secondary);margin:0.25rem 0 0;”>Accepts: PDF, DOC, DOCX — max 20 MB</p>
+          <input type=”file” id=”news-doc-file” accept=”.pdf,.doc,.docx” style=”display:none;” onchange=”uploadNewsDocument(this)”>
+        </div>
+        <div id=”news-doc-attached” class=”doc-attached” style=”display:${existingAttachment?'flex':'none'};”>
+          <svg viewBox=”0 0 24 24” width=”28” height=”28” fill=”none” stroke=”#0d9488” stroke-width=”1.5”><path d=”M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z”/><polyline points=”14 2 14 8 20 8”/></svg>
+          <div style=”flex:1;min-width:0;”>
+            <p style=”margin:0;font-weight:600;font-size:0.875rem;color:var(--text-primary);” id=”news-doc-name”>${escapeHTML(existingAttachmentName||'Attached document')}</p>
+            <a id=”news-doc-link” href=”${escapeHTML(existingAttachment)}” target=”_blank” style=”font-size:0.78rem;color:var(--accent-teal);”>View uploaded file</a>
+          </div>
+          <button type=”button” onclick=”removeNewsDocument()” style=”background:none;border:none;cursor:pointer;color:#ef4444;font-size:1.25rem;padding:0 0.25rem;” title=”Remove attachment”>&times;</button>
+        </div>
+        <p style=”font-size:0.75rem;color:var(--text-secondary);margin-top:0.75rem;”>💡 <strong>Monthly workflow:</strong> each month, duplicate the previous article (copy button in the list), update the title/date, and upload the new month's document.</p>
+        <div class=”form-group” style=”margin-top:1.25rem;”>
+          <label>Featured Image (optional)</label>
+          <input type=”text” name=”image” id=”news-image-url-input” value=”${escapeHTML(item.image||'')}” placeholder=”/images/events/photo.jpg or https://...”>
+          <input type=”file” id=”news-image-file-input2” accept=”image/*” style=”display:none;” onchange=”handleRealFileUpload('news-image-file-input2','news-image-url-input')”>
+          <div class=”file-upload-mock” style=”margin-top:0.4rem;padding:0.6rem;” onclick=”document.getElementById('news-image-file-input2').click()”>
+            <p>📸 Click to upload article photo (optional)</p>
           </div>
         </div>
       </div>
     </form>
   `;
-  
+
+  // tab switcher
+  window.switchNewsTab = function(tab) {
+    document.getElementById('news-manual-panel').classList.toggle('active', tab === 'manual');
+    document.getElementById('news-doc-panel').classList.toggle('active', tab === 'doc');
+    document.getElementById('tab-manual').classList.toggle('active', tab === 'manual');
+    document.getElementById('tab-doc').classList.toggle('active', tab === 'doc');
+  };
+
+  // document upload handler
+  window.uploadNewsDocument = async function(input) {
+    if (!input.files || !input.files[0]) return;
+    const file = input.files[0];
+    const dropzone = document.getElementById('news-doc-dropzone');
+    dropzone.innerHTML = '<p style=”color:var(--text-secondary);margin:0;”>Uploading…</p>';
+    const fd = new FormData();
+    fd.append('file', file);
+    try {
+      const res = await fetch('/api/upload', { method: 'POST', credentials: 'include', body: fd });
+      if (!res.ok) { alert('Upload failed'); return; }
+      const data = await res.json();
+      const url = data.url || data.path || '';
+      document.getElementById('news-attachment-url').value = url;
+      document.getElementById('news-attachment-name').value = file.name;
+      document.getElementById('news-doc-name').textContent = file.name;
+      document.getElementById('news-doc-link').href = url;
+      document.getElementById('news-doc-attached').style.display = 'flex';
+      dropzone.innerHTML = '<p style=”color:#059669;font-weight:600;margin:0;”>✓ File uploaded — upload another to replace</p>';
+      if (!document.getElementById('news-title').value) {
+        document.getElementById('news-title').value = file.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ');
+      }
+    } catch (e) { alert('Upload error: ' + e.message); }
+    input.value = '';
+  };
+
+  window.handleNewsDocDrop = async function(e) {
+    e.preventDefault();
+    document.getElementById('news-doc-dropzone').classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    const fakeInput = { files: [file] };
+    await uploadNewsDocument(fakeInput);
+  };
+
+  window.removeNewsDocument = function() {
+    document.getElementById('news-attachment-url').value = '';
+    document.getElementById('news-attachment-name').value = '';
+    document.getElementById('news-doc-attached').style.display = 'none';
+    document.getElementById('news-doc-dropzone').innerHTML = `
+      <svg viewBox=”0 0 24 24” width=”40” height=”40” fill=”none” stroke=”#94a3b8” stroke-width=”1.5” style=”margin:0 auto 0.75rem;display:block;”><path d=”M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z”/><polyline points=”14 2 14 8 20 8”/><line x1=”12” y1=”18” x2=”12” y2=”12”/><polyline points=”9 15 12 18 15 15”/></svg>
+      <p style=”font-weight:600;color:var(--text-primary);margin:0;”>Click to upload or drag & drop here</p>
+      <p style=”font-size:0.8rem;color:var(--text-secondary);margin:0.25rem 0 0;”>Accepts: PDF, DOC, DOCX — max 20 MB</p>
+      <input type=”file” id=”news-doc-file” accept=”.pdf,.doc,.docx” style=”display:none;” onchange=”uploadNewsDocument(this)”>`;
+  };
+
   const saveBtn = modal.querySelector('#modal-save-btn');
+  saveBtn.textContent = id ? 'Save Changes' : 'Publish Article';
   saveBtn.onclick = async () => {
     const form = document.getElementById('news-form');
-    if (!form.reportValidity()) return;
-    
+    if (!form.checkValidity()) { form.reportValidity(); return; }
     const formData = new FormData(form);
     const formId = formData.get('id');
-    
     let computedStatus = formData.get('status');
     const pubDate = formData.get('publishDate');
-    if (pubDate && isFutureDate(pubDate)) {
-      computedStatus = 'Scheduled';
-    }
-    
+    if (pubDate && isFutureDate(pubDate)) computedStatus = 'Scheduled';
     const article = {
       title: formData.get('title'),
       summary: formData.get('summary'),
-      content: formData.get('content'),
-      image: formData.get('image') || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=600&q=80',
+      excerpt: formData.get('summary'),
+      content: formData.get('content') || '',
+      image: formData.get('image') || '',
       publishDate: pubDate,
+      publish_date: pubDate,
       scheduledPublishDate: computedStatus === 'Scheduled' ? pubDate : null,
       status: computedStatus,
       targetSite: 'all',
       modifiedBy: currentUser?.username || 'CMS Editor',
       category: formData.get('category'),
-      featured: document.getElementById('news-featured-checkbox').checked
+      featured: document.getElementById('news-featured-checkbox').checked,
+      attachment_url: formData.get('attachmentUrl') || '',
+      attachment_name: formData.get('attachmentName') || '',
     };
-    
     try {
       let response;
       if (formId) {
-        // Edit existing
-        response = await fetch(`/api/news/${formId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(article)
-        });
+        response = await fetch(`/api/news/${formId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(article) });
       } else {
-        // Create new
-        response = await fetch('/api/news', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(article)
-        });
+        response = await fetch('/api/news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(article) });
       }
       const result = await response.json();
-      if (result.success) {
-        closeModal();
-        switchView('news');
-      } else {
-        alert("Error saving: " + result.error);
-      }
+      if (result.success) { closeModal(); switchView('news'); }
+      else { alert('Error saving: ' + result.error); }
     } catch (e) {
       console.error(e);
       alert("Network error saving article.");
@@ -675,6 +786,36 @@ async function deleteNews(id) {
       alert("Error deleting article.");
     }
   }
+}
+
+async function duplicateNews(id) {
+  const original = db.news.find(n => n.id === id);
+  if (!original) { alert('Article not found'); return; }
+  const today = new Date().toISOString().split('T')[0];
+  const copy = {
+    title: original.title + ' (Copy)',
+    summary: original.summary || original.excerpt || '',
+    excerpt: original.excerpt || original.summary || '',
+    content: original.content || '',
+    image: original.image || '',
+    publishDate: today,
+    publish_date: today,
+    status: 'Draft',
+    targetSite: 'all',
+    modifiedBy: currentUser?.username || 'CMS Editor',
+    category: original.category || 'Renewable Energy',
+    featured: false,
+    attachment_url: '',
+    attachment_name: '',
+  };
+  try {
+    const res = await fetch('/api/news', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(copy) });
+    const result = await res.json();
+    if (result.success) {
+      switchView('news');
+      setTimeout(() => openNewsForm(result.id || result.data?.id), 300);
+    } else { alert('Could not duplicate: ' + result.error); }
+  } catch (e) { alert('Error: ' + e.message); }
 }
 
 // --- POLICIES & PUBLICATIONS ---
