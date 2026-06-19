@@ -1,4 +1,4 @@
-﻿import { Fragment, useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { MapContainer, TileLayer, Circle, CircleMarker, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -23,6 +23,12 @@ const MAP_STYLES = {
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attribution: 'Tiles &copy; Esri',
   },
+}
+
+function validCoord(lat, lng) {
+  const la = Number(lat)
+  const lo = Number(lng)
+  return isFinite(la) && isFinite(lo) && (la !== 0 || lo !== 0)
 }
 
 function getMarkerColor(capacity) {
@@ -75,12 +81,21 @@ function FitBounds({ sites }) {
   const map = useMap()
 
   useEffect(() => {
-    if (!sites.length) {
+    const valid = sites.filter(s => validCoord(s.lat, s.lng))
+    if (!valid.length) {
       map.setView(BERMUDA_CENTER, DEFAULT_ZOOM)
       return
     }
-    const bounds = L.latLngBounds(sites.map((s) => [s.lat, s.lng]))
-    map.fitBounds(bounds.pad(0.18), { maxZoom: 14 })
+    try {
+      const bounds = L.latLngBounds(valid.map(s => [Number(s.lat), Number(s.lng)]))
+      if (bounds.isValid()) {
+        map.fitBounds(bounds.pad(0.18), { maxZoom: 14 })
+      } else {
+        map.setView(BERMUDA_CENTER, DEFAULT_ZOOM)
+      }
+    } catch {
+      map.setView(BERMUDA_CENTER, DEFAULT_ZOOM)
+    }
   }, [sites, map])
 
   return null
@@ -90,13 +105,18 @@ function MapLayers({ sites, activeId, onSelect }) {
   return (
     <>
       {sites.map((site) => {
+        const lat = Number(site.lat)
+        const lng = Number(site.lng)
+        // Skip sites with invalid coordinates — prevents Leaflet effect errors
+        if (!isFinite(lat) || !isFinite(lng)) return null
+
         const color = getMarkerColor(site.capacity)
         const isActive = activeId === site.id
 
         return (
           <Fragment key={site.id}>
             <Circle
-              center={[site.lat, site.lng]}
+              center={[lat, lng]}
               radius={getHeatRadiusMeters(site.capacity)}
               pathOptions={{
                 color,
@@ -107,7 +127,7 @@ function MapLayers({ sites, activeId, onSelect }) {
               }}
             />
             <CircleMarker
-              center={[site.lat, site.lng]}
+              center={[lat, lng]}
               radius={getMarkerRadius(site.capacity)}
               pathOptions={{
                 color: '#ffffff',
@@ -132,7 +152,7 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
 
   const filtered = useMemo(() => {
     return installations.filter((item) => {
-      if (!item.lat || !item.lng) return false
+      if (!validCoord(item.lat, item.lng)) return false
       if (selectedParish && selectedParish !== 'all' && item.parish !== selectedParish) return false
       if (selectedType && selectedType !== 'all' && item.type !== selectedType) return false
       return true
@@ -140,7 +160,7 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
   }, [installations, selectedParish, selectedType])
 
   const stats = useMemo(() => {
-    const totalCapacity = filtered.reduce((sum, i) => sum + i.capacity, 0)
+    const totalCapacity = filtered.reduce((sum, i) => sum + (Number(i.capacity) || 0), 0)
     const parishes = new Set(filtered.map((i) => i.parish)).size
     return { count: filtered.length, totalCapacity, parishes }
   }, [filtered])
@@ -222,7 +242,7 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
                   {formatNumber(active.capacity, { maximumFractionDigits: 1 })} kW installed capacity
                 </p>
                 <p className="mt-1 text-caption text-slate-500">
-                  {active.lat.toFixed(4)}°N, {Math.abs(active.lng).toFixed(4)}°W
+                  {Number(active.lat).toFixed(4)}°N, {Math.abs(Number(active.lng)).toFixed(4)}°W
                 </p>
               </div>
               <div className="flex flex-wrap gap-2">
