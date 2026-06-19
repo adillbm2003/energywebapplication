@@ -86,7 +86,7 @@ export default function Bursary() {
                   name: 'Neriah Bean',
                   photo: '/images/portraits/neriah-bean.jpg',
                   education: 'Bachelor of Science in Applied Mathematics and Engineering, Oakwood University',
-                  achievement: 'Selected for her strong academic record, leadership potential, and an essay analysing Bermuda\'s energy future and the public\'s role in it.',
+                  achievement: 'Selected for his strong academic record, leadership potential, and an essay analysing Bermuda\'s energy future and the public\'s role in it.',
                   focus: 'Developing foundational engineering and mathematical expertise to contribute to climate resilience and clean energy transformation.',
                 },
                 {
