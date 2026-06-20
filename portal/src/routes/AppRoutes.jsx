@@ -14,7 +14,6 @@ const SpaceSatellite = lazy(() => import('../pages/SpaceSatellite'))
 const SpaceSatellitePage = lazy(() => import('../pages/SpaceSatellite/SpacePage'))
 const Policies = lazy(() => import('../pages/Policies'))
 const Consultations = lazy(() => import('../pages/Consultations'))
-const ProgressTracker = lazy(() => import('../pages/ProgressTracker'))
 const Projects = lazy(() => import('../pages/Projects'))
 const ProjectDetail = lazy(() => import('../pages/Projects/ProjectDetail'))
 const Dashboard = lazy(() => import('../pages/Dashboard'))
@@ -51,7 +50,6 @@ export default function AppRoutes() {
           <Route path="space-satellite/:slug" element={<SpaceSatellitePage />} />
           <Route path="policies" element={<Policies />} />
           <Route path="consultations" element={<Consultations />} />
-          <Route path="progress-tracker" element={<ProgressTracker />} />
           <Route path="projects" element={<Projects />} />
           <Route path="projects/:id" element={<ProjectDetail />} />
           <Route path="dashboard" element={<Dashboard />}>

@@ -19,7 +19,6 @@ export default function TransitionDashboard() {
   const { data: evCategories } = useAsyncData(() => dashboardService.getEVByCategory(), [])
   const { data: charging } = useAsyncData(() => dashboardService.getChargingInfrastructure(), [])
   const { data: transport } = useAsyncData(() => dashboardService.getPublicTransport(), [])
-  const { data: efficiency } = useAsyncData(() => dashboardService.getEfficiencyMetrics(), [])
 
   if (loading) return <LoadingSpinner />
 
@@ -76,7 +75,7 @@ export default function TransitionDashboard() {
               <SectionHeading title="Category Breakdown" className="mb-4" />
               <div className="h-72">
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={evCategories || []} layout="vertical" margin={{ left: 20 }}>
+                  <BarChart data={[...(evCategories || [])].reverse()} layout="vertical" margin={{ left: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                     <XAxis type="number" tick={{ fontSize: 12 }} />
                     <YAxis type="category" dataKey="category" width={110} tick={{ fontSize: 11 }} />
@@ -109,45 +108,23 @@ export default function TransitionDashboard() {
           </div>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
-            <DashboardPanelImage src={PAGE_IMAGES.transport} />
-            <div className="card-padding">
-              <SectionHeading title="Public Transport Electrification" className="mb-4" />
-              <div className="h-72">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={transport || []}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                    <XAxis dataKey="year" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="electric" name="Electric" stackId="a" fill="#0077B6" />
-                    <Bar dataKey="hybrid" name="Hybrid" stackId="a" fill="#C9A227" />
-                    <Bar dataKey="diesel" name="Diesel" stackId="a" fill="#94a3b8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-          </div>
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
-            <DashboardPanelImage src={PAGE_IMAGES.efficiency} />
-            <div className="card-padding">
-              <SectionHeading title="Energy Efficiency Metrics" className="mb-4" />
-              <div className="space-y-6">
-                {efficiency?.map((metric) => (
-                  <div key={metric.metric}>
-                    <p className="text-sm font-medium text-slate-700">{metric.metric}</p>
-                    <div className="mt-2 flex items-center gap-4">
-                      <div className="relative h-3 flex-1 overflow-hidden rounded-full bg-slate-200">
-                        <div className="absolute h-full rounded-full bg-teal-600" style={{ width: `${metric.current}%` }} />
-                        <div className="absolute h-full w-0.5 bg-gold-500" style={{ left: `${metric.target}%` }} />
-                      </div>
-                      <span className="text-sm text-slate-500">{metric.current}% / {metric.target}%</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
+          <DashboardPanelImage src={PAGE_IMAGES.transport} />
+          <div className="card-padding">
+            <SectionHeading title="Public Transport Electrification" className="mb-4" />
+            <div className="h-72">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={transport || []}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="year" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="electric" name="Electric" stackId="a" fill="#0077B6" />
+                  <Bar dataKey="hybrid" name="Hybrid" stackId="a" fill="#C9A227" />
+                  <Bar dataKey="diesel" name="Diesel" stackId="a" fill="#94a3b8" />
+                </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>

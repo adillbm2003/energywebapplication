@@ -17,10 +17,6 @@ const CATEGORIES = [
   { value: 'all', label: 'All Resources' },
   { value: 'Appliance Guides', label: '🔌 Appliance Guides' },
   { value: 'Renewable Energy', label: '☀️ Renewable Energy' },
-  { value: 'EVs', label: '🚗 Electric Vehicles' },
-  { value: 'Energy Efficiency', label: '💡 Energy Efficiency' },
-  { value: 'Sustainability', label: '🌿 Sustainability' },
-  { value: 'Space & STEM', label: '🛰️ Space & STEM' },
 ]
 
 function ResourceCard({ resource }) {
@@ -48,11 +44,6 @@ function ResourceCard({ resource }) {
         <h3 className="font-semibold text-navy-900 leading-snug">{resource.title}</h3>
         <p className="mt-2 flex-1 text-sm text-slate-600 leading-relaxed">{resource.description}</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          {resource.relatedRoute && (
-            <Button to={resource.relatedRoute} variant="primary" size="sm">
-              Explore topic
-            </Button>
-          )}
           {resource.downloadUrl && resource.downloadUrl !== '#' && (
             isExternalUrl(resource.downloadUrl) ? (
               <Button href={resource.downloadUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer">

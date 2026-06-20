@@ -1,7 +1,6 @@
 import PageBanner from '../../components/common/PageBanner'
 import { PAGE_IMAGES } from '../../constants/branding'
 import SectionHeading from '../../components/ui/SectionHeading'
-import Button from '../../components/ui/Button'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { ROUTES } from '../../constants/routes'
 
@@ -63,16 +62,6 @@ export default function ElectronicCommunications() {
         </div>
       </section>
 
-      <section className="section-padding bg-white">
-        <div className="container-page text-center">
-          <SectionHeading
-            title="Related: Space & Satellite"
-            subtitle="Bermuda's communications expertise extends to satellite filing and earth station operations."
-            align="center"
-          />
-          <Button to={ROUTES.spaceSatellite} variant="primary">Explore Space & Satellite</Button>
-        </div>
-      </section>
     </>
   )
 }

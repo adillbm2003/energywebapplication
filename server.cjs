@@ -1909,7 +1909,7 @@ async function runMigrationsInline() {
         '2026-05-01', '2026-07-31', 'Open', 'https://forum.gov.bm/en/')
       ON CONFLICT DO NOTHING
     `);
-    await client.query(`UPDATE consultations SET status = 'Closed' WHERE title ILIKE '%fuel%' AND status != 'Closed'`);
+    await client.query(`DELETE FROM consultations WHERE title ILIKE '%fuel%'`);
     // Seed default admin user if not exists
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token VARCHAR(255);`);
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMP;`);

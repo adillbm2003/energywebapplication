@@ -4,7 +4,7 @@ export const MAIN_NAV = [
   { label: 'Home', to: ROUTES.home },
   { label: 'About', to: ROUTES.about },
   {
-    label: 'Energy',
+    label: 'Sector',
     to: ROUTES.energy,
     children: [
       { label: 'Registered Solar Installers', to: ROUTES.installers },
@@ -19,7 +19,6 @@ export const MAIN_NAV = [
     to: ROUTES.policies,
     children: [
       { label: 'Consultations', to: ROUTES.consultations },
-      { label: 'Progress Tracker', to: ROUTES.progressTracker },
     ],
   },
   {
@@ -57,7 +56,6 @@ export const FOOTER_LINKS = {
   policy: [
     { label: 'Policies & Publications', to: ROUTES.policies },
     { label: 'Consultations', to: ROUTES.consultations },
-    { label: 'Progress Tracker', to: ROUTES.progressTracker },
   ],
   resources: [
     { label: 'Renewable Dashboard', to: ROUTES.renewableDashboard },
@@ -82,6 +80,5 @@ export const SPACE_NAV = [
   { label: 'Satellite Filing & Guidance', to: `${ROUTES.spaceSatellite}/satellite-filing-guidance`, slug: 'satellite-filing-guidance' },
   { label: 'Space Insurance', to: `${ROUTES.spaceSatellite}/space-insurance`, slug: 'space-insurance' },
   { label: 'National Space Strategy', to: `${ROUTES.spaceSatellite}/national-space-strategy`, slug: 'national-space-strategy' },
-  { label: 'STEM & Workforce Pathways', to: `${ROUTES.spaceSatellite}/stem-workforce`, slug: 'stem-workforce' },
   { label: 'Sector Enquiries', to: `${ROUTES.spaceSatellite}/sector-enquiries`, slug: 'sector-enquiries' },
 ]

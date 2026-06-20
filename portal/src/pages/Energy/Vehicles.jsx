@@ -2,9 +2,7 @@ import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import PageBanner from '../../components/common/PageBanner'
 import SectionHeading from '../../components/ui/SectionHeading'
-import Button from '../../components/ui/Button'
 import { PAGE_IMAGES } from '../../constants/branding'
-import { DOCUMENTS } from '../../constants/documents'
 import { ROUTES } from '../../constants/routes'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
@@ -69,8 +67,7 @@ function EvFleetChart({ fleet }) {
       </div>
 
       <p className="mt-4 text-xs text-slate-400">
-        Source: Department of Energy — Vehicles by Fuel Type Registry.{' '}
-        <a href={DOCUMENTS.vehiclesByFuelType} download className="underline hover:text-slate-600">Download full dataset</a>
+        Source: Department of Energy — Vehicles by Fuel Type Registry.
       </p>
     </div>
   )
@@ -113,21 +110,6 @@ const PRIORITIES = [
   "Aligning transport policy with Bermuda's wider energy transition goals",
 ]
 
-function DownloadFuelTypeButton() {
-  return (
-    <a
-      href={DOCUMENTS.vehiclesByFuelType}
-      download="Vehicles by Fuel Type.xls"
-      className="inline-flex items-center gap-2 rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-teal-700"
-    >
-      <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" />
-      </svg>
-      Download Vehicles by Fuel Type
-    </a>
-  )
-}
-
 export default function Vehicles() {
   useDocumentTitle('Vehicles')
 
@@ -153,7 +135,6 @@ export default function Vehicles() {
           { label: 'Vehicles', to: ROUTES.vehicles },
         ]}
         image={PAGE_IMAGES.ev}
-        action={<DownloadFuelTypeButton />}
       />
 
       {/* Intro + download card */}
@@ -180,13 +161,10 @@ export default function Vehicles() {
             <div className="overflow-hidden rounded-xl border border-slate-200 bg-gradient-to-br from-navy-900 to-teal-900 text-white card-shadow">
               <img src={PAGE_IMAGES.charging} alt="" className="h-44 w-full object-cover opacity-90" loading="lazy" />
               <div className="card-padding">
-                <h3>Fleet Data Download</h3>
+                <h3>Cleaner Transport for Bermuda</h3>
                 <p className="mt-3 text-sm leading-relaxed text-slate-300">
-                  Download the latest spreadsheet showing all registered electric vehicles by category, sub-class, make, model, and plate number.
+                  The Department of Energy tracks Bermuda's vehicle fleet to support transport policy, EV incentive programmes, and infrastructure planning for a sustainable island.
                 </p>
-                <div className="mt-4">
-                  <DownloadFuelTypeButton />
-                </div>
               </div>
             </div>
           </div>
@@ -251,24 +229,9 @@ export default function Vehicles() {
         </div>
       </section>
 
-      {/* Dashboard link */}
       <section className="section-padding">
         <div className="container-page">
-          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6 md:p-8">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <h2 className="text-xl font-semibold text-navy-900">Explore the Energy Transition Dashboard</h2>
-                <p className="mt-2 max-w-2xl text-body-small text-slate-600">
-                  View transport-related indicators alongside renewable energy and emissions data.
-                </p>
-              </div>
-              <Button to={ROUTES.transitionDashboard} variant="primary">
-                View Dashboard
-              </Button>
-            </div>
-          </div>
-
-          <p className="mt-6 text-body-small text-slate-500">
+          <p className="text-body-small text-slate-500">
             For consumer guidance on efficient vehicle choices, visit the{' '}
             <Link to={ROUTES.education} className="font-medium text-teal-700 hover:text-teal-800">
               Education Centre
