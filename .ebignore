@@ -1,0 +1,21 @@
+# Elastic Beanstalk deploy — exclude dev/build artifacts
+node_modules/
+dist/
+.env
+.env.local
+.env.*.local
+.env.vercel.prod
+*.log
+.git/
+.github/
+portal/node_modules/
+portal/dist/
+src/
+public/
+index.html
+vite.config.js
+tailwind.config.*
+postcss.config.*
+eslint.config.*
+vitest.config.*
+scripts/
