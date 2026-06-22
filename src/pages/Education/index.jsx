@@ -2,8 +2,9 @@ import { useState, useMemo } from 'react'
 import PageBanner from '../../components/common/PageBanner'
 import { PAGE_IMAGES } from '../../constants/branding'
 import Button from '../../components/ui/Button'
-import EmptyState from '../../components/ui/EmptyState'
 import Badge from '../../components/ui/Badge'
+import EmptyState from '../../components/ui/EmptyState'
+import DetailModal from '../../components/ui/DetailModal'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { educationService } from '../../services'
@@ -11,7 +12,7 @@ import { filterByField } from '../../utils/filter'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import SafeImage from '../../components/common/SafeImage'
 import { resolveContentImage } from '../../utils/contentImages'
-import { downloadMockDocument, isExternalUrl } from '../../utils/mockDownload'
+import { isExternalUrl } from '../../utils/mockDownload'
 
 const CATEGORIES = [
   { value: 'all', label: 'All Resources' },
@@ -19,10 +20,10 @@ const CATEGORIES = [
   { value: 'Renewable Energy', label: '☀️ Renewable Energy' },
 ]
 
-function ResourceCard({ resource }) {
+function ResourceCard({ resource, onView }) {
   const isInfographic = resource.type === 'Infographic'
   const imgSrc = isInfographic ? resource.image : resolveContentImage(resource.image, 'education')
-  const hasLocalFile = resource.downloadUrl && resource.downloadUrl !== '#' && !isExternalUrl(resource.downloadUrl)
+  const hasRealUrl = resource.downloadUrl && resource.downloadUrl !== '#'
 
   return (
     <article className="flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow transition-all hover:-translate-y-0.5 hover:card-shadow-hover">
@@ -44,53 +45,19 @@ function ResourceCard({ resource }) {
         <h3 className="font-semibold text-navy-900 leading-snug">{resource.title}</h3>
         <p className="mt-2 flex-1 text-sm text-slate-600 leading-relaxed">{resource.description}</p>
         <div className="mt-4 flex flex-wrap gap-2">
-          {resource.downloadUrl && resource.downloadUrl !== '#' && (
-            isExternalUrl(resource.downloadUrl) ? (
-              <Button href={resource.downloadUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer">
-                {isInfographic ? '🖼️ View Infographic' : `Download${resource.fileSize ? ` (${resource.fileSize})` : ''}`}
-              </Button>
-            ) : hasLocalFile ? (
-              <a
-                href={resource.downloadUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-              >
-                {isInfographic ? '🖼️ View Infographic' : `⬇ Download${resource.fileSize ? ` (${resource.fileSize})` : ''}`}
-              </a>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => downloadMockDocument({ title: resource.title, summary: resource.description, category: resource.category, content: resource.content })}
-              >
-                ⬇ Download PDF
-              </Button>
-            )
-          )}
-          {resource.downloadUrl === '#' && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => downloadMockDocument({ title: resource.title, summary: resource.description, category: resource.category })}
-            >
-              ⬇ Download PDF
+          {hasRealUrl && isExternalUrl(resource.downloadUrl) ? (
+            <Button href={resource.downloadUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer">
+              {isInfographic ? '🖼️ View Infographic' : 'View Resource'}
+            </Button>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => onView(resource)}>
+              View Details
             </Button>
           )}
-          {resource.videoUrl && (
-            isExternalUrl(resource.videoUrl) ? (
-              <Button href={resource.videoUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer">
-                ▶ Watch Video {resource.duration && `(${resource.duration})`}
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => downloadMockDocument({ title: resource.title, summary: resource.description, category: 'Video Transcript' })}
-              >
-                ▶ Watch Video {resource.duration && `(${resource.duration})`}
-              </Button>
-            )
+          {resource.videoUrl && isExternalUrl(resource.videoUrl) && (
+            <Button href={resource.videoUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer">
+              ▶ Watch Video {resource.duration && `(${resource.duration})`}
+            </Button>
           )}
         </div>
       </div>
@@ -102,6 +69,7 @@ export default function Education() {
   useDocumentTitle('Education Centre')
 
   const [category, setCategory] = useState('all')
+  const [selected, setSelected] = useState(null)
   const { data: resources, loading } = useAsyncData(() => educationService.getAll(), [])
 
   const filtered = useMemo(() => {
@@ -149,10 +117,32 @@ export default function Education() {
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filtered.map((resource) => (
-                <ResourceCard key={resource.id} resource={resource} />
+                <ResourceCard key={resource.id} resource={resource} onView={setSelected} />
               ))}
             </div>
           )}
+
+          <DetailModal isOpen={!!selected} onClose={() => setSelected(null)} title={selected?.title || ''}>
+            {selected && (
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  <Badge>{selected.category}</Badge>
+                  <Badge variant="gold">{selected.type}</Badge>
+                </div>
+                <p className="text-sm text-slate-700 leading-relaxed">{selected.description}</p>
+                {selected.downloadUrl && selected.downloadUrl !== '#' && (
+                  <a
+                    href={selected.downloadUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800 transition-colors"
+                  >
+                    View Full Resource →
+                  </a>
+                )}
+              </div>
+            )}
+          </DetailModal>
         </div>
       </section>
 

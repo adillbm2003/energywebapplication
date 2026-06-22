@@ -1,11 +1,12 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import SectionHeading from '../../ui/SectionHeading'
 import Button from '../../ui/Button'
+import DetailModal from '../../ui/DetailModal'
 import { CardSkeleton } from '../../ui/Skeleton'
 import { energyAwarenessGuides } from '../../../data/energyGuides'
 import { getGuideKeyGuidance } from '../../../utils/homeStats'
-import { downloadMockDocument } from '../../../utils/mockDownload'
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -15,6 +16,7 @@ const fadeUp = {
 }
 
 export default function EnergyAwarenessGuides({ stats, loading = false }) {
+  const [selected, setSelected] = useState(null)
   return (
     <section className="section-padding bg-white" aria-labelledby="energy-guides-heading">
       <div className="container-page">
@@ -30,6 +32,7 @@ export default function EnergyAwarenessGuides({ stats, loading = false }) {
             ? Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)
             : energyAwarenessGuides.map((guide, index) => {
                 const keyGuidance = getGuideKeyGuidance(stats, guide)
+
 
                 return (
                   <motion.article
@@ -67,15 +70,9 @@ export default function EnergyAwarenessGuides({ stats, loading = false }) {
                           variant="secondary"
                           size="sm"
                           className="w-full uppercase tracking-wide"
-                          onClick={() =>
-                            downloadMockDocument({
-                              title: guide.downloadTitle,
-                              summary: guide.description,
-                              category: 'Energy Guide',
-                            })
-                          }
+                          onClick={() => setSelected({ guide, keyGuidance })}
                         >
-                          Download PDF Guide
+                          View Details
                         </Button>
                         <Link
                           to={guide.learnMoreTo}
@@ -91,5 +88,34 @@ export default function EnergyAwarenessGuides({ stats, loading = false }) {
         </div>
       </div>
     </section>
+
+    {selected && (
+      <DetailModal
+        isOpen
+        onClose={() => setSelected(null)}
+        title={`${selected.guide.icon} ${selected.guide.title}`}
+      >
+        <div className="space-y-4">
+          <div className="rounded-lg border border-teal-100 bg-teal-50 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-teal-700">Key Guidance</p>
+            <p className="mt-1 text-2xl font-bold text-navy-900">{selected.keyGuidance}</p>
+            <p className="mt-1 text-sm text-slate-600">{selected.guide.guidanceNote}</p>
+          </div>
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1">About this Guide</p>
+            <p className="text-sm text-slate-700 leading-relaxed">{selected.guide.description}</p>
+          </div>
+          <div className="pt-2">
+            <Link
+              to={selected.guide.learnMoreTo}
+              onClick={() => setSelected(null)}
+              className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800 transition-colors"
+            >
+              Explore Full Guide →
+            </Link>
+          </div>
+        </div>
+      </DetailModal>
+    )}
   )
 }

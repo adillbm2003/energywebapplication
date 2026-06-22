@@ -65,7 +65,7 @@ export default function NewsArticle() {
               </svg>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-navy-900">Attached Document</p>
-                <p className="text-sm text-slate-500 truncate">{article.attachmentName || 'Download document'}</p>
+                <p className="text-sm text-slate-500 truncate">{article.attachmentName || 'View document'}</p>
               </div>
               <a
                 href={article.attachmentUrl}
@@ -73,7 +73,7 @@ export default function NewsArticle() {
                 rel="noopener noreferrer"
                 className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800 transition-colors"
               >
-                Download
+                View Document
               </a>
             </div>
           )}

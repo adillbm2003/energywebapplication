@@ -8,7 +8,6 @@ import { useAsyncData } from '../../hooks/useAsyncData'
 import { projectService } from '../../services'
 import { ROUTES } from '../../constants/routes'
 import { formatDate } from '../../utils/format'
-import { downloadMockDocument } from '../../utils/mockDownload'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import SafeImage from '../../components/common/SafeImage'
 import { resolveProjectImage } from '../../utils/contentImages'
@@ -108,13 +107,18 @@ export default function ProjectDetail() {
                   <ul className="mt-3 space-y-2">
                     {project.documents.map((doc) => (
                       <li key={doc.title}>
-                        <button
-                          type="button"
-                          onClick={() => downloadMockDocument({ title: doc.title, summary: project.summary, category: 'Project Document' })}
-                          className="text-sm text-teal-600 hover:underline"
-                        >
-                          {doc.title} ({doc.size})
-                        </button>
+                        {doc.url ? (
+                          <a
+                            href={doc.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm text-teal-600 hover:underline"
+                          >
+                            {doc.title}{doc.size ? ` (${doc.size})` : ''}
+                          </a>
+                        ) : (
+                          <span className="text-sm text-slate-600">{doc.title}{doc.size ? ` (${doc.size})` : ''}</span>
+                        )}
                       </li>
                     ))}
                   </ul>

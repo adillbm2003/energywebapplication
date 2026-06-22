@@ -6,7 +6,7 @@ import SafeImage from '../../common/SafeImage'
 
 import { formatDate } from '../../../utils/format'
 
-import { downloadMockDocument, isExternalUrl } from '../../../utils/mockDownload'
+import { isExternalUrl } from '../../../utils/mockDownload'
 
 import { resolveContentImage } from '../../../utils/contentImages'
 
@@ -56,9 +56,9 @@ export default function PolicyCard({ policy }) {
 
         {external ? (
 
-          <Button href={policy.downloadUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer" aria-label={`Open ${policy.title}`}>
+          <Button href={policy.downloadUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer" aria-label={`View ${policy.title}`}>
 
-            View
+            View Policy
 
           </Button>
 
@@ -70,13 +70,13 @@ export default function PolicyCard({ policy }) {
 
             size="sm"
 
-            aria-label={`Download ${policy.title}`}
+            aria-label={`View ${policy.title}`}
 
-            onClick={() => downloadMockDocument({ title: policy.title, summary: policy.summary, category: policy.category })}
+            onClick={() => policy.onView?.(policy)}
 
           >
 
-            Download
+            View Details
 
           </Button>
 

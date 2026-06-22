@@ -8,7 +8,7 @@ import { spaceService } from '../../services'
 import { SPACE_NAV } from '../../constants/navigation'
 import { ROUTES } from '../../constants/routes'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
-import { downloadMockDocument, isExternalUrl } from '../../utils/mockDownload'
+import { isExternalUrl } from '../../utils/mockDownload'
 
 export default function SpacePage() {
   const { slug } = useParams()
@@ -51,18 +51,12 @@ export default function SpacePage() {
                   <ul className="mt-3 space-y-2">
                     {page.documents.map((doc) => (
                       <li key={doc.title}>
-                        {isExternalUrl(doc.url) ? (
+                        {doc.url ? (
                           <a href={doc.url} className="text-teal-600 hover:underline" target="_blank" rel="noopener noreferrer">
                             {doc.title} {doc.size && `(${doc.size})`}
                           </a>
                         ) : (
-                          <button
-                            type="button"
-                            onClick={() => downloadMockDocument({ title: doc.title, summary: page.subtitle, category: 'Space & Satellite' })}
-                            className="text-teal-600 hover:underline"
-                          >
-                            {doc.title} {doc.size && `(${doc.size})`}
-                          </button>
+                          <span className="text-sm text-slate-600">{doc.title} {doc.size && `(${doc.size})`}</span>
                         )}
                       </li>
                     ))}

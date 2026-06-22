@@ -8,6 +8,12 @@ import Select from '../../components/ui/Select'
 
 import PolicyCard from '../../components/cards/PolicyCard'
 
+import DetailModal from '../../components/ui/DetailModal'
+
+import Badge from '../../components/ui/Badge'
+
+import { formatDate } from '../../utils/format'
+
 import Pagination from '../../components/ui/Pagination'
 
 import EmptyState from '../../components/ui/EmptyState'
@@ -41,6 +47,8 @@ export default function Policies() {
   const [search, setSearch] = useState('')
 
   const [category, setCategory] = useState('all')
+
+  const [selected, setSelected] = useState(null)
 
   const debouncedSearch = useDebounce(search)
 
@@ -185,7 +193,7 @@ export default function Policies() {
 
               <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 
-                {items.map((policy) => <PolicyCard key={policy.id} policy={policy} />)}
+                {items.map((policy) => <PolicyCard key={policy.id} policy={{ ...policy, onView: setSelected }} />)}
 
               </div>
 
@@ -198,6 +206,29 @@ export default function Policies() {
         </div>
 
       </section>
+
+      <DetailModal isOpen={!!selected} onClose={() => setSelected(null)} title={selected?.title || ''}>
+        {selected && (
+          <div className="space-y-4">
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="gold">{selected.category}</Badge>
+              <Badge status={selected.status}>{selected.status}</Badge>
+            </div>
+            <p className="text-sm text-slate-700 leading-relaxed">{selected.summary}</p>
+            <p className="text-xs text-slate-500">Published: {formatDate(selected.publishedAt)}{selected.fileSize && ` · ${selected.fileSize}`}</p>
+            {selected.downloadUrl && (
+              <a
+                href={selected.downloadUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-lg bg-teal-700 px-4 py-2 text-sm font-semibold text-white hover:bg-teal-800 transition-colors"
+              >
+                View Full Document →
+              </a>
+            )}
+          </div>
+        )}
+      </DetailModal>
 
     </>
 
