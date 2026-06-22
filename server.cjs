@@ -444,6 +444,15 @@ app.get('/readiness', async (req, res) => {
 // ── SECURE AUDIO/MEDIA STORAGE & FALLBACK ROUTING ────────────────────────────
 app.get('/uploads/:filename', async (req, res) => {
   const filename = req.params.filename;
+
+  // Allow configured origins (including Vercel frontend) to load images cross-origin
+  const origin = req.headers.origin;
+  const allowed = allowAllOrigins || !origin ||
+    approvedOrigins.includes(origin) ||
+    (process.env.RAILWAY_PUBLIC_DOMAIN && origin === `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`);
+  if (allowed && origin) res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+
   if (useS3) {
     try {
       const command = new GetObjectCommand({
