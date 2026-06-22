@@ -864,17 +864,25 @@ app.get('/api/solar/installations', (req, res) => {
       // Row without real coordinates: only include if permit is active.
       if (!hasRealCoords && !ACTIVE_STATUSES.has(status)) return;
 
+      const PARISH_MAP = {
+        'Town of St. George': "St. George's",
+        'St. George': "St. George's",
+        'City of Hamilton': 'Hamilton',
+        'Smiths': "Smith's",
+      };
+
       const parish = (row['Permit District'] || 'Bermuda').trim();
+      let normParish = PARISH_MAP[parish] ?? parish;
+
       let lat, lng;
       if (hasRealCoords) {
         lat = parsedLat;
         lng = parsedLng;
       } else {
-        const coords = PARISH_COORDS[parish] || PARISH_COORDS['Bermuda'];
+        const coords = PARISH_COORDS[normParish] || PARISH_COORDS['Bermuda'];
         lat = coords[0] + Math.sin(index * 7.3) * 0.003;
         lng = coords[1] + Math.cos(index * 5.1) * 0.003;
       }
-      // Note: normParish is computed after capacity block below — coords use raw parish for centroid lookup
 
       // ── Capacity: dedicated column wins over description regex ────────────
       const rawCap = row['Extracted AC Capacity'] ?? row['AC Capacity'] ??
@@ -893,15 +901,7 @@ app.get('/api/solar/installations', (req, res) => {
       // and brings the island-wide total in line with the department's 15.6 MW figure.
       if (capacity > 1000) capacity = capacity / 1000;
 
-      // ── Normalise parish names to Bermuda's 9 official parishes ──────────
-      const PARISH_MAP = {
-        'Town of St. George': "St. George's",
-        'St. George': "St. George's",
-        'City of Hamilton': 'Hamilton',
-        'Smiths': "Smith's",
-      };
       // "Bermuda" = no parish assigned; use nearest centroid if coordinates available
-      let normParish = PARISH_MAP[parish] ?? parish;
       if (normParish === 'Bermuda') normParish = nearestParish(lat, lng);
 
       const wc = (row['Permit Work Class'] || '').trim().toLowerCase();
