@@ -18,6 +18,7 @@ const fadeUp = {
 export default function EnergyAwarenessGuides({ stats, loading = false }) {
   const [selected, setSelected] = useState(null)
   return (
+    <>
     <section className="section-padding bg-white" aria-labelledby="energy-guides-heading">
       <div className="container-page">
         <SectionHeading
@@ -117,5 +118,6 @@ export default function EnergyAwarenessGuides({ stats, loading = false }) {
         </div>
       </DetailModal>
     )}
+    </>
   )
 }
