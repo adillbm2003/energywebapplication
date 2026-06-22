@@ -39,6 +39,9 @@ export async function fetchMockById(collection, id, idKey = 'id') {
 export function toRelativeUrl(url) {
   if (!url) return null
   if (!url.startsWith('http')) return url
+  // In production VITE_API_URL is set — keep absolute so images load from the backend host.
+  // In dev it's unset — strip origin so the Vite proxy (/uploads, /api) handles it.
+  if (import.meta.env.VITE_API_URL) return url
   try { return new URL(url).pathname } catch { return url }
 }
 
