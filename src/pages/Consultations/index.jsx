@@ -8,6 +8,7 @@ import { consultationService } from '../../services'
 import { formatDate } from '../../utils/format'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { EXTERNAL_LINKS } from '../../constants/externalLinks'
+import RelatedArticles from '../../components/ui/RelatedArticles'
 
 function ConsultationCard({ consultation }) {
   const forumUrl = consultation.externalUrl || EXTERNAL_LINKS.consultationsForum
@@ -47,6 +48,11 @@ function ConsultationCard({ consultation }) {
             >
               Submit Your Response →
             </Button>
+          </div>
+        )}
+        {consultation.relatedArticles?.length > 0 && (
+          <div className="mt-4">
+            <RelatedArticles articles={consultation.relatedArticles} />
           </div>
         )}
       </div>

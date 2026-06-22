@@ -31,6 +31,9 @@ export const spacePages = {
       'Opportunities exist for establishing earth stations supporting satellite communications, launch monitoring, oceanic tracking, maritime and aviation services.',
     ],
     highlights: ['TT&C services', 'Launch monitoring', 'Oceanic tracking', 'Maritime & aviation networks'],
+    relatedArticles: [
+      { title: 'Public invited to review space and satellite proposals', url: 'https://www.royalgazette.com/general/news/article/20260518/public-invited-to-review-space-and-satellite-proposals/', date: '2026-05-18', source: 'Royal Gazette' },
+    ],
   },
   'satellite-filing-guidance': {
     title: 'Satellite Filing and Regulatory Guidance',

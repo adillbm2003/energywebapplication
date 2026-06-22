@@ -5,6 +5,13 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { PAGE_IMAGES } from '../../constants/branding'
 import { ROUTES } from '../../constants/routes'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
+import RelatedArticles from '../../components/ui/RelatedArticles'
+
+const EV_NEWS = [
+  { title: 'New electric buses arrive', url: 'https://www.royalgazette.com/general/news/article/20220216/new-electric-buses-arrive/', date: '2022-02-16', source: 'Royal Gazette' },
+  { title: 'Electric bus fleet bolstered', url: 'https://www.royalgazette.com/transport/news/article/20230824/electric-bus-fleet-bolstered/', date: '2023-08-24', source: 'Royal Gazette' },
+  { title: 'Government seeks feedback on phasing out gas powered cars', url: 'https://www.royalgazette.com/transport/news/article/20230204/government-seeks-feedback-on-phasing-out-gas-powered-cars/', date: '2023-02-04', source: 'Royal Gazette' },
+]
 
 const CATEGORY_COLORS = {
   'Private Cars': '#16a34a',
@@ -154,6 +161,13 @@ export default function Vehicles() {
               </li>
             ))}
           </ul>
+        </div>
+      </section>
+
+      {/* Related news */}
+      <section className="py-6">
+        <div className="container-page">
+          <RelatedArticles articles={EV_NEWS} heading="In the News — Electric Vehicles" />
         </div>
       </section>
 

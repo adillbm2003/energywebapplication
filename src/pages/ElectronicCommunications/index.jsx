@@ -2,6 +2,11 @@ import PageBanner from '../../components/common/PageBanner'
 import { PAGE_IMAGES } from '../../constants/branding'
 import SectionHeading from '../../components/ui/SectionHeading'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
+import RelatedArticles from '../../components/ui/RelatedArticles'
+
+const EC_NEWS = [
+  { title: 'Bill will establish an Electronic Communications Authority', url: 'https://www.royalgazette.com/politics/news/article/20111128/bill-will-establish-an-electronic-communications-authority/', date: '2011-11-28', source: 'Royal Gazette' },
+]
 
 const AREAS = [
   'Telecommunications licensing and regulation',
@@ -60,6 +65,11 @@ export default function ElectronicCommunications() {
         </div>
       </section>
 
+      <section className="py-6">
+        <div className="container-page">
+          <RelatedArticles articles={EC_NEWS} heading="Legislative Background" />
+        </div>
+      </section>
     </>
   )
 }

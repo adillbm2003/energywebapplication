@@ -8,6 +8,7 @@ import { bursaryService, bursaryRecipientsService } from '../../services'
 import { bursaryPathwayImages } from '../../data/bursary'
 import { formatDate } from '../../utils/format'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import RelatedArticles from '../../components/ui/RelatedArticles'
 
 export default function Bursary() {
   useDocumentTitle('Energy Bursary Programme')
@@ -115,6 +116,10 @@ export default function Bursary() {
               ))}
             </div>
           </div>
+          )}
+
+          {programme?.newsArticles?.length > 0 && (
+            <RelatedArticles articles={programme.newsArticles} heading="In the News" />
           )}
 
           <div>

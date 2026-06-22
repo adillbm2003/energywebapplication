@@ -12,6 +12,8 @@ import DetailModal from '../../components/ui/DetailModal'
 
 import Badge from '../../components/ui/Badge'
 
+import RelatedArticles from '../../components/ui/RelatedArticles'
+
 import { formatDate } from '../../utils/format'
 
 import Pagination from '../../components/ui/Pagination'
@@ -226,6 +228,7 @@ export default function Policies() {
                 View Full Document →
               </a>
             )}
+            <RelatedArticles articles={selected.relatedArticles} />
           </div>
         )}
       </DetailModal>

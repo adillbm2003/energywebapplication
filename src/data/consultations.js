@@ -11,6 +11,10 @@ export const consultations = [
     openingDate: '2026-05-01',
     closingDate: '2026-07-31',
     externalUrl: 'https://forum.gov.bm/en/',
+    relatedArticles: [
+      { title: 'Updating energy policy requires holistic approach, forum hears', url: 'https://www.royalgazette.com/general/news/article/20260519/updating-energy-policy-requires-holistic-approach-forum-hears/', date: '2026-05-19', source: 'Royal Gazette' },
+      { title: 'Proposed changes to electricity sector open for consultation', url: 'https://www.royalgazette.com/environment/news/article/20260416/proposed-changes-to-electricity-sector-open-for-consultation/', date: '2026-04-16', source: 'Royal Gazette' },
+    ],
   },
   {
     id: 'con-001',

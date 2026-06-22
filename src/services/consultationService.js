@@ -13,6 +13,7 @@ export const consultationService = {
       openingDate: c.startDate || c.openingDate,
       closingDate: c.endDate || c.closingDate,
       externalUrl: c.externalUrl || c.relatedLinks || null,
+      relatedArticles: c.relatedArticles || [],
     })), ['openingDate']);
   },
   getActive: async () => {

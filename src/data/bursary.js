@@ -23,6 +23,9 @@ export const bursaryProgramme = {
   ],
   applicationDeadline: '2026-04-30',
   scholarshipLink: EXTERNAL_LINKS.scholarships,
+  newsArticles: [
+    { title: 'Two bright sparks win $25,000 from an energy studies bursary', url: 'https://www.royalgazette.com/education/news/article/20260601/two-bright-sparks-win-25000-from-an-energy-studies-bursary/', date: '2026-06-01', source: 'Royal Gazette' },
+  ],
   careerPathways: [
     'Renewable Energy', 'Electrical Engineering', 'Mechanical Engineering', 'Energy Policy',
     'Energy Regulation', 'Environmental Science', 'Sustainability', 'Climate Resilience',

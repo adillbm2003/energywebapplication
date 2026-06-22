@@ -9,6 +9,7 @@ import { SPACE_NAV } from '../../constants/navigation'
 import { ROUTES } from '../../constants/routes'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { isExternalUrl } from '../../utils/mockDownload'
+import RelatedArticles from '../../components/ui/RelatedArticles'
 
 export default function SpacePage() {
   const { slug } = useParams()
@@ -61,6 +62,12 @@ export default function SpacePage() {
                       </li>
                     ))}
                   </ul>
+                </div>
+              )}
+
+              {page.relatedArticles?.length > 0 && (
+                <div className="mt-8">
+                  <RelatedArticles articles={page.relatedArticles} heading="In the News" />
                 </div>
               )}
 

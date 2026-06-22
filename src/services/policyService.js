@@ -16,6 +16,7 @@ export const policyService = {
       fileSize: p.fileSize,
       tags: p.tags,
       image: toRelativeUrl(p.image),
+      relatedArticles: p.relatedArticles || [],
     })), ['publishedAt'])
   },
   getTracker: async () => {
