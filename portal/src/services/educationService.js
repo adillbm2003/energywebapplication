@@ -1,18 +1,24 @@
 import { educationResources, educationCategories } from '../data/education'
-import { fetchMock } from './api'
 
-// Infographic guides are always sourced from static data (they have local image paths)
 const INFOGRAPHIC_GUIDES = educationResources.filter(r => r.type === 'Infographic')
+
+let _promise = null
+
+async function fetchEducation() {
+  if (_promise) return _promise
+  _promise = fetch('/api/education')
+    .then(res => { if (!res.ok) throw new Error('API error'); return res.json() })
+    .catch(err => { _promise = null; throw err })
+  return _promise
+}
 
 export const educationService = {
   getAll: async () => {
     try {
-      const res = await fetch('/api/education');
-      if (!res.ok) throw new Error('API error');
-      const items = await res.json();
+      const items = await fetchEducation()
       const apiResources = items.map(item => {
-        const isVideo = item.type === 'Video';
-        const fileUrl = item.pdfLink || item.videoUrl || '#';
+        const isVideo = item.type === 'Video'
+        const fileUrl = item.pdfLink || item.videoUrl || '#'
         return {
           id: item.id,
           title: item.title,
@@ -24,26 +30,22 @@ export const educationService = {
           fileSize: isVideo ? undefined : '1.5 MB',
           duration: isVideo ? '15 min' : undefined,
           relatedRoute: '#',
-        };
-      });
-      // Always prepend the official DoE infographic guides
-      const apiIds = new Set(apiResources.map(r => r.id));
-      const nonDuplicateGuides = INFOGRAPHIC_GUIDES.filter(g => !apiIds.has(g.id));
-      return [...nonDuplicateGuides, ...apiResources];
-    } catch (err) {
-      console.warn("Failed to fetch education resources, falling back:", err);
-      return fetchMock(educationResources);
+        }
+      })
+      const apiIds = new Set(apiResources.map(r => r.id))
+      const nonDuplicateGuides = INFOGRAPHIC_GUIDES.filter(g => !apiIds.has(g.id))
+      return [...nonDuplicateGuides, ...apiResources]
+    } catch {
+      return educationResources
     }
   },
   getCategories: async () => {
     try {
-      const res = await fetch('/api/education');
-      if (!res.ok) throw new Error('API error');
-      const items = await res.json();
-      const apiCats = items.map(item => item.category);
-      return [...new Set(['Appliance Guides', 'Renewable Energy', 'EVs', ...apiCats])];
-    } catch (err) {
-      return fetchMock(educationCategories);
+      const items = await fetchEducation()
+      const apiCats = items.map(item => item.category)
+      return [...new Set(['Appliance Guides', 'Renewable Energy', 'EVs', ...apiCats])]
+    } catch {
+      return educationCategories
     }
   },
 }

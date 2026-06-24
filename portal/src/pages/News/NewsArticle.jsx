@@ -35,8 +35,8 @@ export default function NewsArticle() {
         <div className="container-page max-w-3xl">
           <div className="mb-6 flex flex-wrap items-center gap-3">
             <Badge>{article.category}</Badge>
-            <time className="text-sm text-slate-500" dateTime={article.publishedAt}>
-              {formatDate(article.publishedAt)}
+            <time className="text-sm text-slate-500" dateTime={article.publishDate}>
+              {formatDate(article.publishDate)}
             </time>
             <span className="text-sm text-slate-500">by {article.author}</span>
           </div>

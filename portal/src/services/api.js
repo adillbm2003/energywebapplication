@@ -1,19 +1,6 @@
-const DEFAULT_DELAY = 250
-
-function simulateNetworkDelay(ms = DEFAULT_DELAY) {
-  return new Promise((resolve) => setTimeout(resolve, ms))
-}
-
 export async function fetchMock(data, options = {}) {
-  const { delay = DEFAULT_DELAY, filter } = options
-
-  await simulateNetworkDelay(delay)
-
-  if (filter) {
-    return filter(data)
-  }
-
-  return data
+  const { filter } = options
+  return filter ? filter(data) : data
 }
 
 export async function fetchMockById(collection, id, idKey = 'id') {
@@ -23,7 +10,7 @@ export async function fetchMockById(collection, id, idKey = 'id') {
     error.status = 404
     throw error
   }
-  return fetchMock(item)
+  return item
 }
 
 export async function fetchFromAPI(endpoint, fallbackData) {

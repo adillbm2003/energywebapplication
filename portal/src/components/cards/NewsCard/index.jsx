@@ -26,8 +26,8 @@ export default function NewsCard({ article }) {
       </div>
 
       <div className="flex flex-1 flex-col p-5">
-        <time className="text-caption font-medium text-slate-400" dateTime={article.publishedAt}>
-          {formatDate(article.publishedAt)}
+        <time className="text-caption font-medium text-slate-400" dateTime={article.publishDate}>
+          {formatDate(article.publishDate)}
         </time>
 
         <h3 className="mt-1.5 leading-snug group-hover:text-teal-700 transition-colors duration-200 line-clamp-2">
@@ -37,7 +37,7 @@ export default function NewsCard({ article }) {
         </h3>
 
         <p className="mt-2 flex-1 text-body-small text-slate-500 line-clamp-3 leading-relaxed">
-          {article.excerpt}
+          {article.summary}
         </p>
 
         <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
