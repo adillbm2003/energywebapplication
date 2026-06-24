@@ -12,7 +12,7 @@ export const policyService = {
       summary: p.summary || p.description,
       publishedAt: p.publishedAt || p.effectiveDate || p.publishDate,
       status: p.status,
-      downloadUrl: toRelativeUrl(p.downloadUrl || p.pdfLink),
+      downloadUrl: (() => { const u = p.downloadUrl || p.pdfLink; return u && u !== '#' ? toRelativeUrl(u) : null })(),
       fileSize: p.fileSize,
       tags: p.tags,
       image: toRelativeUrl(p.image),

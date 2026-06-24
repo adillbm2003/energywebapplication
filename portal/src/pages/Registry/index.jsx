@@ -186,7 +186,7 @@ export default function Registry() {
         title="Renewable Energy Registry"
         subtitle="Official register of renewable energy installations across Bermuda."
         breadcrumbs={[{ label: 'Registry', to: '/registry' }]}
-        image={PAGE_IMAGES.registry}
+        image={PAGE_IMAGES.dockyardSolar}
       />
 
       <SolarStats />
@@ -194,7 +194,7 @@ export default function Registry() {
       <section className="section-padding">
         <div className="container-page">
           <div className="mb-8 overflow-hidden rounded-xl border border-slate-200">
-            <img src={PAGE_IMAGES.registry} alt="" className="aspect-[21/7] w-full object-cover" loading="lazy" />
+            <img src={PAGE_IMAGES.dockyardSolar} alt="" className="aspect-[21/7] w-full object-cover" loading="lazy" />
           </div>
 
           <div className="mb-6 flex flex-wrap items-end justify-between gap-4">

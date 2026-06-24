@@ -88,6 +88,7 @@ function emptyState(msg, btnLabel, btnFn) {
 // ─── API LAYER ────────────────────────────────
 async function api(method, path, body) {
   const headers = {}
+  if (STATE.token) headers['Authorization'] = 'Bearer ' + STATE.token
   const opts = { method, headers, credentials: 'include' }
   if (body !== undefined) {
     headers['Content-Type'] = 'application/json'
@@ -95,6 +96,8 @@ async function api(method, path, body) {
   }
   const res = await fetch(path, opts)
   if (res.status === 401) {
+    STATE.token = null
+    localStorage.removeItem('cms_token')
     document.getElementById('app').style.display = 'none'
     document.getElementById('login-screen').style.display = 'flex'
     showScreen('login')
@@ -108,7 +111,9 @@ async function api(method, path, body) {
 async function uploadFile(file) {
   const fd = new FormData()
   fd.append('file', file)
-  const res = await fetch('/api/upload', { method: 'POST', credentials: 'include', body: fd })
+  const headers = {}
+  if (STATE.token) headers['Authorization'] = 'Bearer ' + STATE.token
+  const res = await fetch('/api/upload', { method: 'POST', credentials: 'include', headers, body: fd })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     throw new Error(err.error || err.message || 'Upload failed')
@@ -138,14 +143,19 @@ async function fetchCollection(name) {
 // ─── AUTH ─────────────────────────────────────
 async function init() {
   setupForms()
-  try {
-    const me = await api('GET', '/api/auth/me')
-    STATE.user = me
-    STATE.role = me.role || 'Viewer'
-    showApp()
-  } catch {
-    showScreen('login')
+  if (STATE.token) {
+    try {
+      const me = await api('GET', '/api/auth/me')
+      STATE.user = me
+      STATE.role = me.role || 'Viewer'
+      showApp()
+      return
+    } catch {
+      STATE.token = null
+      localStorage.removeItem('cms_token')
+    }
   }
+  showScreen('login')
 }
 
 function setupForms() {
@@ -165,6 +175,8 @@ async function doLogin(e) {
   btn.textContent = 'Signing in…'
   try {
     const data = await api('POST', '/api/auth/login', { email, password: pass })
+    STATE.token = data.token
+    localStorage.setItem('cms_token', data.token)
     STATE.user = data.user
     STATE.role = data.user?.role || 'Viewer'
     showApp()
@@ -698,9 +710,9 @@ async function renderNews() {
         </tr></thead>
         <tbody id="news-tbody">
           ${items.map(a => `<tr data-status="${esc(a.status||'')}" class="news-rows">
-            <td class="td-title"><span class="td-title-text" title="${esc(a.title)}">${esc(a.title)}</span>${a.imageUrl?'<span style="font-size:.7rem;margin-left:.4rem;color:var(--c-text-light)">📷</span>':''}${a.documentUrl?'<span style="font-size:.7rem;margin-left:.4rem;color:var(--c-text-light)">📄</span>':''}</td>
+            <td class="td-title"><span class="td-title-text" title="${esc(a.title)}">${esc(a.title)}</span>${a.image?'<span style="font-size:.7rem;margin-left:.4rem;color:var(--c-text-light)">📷</span>':''}${a.attachmentUrl?'<span style="font-size:.7rem;margin-left:.4rem;color:var(--c-text-light)">📄</span>':''}</td>
             <td class="td-muted">${esc(a.category||'—')}</td>
-            <td class="td-muted">${formatDate(a.date||a.publishedAt)}</td>
+            <td class="td-muted">${formatDate(a.publishDate||a.publishedAt||a.date)}</td>
             <td>${statusBadge(a.status)}</td>
             <td class="td-actions">
               <button class="btn-icon btn-edit write-only" onclick="openNewsDrawer('${esc(a.id)}')" title="Edit">✏️</button>
@@ -721,7 +733,7 @@ async function openNewsDrawer(id) {
     item = items.find(n => n.id === id) || {}
   }
   STATE.pendingUploads = {}
-  STATE.currentImageUrls = { newsImage: item.imageUrl||'', newsDoc: item.documentUrl||'' }
+  STATE.currentImageUrls = { newsImage: item.image||'', newsDoc: item.attachmentUrl||'' }
 
   const storyTab = `
     <div class="form-field">
@@ -766,9 +778,9 @@ async function openNewsDrawer(id) {
   const mediaTab = `
     <div class="form-field">
       <label class="form-label">Featured Image</label>
-      <div id="n-img-preview">${item.imageUrl?`<div class="upload-preview"><img src="${esc(item.imageUrl)}" class="upload-img"><button type="button" class="upload-remove" onclick="clearImageField('newsImage','n-img-preview','n-img-zone')">✕</button></div>`:''}
+      <div id="n-img-preview">${item.image?`<div class="upload-preview"><img src="${esc(item.image)}" class="upload-img"><button type="button" class="upload-remove" onclick="clearImageField('newsImage','n-img-preview','n-img-zone')">✕</button></div>`:''}
       </div>
-      <div id="n-img-zone" class="upload-zone" style="${item.imageUrl?'display:none':''}">
+      <div id="n-img-zone" class="upload-zone" style="${item.image?'display:none':''}">
         <input type="file" id="n-img-input" accept="image/*">
         <svg class="upload-icon" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
         <div class="upload-prompt"><p>Drag & drop image here</p><p style="font-size:.8rem;color:var(--c-text-light)">or click to browse</p></div>
@@ -778,7 +790,7 @@ async function openNewsDrawer(id) {
     <div class="section-divider"></div>
     <div class="form-field">
       <label class="form-label">PDF Document</label>
-      <div id="n-doc-list">${item.documentUrl?`<ul class="file-list"><li class="file-item"><span class="file-ico">📄</span><span class="file-name">${esc(item.documentUrl.split('/').pop())}</span><button type="button" class="file-rm" onclick="clearFileField('newsDoc','n-doc-list')">✕</button></li></ul>`:''}</div>
+      <div id="n-doc-list">${item.attachmentUrl?`<ul class="file-list"><li class="file-item"><span class="file-ico">📄</span><span class="file-name">${esc(item.attachmentUrl.split('/').pop())}</span><button type="button" class="file-rm" onclick="clearFileField('newsDoc','n-doc-list')">✕</button></li></ul>`:''}</div>
       <div id="n-doc-zone" class="upload-zone">
         <input type="file" id="n-doc-input" accept=".pdf,.doc,.docx">
         <svg class="upload-icon" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -810,15 +822,22 @@ async function saveNews(id) {
   const documentUrl= uploads['newsDoc']   || STATE.currentImageUrls['newsDoc']   || ''
 
   const payload = {
-    title, imageUrl, documentUrl,
-    summary:     val('n-summary'),
-    content:     val('n-content'),
-    category:    val('n-category'),
-    status:      val('n-status'),
-    date:        val('n-date'),
-    externalUrl: val('n-url')
+    title,
+    image:         imageUrl,
+    attachmentUrl: documentUrl,
+    summary:       val('n-summary'),
+    excerpt:       val('n-summary'),
+    content:       val('n-content'),
+    category:      val('n-category'),
+    status:        val('n-status'),
+    publishDate:   val('n-date'),
+    publishedAt:   val('n-date'),
   }
 
+  if (!id) {
+    payload.slug = title.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '-' + Date.now()
+    payload.featured = false
+  }
   if (id) await api('PUT', `/api/news/${id}`, payload)
   else     await api('POST', '/api/news', payload)
 
@@ -1254,42 +1273,157 @@ async function deleteKpi(id) {
 
 // ─── SOLAR REGISTRY ───────────────────────────
 async function renderSolarRegistry() {
-  const items = await fetchCollection('solarInstallations')
   const vc = document.getElementById('view-container')
+
+  // Load stats and preview rows in parallel
+  let stats = null, preview = []
+  try {
+    const [sRes, iRes] = await Promise.all([
+      fetch('/api/solar/stats', { credentials: 'include' }),
+      fetch('/api/solar/installations', { credentials: 'include' }),
+    ])
+    if (sRes.ok) stats = await sRes.json()
+    if (iRes.ok) preview = await iRes.json()
+  } catch (_) {}
+
+  const fmtNum = n => Number.isFinite(n) ? n.toLocaleString() : '—'
+  const statCard = (label, value, sub='') => `
+    <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;min-width:130px">
+      <p style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin:0 0 4px">${label}</p>
+      <p style="font-size:24px;font-weight:700;color:#0f172a;margin:0">${value}</p>
+      ${sub ? `<p style="font-size:11px;color:#94a3b8;margin:4px 0 0">${sub}</p>` : ''}
+    </div>`
+
+  const totalKW  = stats ? fmtNum(stats.totalKWExtracted) : '—'
+  const total    = stats ? fmtNum(stats.total) : (preview.length ? fmtNum(preview.length) : '—')
+  const complete = stats?.byStatus?.find(s=>s.status==='Complete')?.count
+  const lastMod  = stats?.fileLastModified ? new Date(stats.fileLastModified).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : 'No file uploaded yet'
+
+  // Top 20 preview rows
+  const shown = preview.slice(0, 20)
+
   vc.innerHTML = `
     <div class="view-header">
-      <div><h2 class="view-title">Solar PV Registry</h2><p class="view-sub">${items.length} installation${items.length!==1?'s':''} on record</p></div>
-      <div class="view-actions write-only">
-        <button class="btn btn-primary" onclick="openSolarDrawer()">+ Add Installation</button>
+      <div>
+        <h2 class="view-title">Solar PV Registry</h2>
+        <p class="view-sub">Permit data powering the GIS heat map and solar statistics</p>
       </div>
     </div>
-    <div class="filter-bar">
-      <div class="filter-search">
+
+    <!-- ── Upload card ── -->
+    <div style="background:#fffbeb;border:2px dashed #f59e0b;border-radius:12px;padding:24px 28px;margin-bottom:24px" class="write-only">
+      <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <p style="font-weight:700;color:#92400e;margin:0 0 4px;font-size:15px">Upload Solar Permit Data (Excel)</p>
+          <p style="font-size:13px;color:#78350f;margin:0 0 10px">
+            Replaces the active dataset. Required columns: <strong>Permit Number, Address, Permit Type, Permit Status,
+            Permit Issue Date, Permit Description, Extracted AC Capacity, Annual Output (kWh), latitude, longitude</strong>.
+          </p>
+          <p style="font-size:12px;color:#b45309;margin:0">Last file: <strong>${lastMod}</strong></p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+          <label style="cursor:pointer">
+            <input type="file" id="solar-excel-input" accept=".xlsx,.xls" style="display:none" onchange="uploadSolarExcel(this)">
+            <span class="btn btn-primary" style="background:#d97706;border-color:#d97706" onclick="document.getElementById('solar-excel-input').click()">
+              Choose Excel File
+            </span>
+          </label>
+          <p id="solar-upload-status" style="font-size:12px;color:#6b7280;margin:0"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Summary stats ── -->
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px">
+      ${statCard('Total Permits', total)}
+      ${statCard('Completed', fmtNum(complete), 'installations')}
+      ${statCard('Total Capacity', totalKW + ' kW', 'extracted from permits')}
+      ${stats?.byYear?.length ? statCard('Years', stats.byYear[0].year + '–' + stats.byYear[stats.byYear.length-1].year, 'data range') : ''}
+    </div>
+
+    ${preview.length === 0 ? `
+      <div style="text-align:center;padding:48px 24px;background:#f8fafc;border-radius:12px;border:1px solid #e2e8f0">
+        <p style="color:#64748b;font-size:15px;margin:0 0 8px">No solar permit data loaded yet.</p>
+        <p style="color:#94a3b8;font-size:13px;margin:0">Upload your Excel file above to populate the GIS heat map and solar statistics pages.</p>
+      </div>` : `
+
+    <!-- ── District breakdown ── -->
+    ${stats?.byDistrict?.length ? `
+    <div style="margin-bottom:24px">
+      <h3 style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin:0 0 10px">Permits by Parish</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${stats.byDistrict.map(d=>`
+          <span style="background:#e0f2fe;color:#0369a1;border-radius:20px;padding:4px 12px;font-size:12px;font-weight:500">
+            ${esc(d.district)} <strong>${d.count}</strong>
+          </span>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- ── Preview table ── -->
+    <div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <h3 style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin:0">
+        Data Preview (first ${shown.length} of ${fmtNum(preview.length)} records)
+      </h3>
+      <div class="filter-search" style="width:240px">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" placeholder="Search installations…" oninput="filterTable(this.value,'sol-tbody','sol-rows')">
+        <input type="search" placeholder="Filter preview…" oninput="filterTable(this.value,'sol-tbody','sol-rows')">
       </div>
     </div>
-    ${items.length === 0 ? emptyState('No solar installations on record.','Add Installation','openSolarDrawer()') : `
     <div class="table-wrap">
       <table class="cms-table">
-        <thead><tr><th>Address / Name</th><th>Capacity (kW)</th><th>Type</th><th>Install Date</th><th>Status</th><th class="th-actions">Actions</th></tr></thead>
+        <thead><tr>
+          <th>Permit #</th>
+          <th>Address</th>
+          <th>Status</th>
+          <th>Issue Date</th>
+          <th style="text-align:right">Capacity (kW)</th>
+          <th style="text-align:right">Annual kWh</th>
+          <th style="text-align:right">Lat / Lng</th>
+        </tr></thead>
         <tbody id="sol-tbody">
-          ${items.map(s => `<tr class="sol-rows">
-            <td class="td-title"><span class="td-title-text">${esc(s.address||s.name||s.location||'—')}</span></td>
-            <td class="td-muted">${esc(s.capacity||s.capacityKw||'—')}</td>
-            <td class="td-muted">${esc(s.type||s.systemType||'—')}</td>
-            <td class="td-muted">${formatDate(s.installDate||s.date)}</td>
-            <td>${statusBadge(s.status||'Active')}</td>
-            <td class="td-actions">
-              <button class="btn-icon btn-edit write-only" onclick="openSolarDrawer('${esc(s.id)}')" title="Edit">✏️</button>
-              <button class="btn-icon btn-del write-only" onclick="deleteSolar('${esc(s.id)}')" title="Delete">🗑️</button>
-            </td>
+          ${shown.map(s => `<tr class="sol-rows">
+            <td style="font-family:monospace;font-size:12px;white-space:nowrap">${esc(s.id||'—')}</td>
+            <td class="td-title"><span class="td-title-text" style="max-width:260px">${esc(s.address||s.name||'—')}</span></td>
+            <td>${statusBadge(s.status||'Unknown')}</td>
+            <td class="td-muted" style="white-space:nowrap">${s.installDate ? formatDate(s.installDate) : '—'}</td>
+            <td class="td-muted" style="text-align:right">${s.capacity ? s.capacity.toFixed(3) : '—'}</td>
+            <td class="td-muted" style="text-align:right">${s.annualOutput ? fmtNum(s.annualOutput) : '—'}</td>
+            <td class="td-muted" style="text-align:right;font-family:monospace;font-size:11px">${s.lat ? s.lat.toFixed(4)+', '+s.lng.toFixed(4) : '—'}</td>
           </tr>`).join('')}
         </tbody>
       </table>
-    </div>`}
+    </div>
+    ${preview.length > 20 ? `<p style="text-align:center;font-size:12px;color:#94a3b8;margin:8px 0 0">Showing 20 of ${fmtNum(preview.length)} records — all records are used for the GIS map and statistics.</p>` : ''}
+    `}
   `
   applyRbac(STATE.role)
+}
+
+async function uploadSolarExcel(input) {
+  const file = input.files[0]
+  if (!file) return
+  const statusEl = document.getElementById('solar-upload-status')
+  statusEl.textContent = 'Uploading…'
+  statusEl.style.color = '#6b7280'
+  try {
+    const fd = new FormData()
+    fd.append('file', file)
+    const dfHeaders = STATE.token ? { 'Authorization': 'Bearer ' + STATE.token } : {}
+    const res = await fetch('/api/data-files/solar', { method: 'POST', credentials: 'include', headers: dfHeaders, body: fd })
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Upload failed') }
+    const data = await res.json()
+    const rowInfo = data.inserted != null ? ` — ${data.inserted.toLocaleString()} installations imported` : ` (${(data.size/1024).toFixed(0)} KB)`
+    statusEl.textContent = `Uploaded: ${file.name}${rowInfo}`
+    statusEl.style.color = '#16a34a'
+    toast(data.inserted != null ? `Solar data saved — ${data.inserted.toLocaleString()} installations loaded into database` : 'Solar data file uploaded')
+    // Refresh the view to show new stats
+    setTimeout(() => renderSolarRegistry(), 1200)
+  } catch (err) {
+    statusEl.textContent = 'Error: ' + err.message
+    statusEl.style.color = '#dc2626'
+    toast('Upload failed: ' + err.message, 'error')
+  }
+  input.value = ''
 }
 
 function openSolarDrawer(id) {
@@ -1691,8 +1825,16 @@ function openBursaryDrawer(id) {
     </div>
     <div class="form-field"><label class="form-label">School / Institution</label>
       <input id="bur-school" class="form-input" value="${esc(item.school||'')}" placeholder="University or school name"></div>
+    <div class="form-field"><label class="form-label">Education</label>
+      <textarea id="bur-education" class="form-textarea" rows="2" placeholder="e.g. Pursuing a Bachelor of Science in Mechanical Engineering at Virginia Tech.">${esc(item.education||'')}</textarea></div>
+    <div class="form-field"><label class="form-label">Background</label>
+      <textarea id="bur-background" class="form-textarea" rows="3" placeholder="Recipient's personal or academic background…">${esc(item.background||'')}</textarea></div>
+    <div class="form-field"><label class="form-label">Achievement</label>
+      <textarea id="bur-achievement" class="form-textarea" rows="3" placeholder="Notable achievements, awards, or accomplishments…">${esc(item.achievement||'')}</textarea></div>
+    <div class="form-field"><label class="form-label">Focus</label>
+      <textarea id="bur-focus" class="form-textarea" rows="2" placeholder="e.g. Independent energy infrastructure and modern technical planning on the island.">${esc(item.focus||'')}</textarea></div>
     <div class="form-field"><label class="form-label">Bio</label>
-      <textarea id="bur-desc" class="form-textarea" rows="3" placeholder="Brief bio or achievement">${esc(item.bio||'')}</textarea></div>
+      <textarea id="bur-desc" class="form-textarea" rows="3" placeholder="Brief summary bio">${esc(item.bio||'')}</textarea></div>
     <div class="form-field">
       <label class="form-label">Photo</label>
       <div id="bur-img-preview">${item.photoUrl?`<div class="upload-preview"><img src="${esc(item.photoUrl)}" class="upload-img"><button type="button" class="upload-remove" onclick="clearImageField('bursaryImg','bur-img-preview','bur-img-zone')">✕</button></div>`:''}</div>
@@ -1711,7 +1853,12 @@ async function saveBursary(id) {
   const name = val('bur-name')
   if (!name) { toast('Name is required','warning'); return }
   const uploads = await resolveUploads()
-  const payload = { name, academicYear:val('bur-year'), fieldOfStudy:val('bur-prog'), school:val('bur-school'), bio:val('bur-desc'), photoUrl: uploads['bursaryImg']||STATE.currentImageUrls['bursaryImg']||'' }
+  const payload = {
+    name, academicYear:val('bur-year'), fieldOfStudy:val('bur-prog'), school:val('bur-school'),
+    education:val('bur-education'), background:val('bur-background'),
+    achievement:val('bur-achievement'), focus:val('bur-focus'),
+    bio:val('bur-desc'), photoUrl: uploads['bursaryImg']||STATE.currentImageUrls['bursaryImg']||''
+  }
   if (id) await api('PUT',`/api/bursaries/${id}`,payload)
   else     await api('POST','/api/bursaries',payload)
   toast(id?'Recipient updated':'Recipient added'); closeDrawer(); await renderBursary()

@@ -10,6 +10,7 @@ export const MAIN_NAV = [
       { label: 'Registered Solar Installers', to: ROUTES.installers },
       { label: 'Vehicles', to: ROUTES.vehicles },
       { label: 'Electronic Communications', to: ROUTES.electronicCommunications },
+      { label: 'Broadcasting', to: ROUTES.broadcasting },
       { label: 'Space & Satellite', to: ROUTES.spaceSatellite },
     ],
   },

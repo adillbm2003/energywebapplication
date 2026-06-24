@@ -86,7 +86,7 @@ app.use(cors({
     if (!origin) return callback(null, true);
     // Wildcard allows everything
     if (allowAllOrigins) return callback(null, true);
-    // Self-origin: CMS portal calling its own Railway API
+    // Self-origin: CMS portal calling its own Railway/EB API
     if (process.env.RAILWAY_PUBLIC_DOMAIN && origin === `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`) {
       return callback(null, true);
     }
@@ -97,8 +97,8 @@ app.use(cors({
 }));
 
 app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Rate Limiting
 const globalLimiter = rateLimit({
@@ -116,7 +116,11 @@ const loginLimiter = rateLimit({
 
 // ── AUTHENTICATION & RBAC MIDDLEWARES ────────────────────────────────────────
 async function authenticate(req, res, next) {
-  const token = req.cookies.token;
+  let token = req.cookies.token;
+  if (!token) {
+    const auth = req.headers['authorization'];
+    if (auth && auth.startsWith('Bearer ')) token = auth.slice(7);
+  }
   if (!token) {
     return res.status(401).json({ error: "Unauthorized: Access token missing" });
   }
@@ -406,7 +410,7 @@ const storage = multer.diskStorage({
     cb(null, `${basename}-${Date.now()}${ext}`);
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({ storage: storage, limits: { fileSize: 50 * 1024 * 1024 } });
 
 // ── SYSTEM MONITORING & HEALTH CHECK ENDPOINTS ────────────────────────────────
 app.get('/health', async (req, res) => {
@@ -521,8 +525,8 @@ app.post('/api/auth/login', loginLimiter, async (req, res, next) => {
     
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' && !(req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'))),
-      sameSite: 'strict',
+      secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+      sameSite: 'lax',
       maxAge: 2 * 60 * 60 * 1000
     });
     
@@ -530,6 +534,7 @@ app.post('/api/auth/login', loginLimiter, async (req, res, next) => {
     
     res.json({
       success: true,
+      token,
       user: {
         id: user.id,
         username: user.username,
@@ -639,8 +644,8 @@ app.post('/api/auth/refresh', async (req, res) => {
     );
     res.cookie('token', newToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production' && !(req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'))),
-      sameSite: 'strict',
+      secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+      sameSite: 'lax',
       maxAge: 2 * 60 * 60 * 1000
     });
     res.json({ success: true });
@@ -653,147 +658,91 @@ app.get('/api/auth/me', authenticate, (req, res) => {
   res.json(req.user);
 });
 
-// ── VEHICLES FLEET DATA FROM EXCEL ───────────────────────────────────────────
-app.get('/api/vehicles/fleet', (req, res) => {
+// ── VEHICLES FLEET DATA — DB cache first, local file fallback ────────────────
+function parseVehiclesExcel(filePath) {
+  const XLSX = require('xlsx');
+  const wb = XLSX.readFile(filePath);
+  const sheetName = wb.SheetNames.includes('FORECAST') ? 'FORECAST' : wb.SheetNames[0];
+  const ws = wb.Sheets[sheetName];
+  const raw = XLSX.utils.sheet_to_json(ws, { defval: '' });
+  const rows = raw.slice(1);
+
+  // Column keys: first col is category (header contains date), rest are unnamed
+  const headerKeys = raw.length > 0 ? Object.keys(raw[0]) : [];
+  const CAT_KEY = headerKeys[0] || '__EMPTY';
+  const SUB_KEY = headerKeys[1] || '__EMPTY_1';
+  const MAKE_KEY = headerKeys[2] || '__EMPTY_2';
+
+  const catCount = {}, makeCount = {}, subCount = {};
+  rows.forEach(row => {
+    const cat = row[CAT_KEY] || ''; const sub = row[SUB_KEY] || ''; const make = row[MAKE_KEY] || '';
+    if (cat) catCount[cat] = (catCount[cat] || 0) + 1;
+    if (sub) subCount[sub] = (subCount[sub] || 0) + 1;
+    if (make) makeCount[make] = (makeCount[make] || 0) + 1;
+  });
+
+  const grouped = {
+    'Private Cars': (catCount['Private Car']||0)+(catCount["Doctors' Cars"]||0)+(catCount['Classic Cars']||0)+(catCount['Light Private']||0)+(catCount['Loaner Vehicle PC']||0),
+    'Rental Mini-Cars': catCount['Rental Mini-Car']||0,
+    'Motorcycles & Cycles': (catCount['Motor Cycle']||0)+(catCount['Auxiliary Cycle']||0),
+    'Trucks': catCount['Truck']||0,
+    'Buses (Omnibus)': catCount['Omnibus']||0,
+    'Government Vehicles': catCount['Government Private']||0,
+    'Taxis & Other': (catCount['Taxi']||0)+(catCount['Locomotive']||0),
+  };
+
+  const topMakes = Object.entries(makeCount).filter(([k])=>k.trim()).sort((a,b)=>b[1]-a[1]).slice(0,10).map(([make,count])=>({make,count}));
+  const dateMatch = CAT_KEY.match(/(\d{2}\/\d{2}\/\d{4})/);
+  const asOf = dateMatch ? dateMatch[1] : new Date().toLocaleDateString('en-GB');
+
+  return { total: rows.length, asOf, fuelType: 'ELECTRIC', byCategory: grouped, rawCategories: Object.entries(catCount).sort((a,b)=>b[1]-a[1]).map(([cat,count])=>({cat,count})), topMakes };
+}
+
+app.get('/api/vehicles/fleet', async (req, res) => {
   try {
-    const XLSX = require('xlsx');
-    const path = require('path');
+    // Try DB cache first (populated when a new file is uploaded via CMS)
+    try {
+      await db.query(`CREATE TABLE IF NOT EXISTS data_cache (key TEXT PRIMARY KEY, value JSONB, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)`);
+      const cacheRes = await db.query(`SELECT value FROM data_cache WHERE key = 'vehicle_fleet'`);
+      if (cacheRes.rows.length > 0) return res.json(cacheRes.rows[0].value);
+    } catch (_) {}
+
+    // Fall back to the file bundled in the deployment zip
     const filePath = path.join(__dirname, 'portal', 'public', 'documents', 'Vehicles by Fuel Type.xls');
-    const wb = XLSX.readFile(filePath);
-    const ws = wb.Sheets['FORECAST'];
-    const raw = XLSX.utils.sheet_to_json(ws, { defval: '' });
-    const rows = raw.slice(1); // skip header row
-
-    const CAT_KEY = 'Vehicles by Fuel Type for fuel type ELECTRIC as at 12/06/2026';
-    const SUB_KEY = '__EMPTY';
-    const MAKE_KEY = '__EMPTY_1';
-    const MODEL_KEY = '__EMPTY_2';
-
-    // Count by top-level category
-    const catCount = {};
-    const makeCount = {};
-    const subCount = {};
-    rows.forEach(row => {
-      const cat = row[CAT_KEY] || '';
-      const sub = row[SUB_KEY] || '';
-      const make = row[MAKE_KEY] || '';
-      if (cat) catCount[cat] = (catCount[cat] || 0) + 1;
-      if (sub) subCount[sub] = (subCount[sub] || 0) + 1;
-      if (make) makeCount[make] = (makeCount[make] || 0) + 1;
-    });
-
-    // Map raw categories to display-friendly groups
-    const grouped = {
-      'Private Cars': (catCount['Private Car'] || 0) + (catCount['Doctors\' Cars'] || 0) + (catCount['Classic Cars'] || 0) + (catCount['Light Private'] || 0) + (catCount['Loaner Vehicle PC'] || 0),
-      'Rental Mini-Cars': catCount['Rental Mini-Car'] || 0,
-      'Motorcycles & Cycles': (catCount['Motor Cycle'] || 0) + (catCount['Auxiliary Cycle'] || 0),
-      'Trucks': catCount['Truck'] || 0,
-      'Buses (Omnibus)': catCount['Omnibus'] || 0,
-      'Government Vehicles': catCount['Government Private'] || 0,
-      'Taxis & Other': (catCount['Taxi'] || 0) + (catCount['Locomotive'] || 0),
-    };
-
-    // Top makes
-    const topMakes = Object.entries(makeCount)
-      .filter(([k]) => k.trim())
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 10)
-      .map(([make, count]) => ({ make, count }));
-
-    // Sub-category breakdown for private cars
-    const carSubCategories = Object.entries(subCount)
-      .filter(([k]) => k.startsWith('Private Car Class') || k.startsWith('Rental'))
-      .sort((a, b) => b[1] - a[1])
-      .map(([sub, count]) => ({ sub, count }));
-
-    res.json({
-      total: rows.length,
-      asOf: '12/06/2026',
-      fuelType: 'ELECTRIC',
-      byCategory: grouped,
-      rawCategories: Object.entries(catCount).sort((a,b) => b[1]-a[1]).map(([cat,count]) => ({ cat, count })),
-      topMakes,
-      carSubCategories,
-    });
+    res.json(parseVehiclesExcel(filePath));
   } catch (err) {
     console.error('Fleet data error:', err.message);
     res.status(500).json({ error: 'Could not read fleet data', detail: err.message });
   }
 });
 
-// ── SOLAR PANEL APPLICATIONS DATA FROM EXCEL ─────────────────────────────────
-app.get('/api/solar/stats', (req, res) => {
+// ── SOLAR PANEL APPLICATIONS — served from PostgreSQL ────────────────────────
+app.get('/api/solar/stats', async (req, res) => {
   try {
-    const XLSX = require('xlsx');
-    const path = require('path');
-    const fs = require('fs');
-    const filePath = path.join(__dirname, 'portal', 'public', 'documents', 'Solar Panel Application 2019-now.xlsx');
-    if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Solar data file not found' });
+    const countRes = await db.query('SELECT COUNT(*) FROM solar_installations');
+    const total = parseInt(countRes.rows[0].count, 10);
+    if (total === 0) return res.json({ total: 0, activeInstalls: 0, totalKWExtracted: 0, byYear: [], byDistrict: [], byStatus: [], byWorkClass: [], fileLastModified: null });
 
-    const wb = XLSX.readFile(filePath);
-    const sheetName = wb.SheetNames[0];
-    const ws = wb.Sheets[sheetName];
-    const raw = XLSX.utils.sheet_to_json(ws, { defval: '' });
-
-    const byYear = {};
-    const byDistrict = {};
-    const byStatus = {};
-    const byWorkClass = {};
-    let totalKW = 0;
-    let kwCount = 0;
-
-    raw.forEach(row => {
-      // Year from application date
-      const dateVal = row['Permit Application Date'];
-      let year = '';
-      if (typeof dateVal === 'number') {
-        const d = XLSX.SSF.parse_date_code(dateVal);
-        year = d && d.y ? String(d.y) : '';
-      } else if (typeof dateVal === 'string') {
-        const m = dateVal.match(/(\d{4})/);
-        year = m ? m[1] : '';
-      }
-      if (year && parseInt(year) >= 2019) byYear[year] = (byYear[year] || 0) + 1;
-
-      // District
-      const dist = (row['Permit District'] || 'Unknown').trim();
-      if (dist) byDistrict[dist] = (byDistrict[dist] || 0) + 1;
-
-      // Status
-      const status = (row['Permit Status'] || 'Unknown').trim();
-      if (status) byStatus[status] = (byStatus[status] || 0) + 1;
-
-      // Work class — group into Residential vs Commercial
-      const wc = (row['Permit Work Class'] || '').trim().toLowerCase();
-      if (wc.includes('residential')) {
-        byWorkClass['Residential'] = (byWorkClass['Residential'] || 0) + 1;
-      } else if (wc.includes('commercial')) {
-        byWorkClass['Commercial'] = (byWorkClass['Commercial'] || 0) + 1;
-      } else if (wc) {
-        byWorkClass['Other'] = (byWorkClass['Other'] || 0) + 1;
-      }
-
-      // Extract kW capacity from description
-      const desc = (row['Permit Description'] || '').toString();
-      const kwMatch = desc.match(/(\d+\.?\d*)\s*kw/i);
-      if (kwMatch) { totalKW += parseFloat(kwMatch[1]); kwCount++; }
-    });
-
-    // Calculate total complete + under construction
-    const activeInstalls = (byStatus['Complete'] || 0) + (byStatus['Under Construction'] || 0) + (byStatus['Issued'] || 0);
-
-    const fileStats = fs.statSync(filePath);
+    const [yearRes, parishRes, statusRes, typeRes, capRes, activeRes, modRes] = await Promise.all([
+      db.query("SELECT EXTRACT(YEAR FROM install_date)::TEXT AS year, COUNT(*)::INT FROM solar_installations WHERE install_date IS NOT NULL GROUP BY year ORDER BY year"),
+      db.query("SELECT parish, COUNT(*)::INT FROM solar_installations GROUP BY parish ORDER BY count DESC"),
+      db.query("SELECT status, COUNT(*)::INT FROM solar_installations GROUP BY status ORDER BY count DESC"),
+      db.query("SELECT type, COUNT(*)::INT FROM solar_installations GROUP BY type ORDER BY count DESC"),
+      db.query("SELECT COALESCE(SUM(capacity),0) AS total_kw, COUNT(*) FILTER (WHERE capacity > 0) AS cap_count FROM solar_installations"),
+      db.query("SELECT COUNT(*)::INT FROM solar_installations WHERE status IN ('Complete','Issued','Under Construction')"),
+      db.query("SELECT MAX(updated_at) AS last_modified FROM solar_installations"),
+    ]);
 
     res.json({
-      total: raw.length,
-      activeInstalls,
-      totalKWExtracted: Math.round(totalKW),
-      kWDataPoints: kwCount,
-      byYear: Object.entries(byYear).sort((a,b) => a[0].localeCompare(b[0])).map(([year, count]) => ({ year, count })),
-      byDistrict: Object.entries(byDistrict).sort((a,b) => b[1]-a[1]).map(([district, count]) => ({ district, count })),
-      byStatus: Object.entries(byStatus).sort((a,b) => b[1]-a[1]).map(([status, count]) => ({ status, count })),
-      byWorkClass: Object.entries(byWorkClass).sort((a,b) => b[1]-a[1]).map(([type, count]) => ({ type, count })),
-      fileLastModified: fileStats.mtime.toISOString(),
+      total,
+      activeInstalls: parseInt(activeRes.rows[0].count, 10),
+      totalKWExtracted: Math.round(parseFloat(capRes.rows[0].total_kw) || 0),
+      kWDataPoints: parseInt(capRes.rows[0].cap_count, 10),
+      byYear: yearRes.rows.map(r => ({ year: String(r.year), count: r.count })),
+      byDistrict: parishRes.rows.map(r => ({ district: r.parish || 'Unknown', count: r.count })),
+      byStatus: statusRes.rows.map(r => ({ status: r.status || 'Unknown', count: r.count })),
+      byWorkClass: typeRes.rows.map(r => ({ type: r.type || 'Unknown', count: r.count })),
+      fileLastModified: modRes.rows[0]?.last_modified || null,
     });
   } catch (err) {
     console.error('Solar stats error:', err.message);
@@ -801,144 +750,29 @@ app.get('/api/solar/stats', (req, res) => {
   }
 });
 
-// ── SOLAR INSTALLATIONS — GIS-ready individual permit records ─────────────────
-app.get('/api/solar/installations', (req, res) => {
+// ── SOLAR INSTALLATIONS — served from PostgreSQL ─────────────────────────────
+app.get('/api/solar/installations', async (req, res) => {
   try {
-    const XLSX = require('xlsx');
-    const path = require('path');
-    const fs = require('fs');
-    const filePath = path.join(__dirname, 'portal', 'public', 'documents', 'Solar Panel Application 2019-now.xlsx');
-    if (!fs.existsSync(filePath)) return res.status(404).json({ error: 'Solar data file not found' });
-
-    // Parish centroids used only as fallback when Excel has no lat/lon columns
-    const PARISH_COORDS = {
-      'Paget': [32.2752, -64.7743],
-      'Warwick': [32.2648, -64.7930],
-      'Pembroke': [32.3009, -64.7779],
-      "Smith's": [32.3104, -64.7349],
-      'Southampton': [32.2580, -64.8233],
-      'Devonshire': [32.3124, -64.7580],
-      'Sandys': [32.2783, -64.8794],
-      'Hamilton': [32.3274, -64.7276],
-      "St. George's": [32.3830, -64.6797],
-      'City of Hamilton': [32.2942, -64.7839],
-      'Town of St. George': [32.3787, -64.6755],
-      'Bermuda': [32.3078, -64.7505],
-    };
-
-    // The 9 official Bermuda parishes used for nearest-centroid lookup
-    const OFFICIAL_PARISHES = [
-      ['Devonshire', [32.3124, -64.7580]],
-      ['Hamilton', [32.3274, -64.7276]],
-      ['Paget', [32.2752, -64.7743]],
-      ['Pembroke', [32.3009, -64.7779]],
-      ['Sandys', [32.2783, -64.8794]],
-      ["Smith's", [32.3104, -64.7349]],
-      ['Southampton', [32.2580, -64.8233]],
-      ["St. George's", [32.3830, -64.6797]],
-      ['Warwick', [32.2648, -64.7930]],
-    ];
-    const nearestParish = (lat, lng) => {
-      let best = OFFICIAL_PARISHES[0][0], bestDist = Infinity;
-      for (const [name, [plat, plng]] of OFFICIAL_PARISHES) {
-        const d = (lat - plat) ** 2 + (lng - plng) ** 2;
-        if (d < bestDist) { bestDist = d; best = name; }
-      }
-      return best;
-    };
-
-    const ACTIVE_STATUSES = new Set(['Complete', 'Issued', 'Under Construction']);
-
-    const wb = XLSX.readFile(filePath);
-    const sheetName = wb.SheetNames[0];
-    const ws = wb.Sheets[sheetName];
-    const raw = XLSX.utils.sheet_to_json(ws, { defval: '' });
-
-    let index = 0;
-    const installations = [];
-
-    raw.forEach(row => {
-      const status = (row['Permit Status'] || '').trim();
-
-      // ── Real coordinates: try every likely column name variant ────────────
-      const rawLat = row['lat'] ?? row['Lat'] ?? row['latitude'] ?? row['Latitude'] ?? '';
-      const rawLng = row['lon'] ?? row['Lon'] ?? row['lng'] ?? row['Lng'] ??
-                     row['longitude'] ?? row['Longitude'] ?? '';
-      const parsedLat = parseFloat(rawLat);
-      const parsedLng = parseFloat(rawLng);
-      const hasRealCoords = Number.isFinite(parsedLat) && Number.isFinite(parsedLng) &&
-                            parsedLat !== 0 && parsedLng !== 0;
-
-      // Row with real coordinates: always include (user explicitly geocoded it).
-      // Row without real coordinates: only include if permit is active.
-      if (!hasRealCoords && !ACTIVE_STATUSES.has(status)) return;
-
-      const PARISH_MAP = {
-        'Town of St. George': "St. George's",
-        'St. George': "St. George's",
-        'City of Hamilton': 'Hamilton',
-        'Smiths': "Smith's",
-      };
-
-      const parish = (row['Permit District'] || 'Bermuda').trim();
-      let normParish = PARISH_MAP[parish] ?? parish;
-
-      let lat, lng;
-      if (hasRealCoords) {
-        lat = parsedLat;
-        lng = parsedLng;
-      } else {
-        const coords = PARISH_COORDS[normParish] || PARISH_COORDS['Bermuda'];
-        lat = coords[0] + Math.sin(index * 7.3) * 0.003;
-        lng = coords[1] + Math.cos(index * 5.1) * 0.003;
-      }
-
-      // ── Capacity: dedicated column wins over description regex ────────────
-      const rawCap = row['Extracted AC Capacity'] ?? row['AC Capacity'] ??
-                     row['AC Capacity (kW)'] ?? row['Capacity (kW)'] ?? row['Capacity'] ?? '';
-      const parsedCap = parseFloat(rawCap);
-      const desc = (row['Permit Description'] || '').toString();
-      let capacity;
-      if (Number.isFinite(parsedCap) && parsedCap > 0) {
-        capacity = parsedCap;
-      } else {
-        const kwMatch = desc.match(/(\d+\.?\d*)\s*kw/i);
-        capacity = kwMatch ? parseFloat(kwMatch[1]) : 0;
-      }
-      // Entries > 1000 kW at individual addresses are data-entry errors (Wp entered as kW).
-      // Dividing by 1000 corrects them to realistic residential/small-commercial sizes
-      // and brings the island-wide total in line with the department's 15.6 MW figure.
-      if (capacity > 1000) capacity = capacity / 1000;
-
-      // "Bermuda" = no parish assigned; use nearest centroid if coordinates available
-      if (normParish === 'Bermuda') normParish = nearestParish(lat, lng);
-
-      const wc = (row['Permit Work Class'] || '').trim().toLowerCase();
-      const type = wc.includes('commercial') ? 'Commercial' : 'Residential';
-
-      // Address: try enriched column first (user-supplied), then permit columns
-      const address = (row['Adresss'] || row['Address'] || row['Permit Address'] || '').toString().trim();
-      const firstLine = address.split(/[\n\r,]/)[0].trim();
-
-      const permitNo = row['Permit Number'] || row['Permit No'] || row['PermitNumber'] || '';
-
-      installations.push({
-        id: permitNo ? String(permitNo) : `solar-${index}`,
-        name: firstLine || `Permit ${index + 1}`,
-        parish: normParish,
-        capacity,
-        type,
-        status: status || 'Unknown',
-        description: desc.slice(0, 120),
-        address: address.slice(0, 200),
-        annualOutput: parseFloat(row['Annual Output (kWh)'] || row['Annual Output'] || 0) || 0,
-        lat,
-        lng,
-      });
-
-      index++;
-    });
-
+    const result = await db.query(
+      `SELECT id, name, parish, type, capacity, status, install_date,
+              lat, lng, notes AS description,
+              COALESCE(address, name, '') AS address,
+              COALESCE(annual_output, 0) AS annual_output
+       FROM solar_installations ORDER BY id LIMIT 5000`
+    );
+    const installations = result.rows.map(row => ({
+      id: row.id,
+      name: row.name || '',
+      parish: row.parish || '',
+      capacity: parseFloat(row.capacity) || 0,
+      type: row.type || 'Residential',
+      status: row.status || 'Unknown',
+      description: row.description || '',
+      address: row.address || '',
+      annualOutput: parseFloat(row.annual_output) || 0,
+      lat: parseFloat(row.lat) || 0,
+      lng: parseFloat(row.lng) || 0,
+    }));
     res.json(installations);
   } catch (err) {
     console.error('Solar installations error:', err.message);
@@ -1011,11 +845,144 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
   const key = req.params.key;
   if (!DATA_FILES[key]) return res.status(400).json({ error: 'Unknown data file key' });
 
-  multerExcel.single('file')(req, res, (err) => {
+  multerExcel.single('file')(req, res, async (err) => {
     if (err) return res.status(400).json({ error: err.message });
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
-    logAction(req.user, 'UPLOAD', 'Data File', DATA_FILES[key].label);
-    res.json({ success: true, filename: req.file.filename, size: req.file.size });
+
+    if (key === 'vehicles') {
+      try {
+        const fleetData = parseVehiclesExcel(req.file.path);
+        await db.query(`CREATE TABLE IF NOT EXISTS data_cache (key TEXT PRIMARY KEY, value JSONB, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)`);
+        await db.query(`INSERT INTO data_cache (key,value,updated_at) VALUES ($1,$2,CURRENT_TIMESTAMP) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value,updated_at=CURRENT_TIMESTAMP`, ['vehicle_fleet', JSON.stringify(fleetData)]);
+        logAction(req.user, 'UPLOAD', 'Data File', `Vehicles fleet — ${fleetData.total} records imported`);
+        return res.json({ success: true, filename: req.file.filename, size: req.file.size, total: fleetData.total });
+      } catch (parseErr) {
+        console.error('Vehicles Excel parse error:', parseErr);
+        logAction(req.user, 'UPLOAD', 'Data File', DATA_FILES[key].label);
+        return res.json({ success: true, filename: req.file.filename, size: req.file.size });
+      }
+    }
+
+    if (key !== 'solar') {
+      logAction(req.user, 'UPLOAD', 'Data File', DATA_FILES[key].label);
+      return res.json({ success: true, filename: req.file.filename, size: req.file.size });
+    }
+
+    // Solar upload: parse Excel and persist rows to PostgreSQL
+    try {
+      const XLSX = require('xlsx');
+      const wb = XLSX.readFile(req.file.path);
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const raw = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+      // Flexible case-insensitive column lookup
+      const colMap = {};
+      if (raw.length > 0) Object.keys(raw[0]).forEach(k => { colMap[k.toLowerCase().trim()] = k; });
+      const getCol = (row, ...names) => {
+        for (const name of names) {
+          const k = colMap[name.toLowerCase().trim()];
+          if (k !== undefined) { const v = row[k]; if (v !== '' && v != null) return v; }
+        }
+        return '';
+      };
+
+      const PARISH_COORDS = {
+        'Paget': [32.2752, -64.7743], 'Warwick': [32.2648, -64.7930],
+        'Pembroke': [32.3009, -64.7779], "Smith's": [32.3104, -64.7349],
+        'Southampton': [32.2580, -64.8233], 'Devonshire': [32.3124, -64.7580],
+        'Sandys': [32.2783, -64.8794], 'Hamilton': [32.3274, -64.7276],
+        "St. George's": [32.3830, -64.6797], 'Bermuda': [32.3078, -64.7505],
+      };
+      const OFFICIAL_PARISHES = [
+        ['Devonshire',[32.3124,-64.7580]],['Hamilton',[32.3274,-64.7276]],
+        ['Paget',[32.2752,-64.7743]],['Pembroke',[32.3009,-64.7779]],
+        ['Sandys',[32.2783,-64.8794]],["Smith's",[32.3104,-64.7349]],
+        ['Southampton',[32.2580,-64.8233]],["St. George's",[32.3830,-64.6797]],
+        ['Warwick',[32.2648,-64.7930]],
+      ];
+      const nearestParish = (lat, lng) => {
+        let best = OFFICIAL_PARISHES[0][0], bestD = Infinity;
+        for (const [n,[plat,plng]] of OFFICIAL_PARISHES) { const d=(lat-plat)**2+(lng-plng)**2; if(d<bestD){bestD=d;best=n;} }
+        return best;
+      };
+      const PARISH_MAP = { 'Town of St. George':"St. George's", 'St. George':"St. George's", 'City of Hamilton':'Hamilton', 'Smiths':"Smith's" };
+      const ACTIVE = new Set(['Complete','Issued','Under Construction']);
+
+      // Ensure extra columns exist
+      await db.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS annual_output NUMERIC DEFAULT 0`);
+      await db.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS address TEXT`);
+      await db.query('TRUNCATE solar_installations');
+
+      let inserted = 0;
+      for (let i = 0; i < raw.length; i++) {
+        const row = raw[i];
+        const rawLat = getCol(row,'lat','latitude');
+        const rawLng = getCol(row,'lon','lng','longitude','long');
+        const parsedLat = parseFloat(String(rawLat).trim());
+        let parsedLng = parseFloat(String(rawLng).trim());
+        if (Number.isFinite(parsedLng) && parsedLng > 0 && parsedLng < 70) parsedLng = -parsedLng;
+        const hasCoords = Number.isFinite(parsedLat) && Number.isFinite(parsedLng) && parsedLat !== 0 && parsedLng !== 0;
+
+        const status = String(getCol(row,'Permit Status') || '').trim();
+        if (!hasCoords && !ACTIVE.has(status)) continue;
+
+        let parish = String(getCol(row,'Permit District','Parish','District') || 'Bermuda').trim();
+        parish = PARISH_MAP[parish] ?? parish;
+
+        let lat, lng;
+        if (hasCoords) { lat = parsedLat; lng = parsedLng; }
+        else { const c = PARISH_COORDS[parish] || PARISH_COORDS['Bermuda']; lat = c[0]+Math.sin(i*7.3)*0.003; lng = c[1]+Math.cos(i*5.1)*0.003; }
+        if (parish === 'Bermuda') parish = nearestParish(lat, lng);
+
+        const rawCap = getCol(row,'Extracted AC Capacity','AC Capacity','AC Capacity (kW)','Capacity (kW)','Capacity','capacity');
+        let capacity = parseFloat(String(rawCap).trim());
+        if (!Number.isFinite(capacity) || capacity <= 0) {
+          const desc2 = String(getCol(row,'Permit Description') || '');
+          const m2 = desc2.match(/(\d+\.?\d*)\s*kw/i);
+          capacity = m2 ? parseFloat(m2[1]) : 0;
+        }
+        if (capacity > 1000) capacity = capacity / 1000;
+
+        const annualOutput = parseFloat(String(getCol(row,'Annual Output (kWh)','Annual Output','Annual Output kWh') || 0)) || 0;
+        const wc = String(getCol(row,'Permit Work Class','Permit Type','Work Class') || '').toLowerCase();
+        const type = wc.includes('commercial') ? 'Commercial' : wc.includes('utility') ? 'Utility' : 'Residential';
+        const address = String(getCol(row,'Adresss','Address','Permit Address','address') || '').trim();
+        const firstLine = address.split(/[\n\r,]/)[0].trim();
+        const desc = String(getCol(row,'Permit Description') || '').slice(0,120);
+        const permitNo = getCol(row,'Permit Number','Permit No','PermitNumber') || '';
+        const id = permitNo ? String(permitNo) : `solar-${i}`;
+
+        // Parse install date
+        const dateVal = getCol(row,'Permit Issue Date','Permit Application Date','Issue Date','Date') || '';
+        let installDate = null;
+        if (typeof dateVal === 'number') {
+          const d = XLSX.SSF.parse_date_code(dateVal);
+          if (d && d.y) installDate = `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
+        } else if (typeof dateVal === 'string' && dateVal) {
+          const p = new Date(dateVal); if (!isNaN(p)) installDate = p.toISOString().split('T')[0];
+        }
+
+        try {
+          await db.query(
+            `INSERT INTO solar_installations (id,name,parish,type,capacity,status,install_date,lat,lng,notes,address,annual_output)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+             ON CONFLICT (id) DO UPDATE SET
+               name=EXCLUDED.name,parish=EXCLUDED.parish,type=EXCLUDED.type,capacity=EXCLUDED.capacity,
+               status=EXCLUDED.status,install_date=EXCLUDED.install_date,lat=EXCLUDED.lat,lng=EXCLUDED.lng,
+               notes=EXCLUDED.notes,address=EXCLUDED.address,annual_output=EXCLUDED.annual_output,
+               updated_at=CURRENT_TIMESTAMP`,
+            [id, firstLine||`Permit ${i+1}`, parish, type, capacity||0, status||'Unknown', installDate, lat, lng, desc, address.slice(0,200), annualOutput]
+          );
+          inserted++;
+        } catch (rowErr) { console.error(`Solar row ${i} error:`, rowErr.message); }
+      }
+
+      logAction(req.user, 'UPLOAD', 'Data File', `Solar data — ${inserted} installations imported`);
+      res.json({ success: true, filename: req.file.filename, size: req.file.size, inserted });
+    } catch (parseErr) {
+      console.error('Solar Excel parse error:', parseErr);
+      res.status(500).json({ error: 'Failed to parse Excel: ' + parseErr.message });
+    }
   });
 });
 
@@ -1555,10 +1522,10 @@ app.post('/api/upload', authenticate, authorize('Editor', 'Approver', 'Administr
     // Secure hook for future ICAP/ClamAV daemon scan.
     console.log(`[Security Audit] Anti-virus scan run for: ${req.file.originalname} - Result: CLEAN`);
 
-    const serverBase = process.env.RAILWAY_PUBLIC_DOMAIN
-      ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
-      : `${req.protocol}://${req.get('host')}`;
-    const fileUrl = `${serverBase}/uploads/${req.file.filename}`;
+    // Store as a root-relative path so the URL works regardless of which
+    // hostname serves the frontend (CloudFront, energy.bm, or EB direct).
+    // CloudFront routes /uploads/* → EB → S3 presigned redirect.
+    const fileUrl = `/uploads/${req.file.filename}`;
     const fileSizeMbStr = fileSizeMb.toFixed(2) + ' MB';
     const mediaId = `med-${Date.now()}`;
     const newMedia = {
@@ -1656,11 +1623,44 @@ app.delete('/api/media/:id', authenticate, authorize('Administrator'), async (re
 
 // ── STATISTICS HISTORY API ────────────────────────────────────────────────────
 
+// Upload statistics via file (CSV with columns: category,label,value,unit,year,notes)
+app.post('/api/statistics/upload', authenticate, checkWritePermission('kpis'), upload.single('file'), async (req, res, next) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
+    const text = req.file.buffer ? req.file.buffer.toString('utf-8') : require('fs').readFileSync(req.file.path, 'utf-8');
+    const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+    if (lines.length < 2) return res.status(400).json({ error: 'File must have a header row and at least one data row' });
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase().replace(/[^a-z]/g, ''));
+    const rows = [];
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(',');
+      const row = {};
+      headers.forEach((h, idx) => { row[h] = (cols[idx] || '').trim().replace(/^"|"$/g, ''); });
+      if (!row.value) continue;
+      const id = `stat-${Date.now()}-${i}`;
+      await db.query(
+        `INSERT INTO statistics_history (id, data_type, period, value, unit, notes, uploaded_by, uploaded_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,NOW()) ON CONFLICT (id) DO NOTHING`,
+        [id, row.category || row.datatype || 'general', row.year || row.period || '', row.value, row.unit || '', row.label || row.notes || '', req.user.username]
+      );
+      rows.push(row);
+    }
+    await logAction(req.user.username, `Uploaded statistics file (${rows.length} rows)`, 'statistics', req.file.originalname);
+    res.json({ success: true, inserted: rows.length, message: `${rows.length} statistics rows uploaded successfully` });
+  } catch (err) { next(err); }
+});
+
 // Get all statistics history entries
 app.get('/api/statistics', async (req, res, next) => {
   try {
     const result = await db.query('SELECT * FROM statistics_history ORDER BY period DESC, data_type ASC');
-    res.json(db.snakeToCamel(result.rows));
+    // Map DB columns to what CMS displays: category, label, value, unit, year
+    const rows = result.rows.map(r => ({
+      id: r.id, category: r.data_type, label: r.notes || r.data_type,
+      value: r.value, unit: r.unit, year: r.period,
+      uploadedBy: r.uploaded_by, uploadedAt: r.uploaded_at
+    }));
+    res.json(rows);
   } catch (err) {
     next(err);
   }
@@ -1746,6 +1746,28 @@ app.get(/^\/portal(?:\/.*)?$/, (req, res) => {
   res.sendFile(path.join(__dirname, 'portal', 'dist', 'index.html'));
 });
 
+// Serve /images/* and /guides/* from local portal/dist if available, else redirect to CloudFront
+const portalDistImages = path.join(__dirname, 'portal', 'dist', 'images');
+const portalDistGuides = path.join(__dirname, 'portal', 'dist', 'guides');
+const CF_URL = process.env.CLOUDFRONT_URL || 'https://d3s0m5di5jxhm9.cloudfront.net';
+app.use('/images', (req, res, next) => {
+  const local = path.join(portalDistImages, req.path);
+  if (require('fs').existsSync(local)) return res.sendFile(local);
+  res.redirect(302, `${CF_URL}/images${req.url}`);
+});
+app.use('/guides', (req, res, next) => {
+  const local = path.join(portalDistGuides, req.path);
+  if (require('fs').existsSync(local)) return res.sendFile(local);
+  res.redirect(302, `${CF_URL}/guides${req.url}`);
+});
+
+// Favicon
+app.get('/favicon.ico', (req, res) => {
+  const fav = path.join(__dirname, 'portal', 'dist', 'favicon.svg');
+  if (require('fs').existsSync(fav)) return res.sendFile(fav);
+  res.status(204).end();
+});
+
 // Serve root homepage statically (Admin CMS)
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'cms-admin.html'));
@@ -1792,6 +1814,8 @@ async function runMigrationsInline() {
     await client.query(`CREATE TABLE IF NOT EXISTS bursaries (id VARCHAR(50) PRIMARY KEY, name TEXT, school TEXT, field_of_study TEXT, academic_year VARCHAR(50), status VARCHAR(50) DEFAULT 'Active', amount VARCHAR(50), photo_url TEXT, guidelines_url TEXT, bio TEXT, achievement TEXT, focus TEXT, target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
     await client.query(`ALTER TABLE bursaries ADD COLUMN IF NOT EXISTS achievement TEXT;`);
     await client.query(`ALTER TABLE bursaries ADD COLUMN IF NOT EXISTS focus TEXT;`);
+    await client.query(`ALTER TABLE bursaries ADD COLUMN IF NOT EXISTS education TEXT;`);
+    await client.query(`ALTER TABLE bursaries ADD COLUMN IF NOT EXISTS background TEXT;`);
     await client.query(`CREATE TABLE IF NOT EXISTS leadership (id VARCHAR(50) PRIMARY KEY, name TEXT NOT NULL, role TEXT NOT NULL, image_url TEXT, bio TEXT, display_order INT DEFAULT 0, status VARCHAR(50) DEFAULT 'Active', target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
     await client.query(`CREATE TABLE IF NOT EXISTS space_content (id VARCHAR(50) PRIMARY KEY, title TEXT, slug VARCHAR(100), category VARCHAR(100), content TEXT, summary TEXT, pdf_link TEXT, image TEXT, status VARCHAR(50) DEFAULT 'Published', target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
     await client.query(`CREATE TABLE IF NOT EXISTS recycle_bin (id VARCHAR(50) PRIMARY KEY, deleted_at DATE DEFAULT CURRENT_DATE, original_collection VARCHAR(50), item_data JSONB);`);

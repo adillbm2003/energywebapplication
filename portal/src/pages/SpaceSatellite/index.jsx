@@ -40,7 +40,7 @@ export default function SpaceSatellite() {
         subtitle="Bermuda - a strategic jurisdiction for space industry investment, satellite filing, and earth station operations."
 
         breadcrumbs={[{ label: 'Space & Satellite', to: ROUTES.spaceSatellite }]}
-        image={PAGE_IMAGES.space}
+        image={PAGE_IMAGES.spaceSatellites}
       />
 
 
@@ -79,7 +79,7 @@ export default function SpaceSatellite() {
 
               <img
 
-                src={PAGE_IMAGES.space}
+                src={PAGE_IMAGES.satellite}
 
                 alt=""
 
@@ -109,7 +109,7 @@ export default function SpaceSatellite() {
 
             {pages.map((page) => {
               const pageData = spacePages[page.slug]
-              const image = pageData?.image || PAGE_IMAGES.space
+              const image = pageData?.image || PAGE_IMAGES.satellite
 
               return (
               <Link

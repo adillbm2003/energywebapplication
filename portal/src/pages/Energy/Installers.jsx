@@ -31,7 +31,7 @@ export default function Installers() {
       <section className="section-padding">
         <div className="container-page">
           <SectionHeading
-            title="Certified Installers"
+            title="Registered Solar PV Installers"
             subtitle="All companies listed below are registered with the Department of Energy. Contact them directly for quotes and installation services."
           />
 

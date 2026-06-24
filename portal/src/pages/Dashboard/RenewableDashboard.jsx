@@ -32,7 +32,7 @@ export default function RenewableDashboard() {
     <section className="section-padding">
       <div className="container-page space-y-10">
         <div className="overflow-hidden rounded-xl border border-slate-200">
-          <SafeImage src={PAGE_IMAGES.solar} alt="" className="aspect-[21/6] w-full object-cover" />
+          <SafeImage src={PAGE_IMAGES.solarFieldBermuda} alt="" className="aspect-[21/6] w-full object-cover" />
         </div>
 
         <DashboardFilters year={year} onYearChange={setYear} years={years} />

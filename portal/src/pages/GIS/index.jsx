@@ -42,7 +42,7 @@ export default function GIS() {
           { label: 'Data & GIS', to: ROUTES.dashboard },
           { label: 'GIS Heat Map', to: ROUTES.gis },
         ]}
-        image={PAGE_IMAGES.grid}
+        image={PAGE_IMAGES.gisHeatmap}
       />
 
       <section className="section-padding">

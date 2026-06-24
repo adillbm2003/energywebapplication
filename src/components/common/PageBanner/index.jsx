@@ -19,7 +19,7 @@ export default function PageBanner({ title, subtitle, breadcrumbs = [], image, c
             aria-hidden="true"
           />
           <div className="absolute right-0 top-0 hidden h-full w-2/5 overflow-hidden md:block" aria-hidden="true">
-            <img src={image} alt="" className="h-full w-full object-cover" />
+            <img src={image} alt="" className="h-full w-full object-cover object-top" />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-50 via-slate-50/80 to-transparent" />
           </div>
         </>

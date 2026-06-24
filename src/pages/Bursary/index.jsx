@@ -99,6 +99,18 @@ export default function Bursary() {
                     </div>
                   </div>
                   <div className="space-y-3 p-5">
+                    {recipient.education && (
+                      <div>
+                        <p className="text-caption font-semibold uppercase tracking-wider text-teal-700">Education</p>
+                        <p className="mt-1 text-body-small text-slate-600">{recipient.education}</p>
+                      </div>
+                    )}
+                    {recipient.background && (
+                      <div>
+                        <p className="text-caption font-semibold uppercase tracking-wider text-teal-700">Background</p>
+                        <p className="mt-1 text-body-small text-slate-600">{recipient.background}</p>
+                      </div>
+                    )}
                     {recipient.achievement && (
                       <div>
                         <p className="text-caption font-semibold uppercase tracking-wider text-teal-700">Achievement</p>

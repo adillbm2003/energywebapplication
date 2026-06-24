@@ -38,7 +38,7 @@ export default function Projects() {
         title="Energy Projects & Government Initiatives"
         subtitle="Major projects driving Bermuda's energy transition."
         breadcrumbs={[{ label: 'Projects', to: '/projects' }]}
-        image={PAGE_IMAGES.solar}
+        image={PAGE_IMAGES.govSolarField}
       />
 
       <section className="section-padding">

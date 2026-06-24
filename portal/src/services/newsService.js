@@ -11,7 +11,11 @@ export const newsService = {
       id: n.id,
       title: n.title,
       summary: n.summary,
-      content: n.content,
+      content: Array.isArray(n.content)
+        ? n.content
+        : n.content
+          ? n.content.split(/\r?\n\r?\n+/).map(s => s.trim()).filter(Boolean)
+          : [],
       image: n.image,
       publishDate: n.publishDate,
       slug: slugify(n.title) || n.id,

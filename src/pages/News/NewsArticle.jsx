@@ -43,8 +43,8 @@ export default function NewsArticle() {
 
           <SafeImage
             src={resolveNewsImage(article)}
-            alt=""
-            className="mb-8 w-full rounded-lg object-cover max-h-96"
+            alt={article.title}
+            className="mb-8 w-full rounded-xl object-contain"
           />
 
           <div className="prose prose-slate max-w-none">

@@ -18,11 +18,13 @@ export default function Logo({
       <div
         className={cn(
           'flex shrink-0 items-center justify-center overflow-hidden bg-white',
-          isCompact || isHeader
-            ? 'h-10 w-10 rounded-md p-0.5 lg:h-12 lg:w-12'
+          isCompact
+            ? 'h-10 w-10 rounded-md p-0.5'
+            : isHeader
+            ? 'h-14 w-14 rounded-lg p-0.5 lg:h-16 lg:w-16'
             : isFooter
               ? 'h-16 w-16 rounded-lg p-1'
-              : 'h-12 w-12 rounded-lg p-1 sm:h-14 sm:w-14',
+              : 'h-14 w-14 rounded-lg p-1 sm:h-16 sm:w-16',
         )}
       >
         <img

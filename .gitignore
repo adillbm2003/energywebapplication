@@ -48,3 +48,7 @@ Thumbs.db
 *.swp
 *.swo
 .vercel
+
+# Deployment zip artifacts
+*.zip
+.env.vercel.prod

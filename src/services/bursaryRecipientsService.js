@@ -37,6 +37,8 @@ export const bursaryRecipientsService = {
         fieldOfStudy: r.fieldOfStudy || r.field_of_study,
         academicYear: r.academicYear || r.academic_year,
         photoUrl: toRelativeUrl(r.photoUrl || r.photo_url) || '/images/portrait.jpg',
+        education: r.education || '',
+        background: r.background || '',
         achievement: r.achievement || r.bio || '',
         focus: r.focus || '',
         status: r.status,

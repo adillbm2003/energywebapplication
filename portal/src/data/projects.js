@@ -13,7 +13,7 @@ export const projects = [
     expectedCompletion: '2028-06-30',
     progress: 45,
     budget: '$8.2M',
-    image: PAGE_IMAGES.solar,
+    image: PAGE_IMAGES.bhcHousing,
     milestones: [
       { title: 'Programme design approved', date: '2024-06-01', completed: true },
       { title: 'Site assessments completed', date: '2025-03-01', completed: true },
@@ -25,7 +25,7 @@ export const projects = [
       { title: 'Community Solar Guidelines', url: '#', size: '890 KB' },
     ],
     gallery: [
-      PAGE_IMAGES.solar,
+      PAGE_IMAGES.bhcHousing,
     ],
   },
   {
@@ -40,7 +40,7 @@ export const projects = [
     expectedCompletion: '2027-12-31',
     progress: 30,
     budget: '$1.8M',
-    image: PAGE_IMAGES.solarRooftop,
+    image: PAGE_IMAGES.balconySolar,
     milestones: [
       { title: 'Pilot framework approved', date: '2025-01-15', completed: true },
       { title: 'First installations', date: '2025-08-01', completed: true },
@@ -64,7 +64,7 @@ export const projects = [
     expectedCompletion: '2027-06-30',
     progress: 62,
     budget: '$12.5M',
-    image: PAGE_IMAGES.solarCommercial,
+    image: PAGE_IMAGES.govSolarField,
     milestones: [
       { title: 'Energy audits completed', date: '2024-01-31', completed: true },
       { title: 'Phase 1 installations', date: '2025-06-30', completed: true },
@@ -86,7 +86,7 @@ export const projects = [
     expectedCompletion: '2028-03-31',
     progress: 35,
     budget: '$15.0M',
-    image: PAGE_IMAGES.bus,
+    image: PAGE_IMAGES.electricBuses,
     milestones: [
       { title: 'Fleet assessment', date: '2024-03-01', completed: true },
       { title: 'Pilot electric buses', date: '2025-12-31', completed: true },
@@ -107,7 +107,7 @@ export const projects = [
     expectedCompletion: '2026-12-31',
     progress: 72,
     budget: '$6.4M',
-    image: PAGE_IMAGES.efficiency,
+    image: PAGE_IMAGES.balconySolar,
     milestones: [
       { title: 'Audits complete', date: '2024-01-01', completed: true },
       { title: 'Phase 1 retrofits', date: '2025-06-30', completed: true },
@@ -127,7 +127,7 @@ export const projects = [
     expectedCompletion: '2027-06-30',
     progress: 40,
     budget: '$4.2M',
-    image: PAGE_IMAGES.charging,
+    image: PAGE_IMAGES.electricBus,
     milestones: [
       { title: 'Site identification', date: '2025-01-15', completed: true },
       { title: 'Hamilton stations', date: '2025-08-01', completed: true },

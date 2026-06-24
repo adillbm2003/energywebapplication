@@ -170,7 +170,7 @@ export const educationResources = [
     description: 'A practical room-by-room checklist for Bermuda homeowners: LED lighting, ENERGY STAR appliances, smart thermostat settings, insulation checks, and BELCO time-of-use rate tips to significantly lower your electricity bill.',
     downloadUrl: '#',
     fileSize: '890 KB',
-    image: PAGE_IMAGES.efficiency,
+    image: PAGE_IMAGES.balconySolar,
     relatedRoute: ROUTES.simulator,
   },
   {
@@ -181,7 +181,7 @@ export const educationResources = [
     description: 'Everything you need to know about owning, charging, and maintaining an EV in Bermuda — including duty concessions, public charging locations, BELCO EV tariffs, and range considerations for the island.',
     downloadUrl: '#',
     fileSize: '1.5 MB',
-    image: PAGE_IMAGES.ev,
+    image: PAGE_IMAGES.electricBuses,
     relatedRoute: ROUTES.transitionDashboard,
   },
   {
@@ -192,7 +192,7 @@ export const educationResources = [
     description: 'Simple daily actions — from reducing phantom loads to composting and water conservation — that help Bermuda households reduce their carbon footprint and contribute to the island\'s 2035 energy transition goals.',
     downloadUrl: '#',
     fileSize: '1.1 MB',
-    image: PAGE_IMAGES.grid,
+    image: PAGE_IMAGES.floatingSolar,
     relatedRoute: ROUTES.education,
   },
   {
@@ -203,7 +203,7 @@ export const educationResources = [
     description: 'Educational video series introducing satellite technology, orbital mechanics, ground station operations, and Bermuda\'s strategic role in global space services and telecommunications infrastructure.',
     videoUrl: '#',
     duration: '24 min',
-    image: PAGE_IMAGES.space,
+    image: PAGE_IMAGES.satellite,
     relatedRoute: ROUTES.spaceSatellite,
   },
   {
@@ -214,7 +214,7 @@ export const educationResources = [
     description: 'How Bermuda\'s net metering framework works under the Electricity Act 2016: how excess solar or wind generation is exported to the BELCO grid, how credits appear on your bill, and the current export rate structure.',
     downloadUrl: '#',
     fileSize: '650 KB',
-    image: PAGE_IMAGES.energy,
+    image: PAGE_IMAGES.solarFieldBermuda,
     relatedRoute: ROUTES.policies,
   },
   {
@@ -236,7 +236,7 @@ export const educationResources = [
     description: 'Career pathways for Bermudian students in the growing energy and clean technology sectors — from electrical engineering and solar installation to energy policy, project finance, and environmental science.',
     downloadUrl: '#',
     fileSize: '1.8 MB',
-    image: PAGE_IMAGES.education,
+    image: PAGE_IMAGES.educationOutreach,
     relatedRoute: ROUTES.bursary,
   },
   {
@@ -247,7 +247,7 @@ export const educationResources = [
     description: 'Step-by-step guide to conducting a home energy audit in Bermuda: identifying where your electricity goes, using a plug-in energy meter, reading your BELCO bill, and prioritising upgrades for the best return on investment.',
     downloadUrl: '#',
     fileSize: '1.0 MB',
-    image: PAGE_IMAGES.efficiency,
+    image: PAGE_IMAGES.bhcHousing,
     relatedRoute: ROUTES.simulator,
   },
   {
@@ -258,7 +258,7 @@ export const educationResources = [
     description: 'How Bermuda\'s traditional architecture — white roofs, deep overhangs, natural ventilation — embodies passive solar design. Modern green building strategies to reduce cooling loads and meet Bermuda\'s planning requirements.',
     downloadUrl: '#',
     fileSize: '1.4 MB',
-    image: PAGE_IMAGES.home,
+    image: PAGE_IMAGES.bhcHousing,
     relatedRoute: ROUTES.education,
   },
   {
@@ -269,7 +269,7 @@ export const educationResources = [
     description: 'Guide to EV charging in Bermuda: Level 1 (120V), Level 2 (240V) home chargers, and public DC fast chargers. Covers BELCO EV tariff, installation costs ($800–$2,000), and the government\'s expanding public charging network.',
     downloadUrl: '#',
     fileSize: '1.2 MB',
-    image: PAGE_IMAGES.ev,
+    image: PAGE_IMAGES.electricBus,
     relatedRoute: ROUTES.vehicles,
   },
   {
@@ -280,7 +280,7 @@ export const educationResources = [
     description: 'Bermuda\'s pathway to a cleaner energy future: from the 2010 Solar Rebate Programme and 2016 Electricity Act to the 2023 electric bus fleet and the 2025 14.3 MW distributed generation target. Milestones, policies, and future goals.',
     downloadUrl: '#',
     fileSize: '1.6 MB',
-    image: PAGE_IMAGES.energy,
+    image: PAGE_IMAGES.govSolarField,
     relatedRoute: ROUTES.transitionDashboard,
   },
 ]

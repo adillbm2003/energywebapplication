@@ -89,7 +89,7 @@ export default function Education() {
         title="Education & Public Awareness Centre"
         subtitle="Official energy guides, infographics, and learning resources from the Department of Energy."
         breadcrumbs={[{ label: 'Education', to: '/education' }]}
-        image={PAGE_IMAGES.education}
+        image={PAGE_IMAGES.educationOutreach}
       />
 
       <section className="section-padding">

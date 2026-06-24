@@ -104,10 +104,11 @@ function StatCard({ label, value, icon, sub }) {
 }
 
 const PRIORITIES = [
-  'Supporting electric vehicle adoption and charging infrastructure planning',
+  'Supporting electric vehicle adoption across Bermuda',
   "Tracking the island's vehicle fleet composition by fuel type",
   'Promoting efficient transport choices for residents and businesses',
   "Aligning transport policy with Bermuda's wider energy transition goals",
+  'Public EV charging infrastructure — coming soon',
 ]
 
 export default function Vehicles() {

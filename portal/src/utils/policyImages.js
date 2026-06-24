@@ -11,24 +11,24 @@ const CATEGORY_IMAGES = {
 }
 
 const TAG_IMAGES = [
-  ['charging', PAGE_IMAGES.charging],
-  ['satellite', PAGE_IMAGES.space],
-  ['space', PAGE_IMAGES.space],
+  ['charging', PAGE_IMAGES.electricBus],
+  ['satellite', PAGE_IMAGES.satellite],
+  ['space', PAGE_IMAGES.spaceSatellites],
   ['telecommunications', PAGE_IMAGES.telecom],
   ['broadcasting', PAGE_IMAGES.telecom],
-  ['hydrogen', PAGE_IMAGES.grid],
-  ['efficiency', PAGE_IMAGES.efficiency],
-  ['solar', PAGE_IMAGES.solar],
-  ['renewable', PAGE_IMAGES.solar],
-  ['EV', PAGE_IMAGES.ev],
-  ['fuels', PAGE_IMAGES.grid],
+  ['hydrogen', PAGE_IMAGES.windTurbine],
+  ['efficiency', PAGE_IMAGES.balconySolar],
+  ['solar', PAGE_IMAGES.solarFieldBermuda],
+  ['renewable', PAGE_IMAGES.govSolarField],
+  ['EV', PAGE_IMAGES.electricBuses],
+  ['fuels', PAGE_IMAGES.hamiltonStreet],
 ]
 
 export function policyImage({ category, tags = [], sector }) {
-  if (sector === 'Space and Satellite') return PAGE_IMAGES.space
+  if (sector === 'Space and Satellite') return PAGE_IMAGES.spaceSatellites
   if (sector === 'Telecommunications') return PAGE_IMAGES.telecom
-  if (sector === 'Renewable Energy') return PAGE_IMAGES.solar
-  if (sector === 'Fuels') return PAGE_IMAGES.grid
+  if (sector === 'Renewable Energy') return PAGE_IMAGES.solarFieldBermuda
+  if (sector === 'Fuels') return PAGE_IMAGES.hamiltonStreet
 
   for (const [tag, image] of TAG_IMAGES) {
     if (tags.includes(tag)) return image

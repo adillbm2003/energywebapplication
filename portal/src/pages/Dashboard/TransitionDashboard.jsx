@@ -26,7 +26,7 @@ export default function TransitionDashboard() {
     <section className="section-padding">
       <div className="container-page space-y-10">
         <div className="overflow-hidden rounded-xl border border-slate-200">
-          <SafeImage src={PAGE_IMAGES.ev} alt="" className="aspect-[21/6] w-full object-cover" />
+          <SafeImage src={PAGE_IMAGES.electricBus} alt="" className="aspect-[21/6] w-full object-cover" />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

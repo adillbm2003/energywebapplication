@@ -7,10 +7,10 @@ import { useAsyncData } from '../../hooks/useAsyncData'
 import { fetchFromAPI } from '../../services/api'
 
 const VALUES = [
-  { title: 'Transparency', description: 'Open, accountable governance in energy policy and public engagement.', image: PAGE_IMAGES.government },
-  { title: 'Sustainability', description: 'Long-term environmental stewardship and climate resilience for Bermuda.', image: PAGE_IMAGES.wind },
-  { title: 'Innovation', description: 'Embracing new technologies to modernise our energy systems.', image: PAGE_IMAGES.innovation },
-  { title: 'Equity', description: 'Ensuring fair access to clean energy benefits for all Bermudians.', image: PAGE_IMAGES.consultation },
+  { title: 'Transparency', description: 'Open, accountable governance in energy policy and public engagement.', image: PAGE_IMAGES.solarWorkers },
+  { title: 'Sustainability', description: 'Long-term environmental stewardship and climate resilience for Bermuda.', image: PAGE_IMAGES.floatingSolar },
+  { title: 'Innovation', description: 'Embracing new technologies to modernise our energy systems.', image: PAGE_IMAGES.satellite },
+  { title: 'Equity', description: 'Ensuring fair access to clean energy benefits for all Bermudians.', image: PAGE_IMAGES.bhcHousing },
 ]
 
 const PORTRAIT_CYCLE = [
@@ -51,8 +51,8 @@ export default function About() {
         <div className="container-page space-y-16">
           <ContentBlock
             title="Our Mission"
-            image={PAGE_IMAGES.bermuda}
-            imageAlt="Bermuda coastline"
+            image={PAGE_IMAGES.hamiltonStreet}
+            imageAlt="Hamilton, Bermuda"
           >
             <p>
               The Department of Energy is responsible for developing and implementing Bermuda&apos;s energy policy,
@@ -68,8 +68,8 @@ export default function About() {
           <ContentBlock
             title="Our Vision"
             subtitle="A cleaner, more resilient Bermuda"
-            image={PAGE_IMAGES.grid}
-            imageAlt="Bermuda renewable energy grid"
+            image={PAGE_IMAGES.bermudaVision}
+            imageAlt="Aerial view of Bermuda coastline"
             reverse
           >
             <p className="text-lg font-medium text-navy-900">

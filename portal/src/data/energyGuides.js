@@ -55,7 +55,7 @@ export const energyAwarenessGuides = [
     guidanceNote: 'Select energy-efficient appliances — washing machines, dryers, water heaters.',
     description:
       'Practical guidance to audit home energy loss, install LED lighting, reduce phantom load draws, and access Bermuda Government energy efficiency rebates.',
-    learnMoreTo: ROUTES.simulator,
+    learnMoreTo: ROUTES.education,
     downloadTitle: 'Home Energy Efficiency Guide',
     pdfUrl: null,
   },

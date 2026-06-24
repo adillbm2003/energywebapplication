@@ -41,14 +41,16 @@ export default function NewsArticle() {
             <span className="text-sm text-slate-500">by {article.author}</span>
           </div>
 
-          <SafeImage
-            src={resolveNewsImage(article)}
-            alt=""
-            className="mb-8 w-full rounded-lg object-cover max-h-96"
-          />
+          <div className="mb-8 flex justify-center rounded-xl overflow-hidden bg-slate-50">
+            <SafeImage
+              src={resolveNewsImage(article)}
+              alt=""
+              className="max-h-[560px] w-auto max-w-full object-contain"
+            />
+          </div>
 
           <div className="prose prose-slate max-w-none">
-            {article.content.map((paragraph, i) => (
+            {(Array.isArray(article.content) ? article.content : [article.content].filter(Boolean)).map((paragraph, i) => (
               <p key={i} className="mb-4 text-slate-600 leading-relaxed text-lg">
                 {paragraph}
               </p>

@@ -34,9 +34,9 @@ export default function NewsCard({ article }) {
 
           src={resolveNewsImage(article)}
 
-          alt=""
+          alt={article.title}
 
-          className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          className="h-full w-full object-cover object-top transition-transform duration-300 group-hover:scale-105"
 
         />
 

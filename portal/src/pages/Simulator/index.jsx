@@ -16,7 +16,7 @@ export default function Simulator() {
           { label: 'Data & GIS', to: ROUTES.dashboard },
           { label: 'Energy Simulator', to: ROUTES.simulator },
         ]}
-        image={PAGE_IMAGES.home}
+        image={PAGE_IMAGES.bhcHousing}
       />
       <BermudaEnergySimulator />
     </>

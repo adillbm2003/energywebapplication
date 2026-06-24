@@ -98,7 +98,6 @@ export default function ProjectDetail() {
                   <div><dt className="text-slate-500">Location</dt><dd className="font-medium">{project.location}</dd></div>
                   <div><dt className="text-slate-500">Start Date</dt><dd>{formatDate(project.startDate)}</dd></div>
                   <div><dt className="text-slate-500">Expected Completion</dt><dd>{formatDate(project.expectedCompletion)}</dd></div>
-                  <div><dt className="text-slate-500">Budget</dt><dd className="font-medium">{project.budget}</dd></div>
                 </dl>
               </div>
 

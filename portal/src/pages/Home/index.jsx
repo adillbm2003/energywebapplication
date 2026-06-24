@@ -220,7 +220,7 @@ export default function Home() {
       <section className="section-padding bg-white" aria-labelledby="installers-heading">
         <div className="container-page">
           <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
-            <SectionHeading title="Certified PV Installers" subtitle="Registered professionals for your renewable energy project" className="mb-0" />
+            <SectionHeading title="Registered Solar PV Installers" subtitle="Registered professionals for your renewable energy project" className="mb-0" />
             <Button to={ROUTES.installers} variant="outline">View All Installers</Button>
           </div>
           <div className="flex flex-col gap-3">

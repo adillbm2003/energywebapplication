@@ -5,6 +5,7 @@ export const ROUTES = {
   installers: '/energy/installers',
   vehicles: '/energy/vehicles',
   electronicCommunications: '/electronic-communications',
+  broadcasting: '/broadcasting',
   spaceSatellite: '/space-satellite',
   policies: '/policies',
   consultations: '/consultations',

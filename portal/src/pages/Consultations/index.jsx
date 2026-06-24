@@ -10,13 +10,14 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { EXTERNAL_LINKS } from '../../constants/externalLinks'
 
 function ConsultationCard({ consultation }) {
+  const isOpen = consultation.status === 'Open' || consultation.status === 'active'
   const forumUrl = consultation.externalUrl || EXTERNAL_LINKS.consultationsForum
 
   return (
     <article className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow transition-shadow hover:card-shadow-hover">
       <div className="card-padding">
-        <Badge status={consultation.status === 'Open' || consultation.status === 'active' ? 'active' : 'completed'}>
-          {consultation.status === 'Open' || consultation.status === 'active' ? 'Open for Submissions' : 'Closed'}
+        <Badge status={isOpen ? 'active' : 'completed'}>
+          {isOpen ? 'Open for Submissions' : 'Closed'}
         </Badge>
         <h3 className="mt-3 text-lg font-semibold text-navy-900">{consultation.title}</h3>
         {consultation.summary && (
@@ -36,17 +37,19 @@ function ConsultationCard({ consultation }) {
             </div>
           )}
         </dl>
-        <div className="mt-5">
-          <Button
-            href={forumUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            variant="primary"
-            size="sm"
-          >
-            Submit Your Response →
-          </Button>
-        </div>
+        {isOpen && (
+          <div className="mt-5">
+            <Button
+              href={forumUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="primary"
+              size="sm"
+            >
+              Submit Your Response →
+            </Button>
+          </div>
+        )}
       </div>
     </article>
   )

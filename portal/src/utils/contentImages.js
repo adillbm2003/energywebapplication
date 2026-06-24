@@ -2,30 +2,32 @@ import { PAGE_IMAGES } from '../constants/branding'
 
 /** Default images when CMS/API items have no uploaded photo */
 export const CONTENT_PLACEHOLDERS = {
-  default: PAGE_IMAGES.solar,
-  project: PAGE_IMAGES.solar,
-  news: PAGE_IMAGES.energy,
-  consultation: PAGE_IMAGES.consultation,
-  installer: PAGE_IMAGES.solar,
-  education: PAGE_IMAGES.education,
-  policy: PAGE_IMAGES.policy,
-  bursary: PAGE_IMAGES.education,
-  progress: PAGE_IMAGES.analytics,
+  default: PAGE_IMAGES.solarFieldBermuda,
+  project: PAGE_IMAGES.solarFieldBermuda,
+  news: PAGE_IMAGES.solarFieldBermuda,
+  consultation: PAGE_IMAGES.hamiltonStreet,
+  installer: PAGE_IMAGES.solarWorkers,
+  education: PAGE_IMAGES.educationOutreach,
+  policy: PAGE_IMAGES.hamiltonStreet,
+  bursary: PAGE_IMAGES.educationOutreach,
+  progress: PAGE_IMAGES.gisHeatmap,
 }
 
 const PROJECT_CATEGORY_IMAGES = {
-  'Community Solar': PAGE_IMAGES.solar,
-  Solar: PAGE_IMAGES.solar,
-  Transport: PAGE_IMAGES.transport,
-  Efficiency: PAGE_IMAGES.efficiency,
+  'Community Solar': PAGE_IMAGES.bhcHousing,
+  Solar: PAGE_IMAGES.solarFieldBermuda,
+  Transport: PAGE_IMAGES.electricBuses,
+  Efficiency: PAGE_IMAGES.balconySolar,
 }
 
 const NEWS_CATEGORY_IMAGES = {
-  Policy: PAGE_IMAGES.policy,
-  Solar: PAGE_IMAGES.solar,
-  Transport: PAGE_IMAGES.transport,
-  Innovation: PAGE_IMAGES.innovation,
-  Community: PAGE_IMAGES.solar,
+  Policy: PAGE_IMAGES.hamiltonStreet,
+  Solar: PAGE_IMAGES.solarFieldBermuda,
+  Transport: PAGE_IMAGES.electricBuses,
+  Innovation: PAGE_IMAGES.satellite,
+  Community: PAGE_IMAGES.bhcHousing,
+  Space: PAGE_IMAGES.satellite,
+  Education: PAGE_IMAGES.educationOutreach,
 }
 
 /** Resolve image URL for CMS content — uses upload when present, otherwise topic placeholder */
