@@ -4,23 +4,21 @@ import EVChart from '../../components/dashboard/EVChart'
 import DashboardPanelImage from '../../components/dashboard/DashboardPanelImage'
 import SafeImage from '../../components/common/SafeImage'
 import SectionHeading from '../../components/ui/SectionHeading'
-import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { dashboardService } from '../../services'
 import { formatNumber } from '../../utils/format'
 import { PAGE_IMAGES } from '../../constants/branding'
+import { transitionKPIs, evAdoptionData, evByCategory, chargingInfrastructure, publicTransportElectrification } from '../../data/dashboard'
 
 export default function TransitionDashboard() {
   useDocumentTitle('Energy Transition Dashboard')
 
-  const { data: kpis, loading } = useAsyncData(() => dashboardService.getTransitionKPIs(), [])
-  const { data: evData } = useAsyncData(() => dashboardService.getEVAdoption(), [])
-  const { data: evCategories } = useAsyncData(() => dashboardService.getEVByCategory(), [])
-  const { data: charging } = useAsyncData(() => dashboardService.getChargingInfrastructure(), [])
-  const { data: transport } = useAsyncData(() => dashboardService.getPublicTransport(), [])
-
-  if (loading) return <LoadingSpinner />
+  const { data: kpis } = useAsyncData(() => dashboardService.getTransitionKPIs(), [], transitionKPIs)
+  const { data: evData } = useAsyncData(() => dashboardService.getEVAdoption(), [], evAdoptionData)
+  const { data: evCategories } = useAsyncData(() => dashboardService.getEVByCategory(), [], evByCategory)
+  const { data: charging } = useAsyncData(() => dashboardService.getChargingInfrastructure(), [], chargingInfrastructure)
+  const { data: transport } = useAsyncData(() => dashboardService.getPublicTransport(), [], publicTransportElectrification)
 
   return (
     <section className="section-padding">

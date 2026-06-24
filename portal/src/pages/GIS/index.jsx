@@ -5,12 +5,15 @@ import HeatMap from '../../components/gis/HeatMap'
 import MapLegend from '../../components/gis/MapLegend'
 import MapFilters from '../../components/gis/MapFilters'
 import Button from '../../components/ui/Button'
-import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { gisService } from '../../services'
+import { gisInstallations } from '../../data/installers'
 import { ROUTES } from '../../constants/routes'
 import { formatNumber } from '../../utils/format'
+
+const defaultParishes = [...new Set(gisInstallations.map(i => i.parish))].sort()
+const defaultTypes = [...new Set(gisInstallations.map(i => i.type))].filter(Boolean).sort()
 
 export default function GIS() {
   useDocumentTitle('GIS Heat Map')
@@ -18,9 +21,9 @@ export default function GIS() {
   const [parish, setParish] = useState('all')
   const [type, setType] = useState('all')
 
-  const { data: installations, loading } = useAsyncData(() => gisService.getInstallations(), [])
-  const { data: parishes } = useAsyncData(() => gisService.getParishes(), [])
-  const { data: types } = useAsyncData(() => gisService.getTypes(), [])
+  const { data: installations } = useAsyncData(() => gisService.getInstallations(), [], gisInstallations)
+  const { data: parishes } = useAsyncData(() => gisService.getParishes(), [], defaultParishes)
+  const { data: types } = useAsyncData(() => gisService.getTypes(), [], defaultTypes)
 
   const summary = useMemo(() => {
     const list = installations ?? []
@@ -30,8 +33,6 @@ export default function GIS() {
       parishes: new Set(list.map((i) => i.parish)).size,
     }
   }, [installations])
-
-  if (loading) return <LoadingSpinner />
 
   return (
     <>

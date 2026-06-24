@@ -1,18 +1,15 @@
 import { useEffect, useState } from 'react'
 
-export function useAsyncData(fetcher, deps = []) {
-  const [data, setData] = useState(null)
-  const [loading, setLoading] = useState(true)
+export function useAsyncData(fetcher, deps = [], initialData = null) {
+  const [data, setData] = useState(initialData)
+  const [loading, setLoading] = useState(initialData === null)
   const [error, setError] = useState(null)
 
   useEffect(() => {
     let cancelled = false
-    const frame = requestAnimationFrame(() => {
-      if (!cancelled) {
-        setLoading(true)
-        setError(null)
-      }
-    })
+    // Only block with spinner when there is nothing to show yet
+    if (initialData === null) setLoading(true)
+    setError(null)
 
     fetcher()
       .then((result) => {
@@ -29,10 +26,7 @@ export function useAsyncData(fetcher, deps = []) {
         }
       })
 
-    return () => {
-      cancelled = true
-      cancelAnimationFrame(frame)
-    }
+    return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps)
 

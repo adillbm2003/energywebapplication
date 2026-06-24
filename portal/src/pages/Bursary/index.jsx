@@ -5,17 +5,14 @@ import Button from '../../components/ui/Button'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { bursaryService } from '../../services'
-import { bursaryPathwayImages } from '../../data/bursary'
+import { bursaryProgramme, bursaryFAQs, bursaryPathwayImages } from '../../data/bursary'
 import { formatDate } from '../../utils/format'
-import LoadingSpinner from '../../components/ui/LoadingSpinner'
 
 export default function Bursary() {
   useDocumentTitle('Energy Bursary Programme')
 
-  const { data: programme, loading } = useAsyncData(() => bursaryService.getProgramme(), [])
-  const { data: faqs } = useAsyncData(() => bursaryService.getFAQs(), [])
-
-  if (loading) return <LoadingSpinner />
+  const { data: programme } = useAsyncData(() => bursaryService.getProgramme(), [], bursaryProgramme)
+  const { data: faqs } = useAsyncData(() => bursaryService.getFAQs(), [], bursaryFAQs)
 
   return (
     <>

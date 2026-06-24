@@ -7,26 +7,24 @@ import DashboardFilters from '../../components/dashboard/DashboardFilters'
 import DashboardPanelImage from '../../components/dashboard/DashboardPanelImage'
 import SafeImage from '../../components/common/SafeImage'
 import SectionHeading from '../../components/ui/SectionHeading'
-import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { dashboardService } from '../../services'
 import { PAGE_IMAGES } from '../../constants/branding'
+import { renewableKPIs, solarGrowthData, capacityByType as defaultCapacity, batteryStorageData, penetrationData } from '../../data/dashboard'
 
 export default function RenewableDashboard() {
   useDocumentTitle('Renewable Energy Dashboard')
   const [year, setYear] = useState('all')
 
-  const { data: kpis, loading: kpiLoading } = useAsyncData(() => dashboardService.getRenewableKPIs(), [])
-  const { data: solarGrowth } = useAsyncData(() => dashboardService.getSolarGrowth(), [])
-  const { data: capacityByType } = useAsyncData(() => dashboardService.getCapacityByType(), [])
-  const { data: batteryData } = useAsyncData(() => dashboardService.getBatteryStorage(), [])
-  const { data: penetration } = useAsyncData(() => dashboardService.getPenetration(), [])
+  const { data: kpis } = useAsyncData(() => dashboardService.getRenewableKPIs(), [], renewableKPIs)
+  const { data: solarGrowth } = useAsyncData(() => dashboardService.getSolarGrowth(), [], solarGrowthData)
+  const { data: capacityByType } = useAsyncData(() => dashboardService.getCapacityByType(), [], defaultCapacity)
+  const { data: batteryData } = useAsyncData(() => dashboardService.getBatteryStorage(), [], batteryStorageData)
+  const { data: penetration } = useAsyncData(() => dashboardService.getPenetration(), [], penetrationData)
 
   const years = solarGrowth?.map((d) => d.year) ?? []
   const filteredSolar = year === 'all' ? solarGrowth : solarGrowth?.filter((d) => String(d.year) === year)
-
-  if (kpiLoading) return <LoadingSpinner />
 
   return (
     <section className="section-padding">
