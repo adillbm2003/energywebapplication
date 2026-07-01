@@ -63,7 +63,7 @@ const JWT_EXPIRES_IN = '2h';
 // AWS S3 Configuration
 const S3_BUCKET_NAME = process.env.AWS_S3_BUCKET || 'bermuda-doe-cms-uploads';
 const s3Client = new S3Client({
-  region: process.env.AWS_REGION || 'us-east-1',
+  region: process.env.AWS_REGION || 'us-east-2',
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY_ID || 'mock-key',
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || 'mock-secret',
@@ -97,10 +97,7 @@ app.use(cors({
     if (!origin) return callback(null, true);
     // Wildcard allows everything
     if (allowAllOrigins) return callback(null, true);
-    // Self-origin: CMS portal calling its own Railway/EB API
-    if (process.env.RAILWAY_PUBLIC_DOMAIN && origin === `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`) {
-      return callback(null, true);
-    }
+    // Approved origins (e.g. the CloudFront domain) come from APPROVED_ORIGINS
     if (approvedOrigins.includes(origin)) return callback(null, true);
     callback(new Error('Not allowed by CORS: Origin rejected'));
   },
@@ -480,7 +477,7 @@ app.get('/health', async (req, res) => {
     health.error = err.message;
   }
   
-  // Always return 200 so Railway/load-balancer health checks pass even when DB is degraded
+  // Always return 200 so the Elastic Beanstalk / load-balancer health checks pass even when DB is degraded
   res.json(health);
 });
 
@@ -503,11 +500,10 @@ app.get('/uploads/:filename', async (req, res) => {
     return res.status(400).json({ error: "Invalid filename" });
   }
 
-  // Allow configured origins (including Vercel frontend) to load images cross-origin
+  // Allow configured origins (e.g. the CloudFront frontend) to load images cross-origin
   const origin = req.headers.origin;
   const allowed = allowAllOrigins || !origin ||
-    approvedOrigins.includes(origin) ||
-    (process.env.RAILWAY_PUBLIC_DOMAIN && origin === `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`);
+    approvedOrigins.includes(origin);
   if (allowed && origin) res.setHeader('Access-Control-Allow-Origin', origin);
   res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
 

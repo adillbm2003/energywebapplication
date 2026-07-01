@@ -62,7 +62,7 @@ Enter when prompted:
 ```
 AWS Access Key ID:     <from CSV download>
 AWS Secret Access Key: <from CSV download>
-Default region name:   us-east-1
+Default region name:   us-east-2
 Default output format: json
 ```
 
@@ -74,7 +74,7 @@ Default output format: json
 # Must be globally unique — change the name if it's taken
 aws s3api create-bucket \
   --bucket energybm-uploads \
-  --region us-east-1
+  --region us-east-2
 
 # Block all public access (uploads served via presigned URLs)
 aws s3api put-public-access-block \
@@ -90,7 +90,7 @@ aws s3api put-public-access-block \
 ```bash
 aws s3api create-bucket \
   --bucket energybm-frontend \
-  --region us-east-1
+  --region us-east-2
 
 # Enable static website hosting
 aws s3 website s3://energybm-frontend/ \
@@ -127,7 +127,7 @@ aws s3api put-bucket-policy \
    - Storage: 20 GB gp2
    - **Public access: Yes** *(needed for EB to connect — restrict with security group later)*
 3. Click **Create database** — takes ~5 minutes
-4. Once created, note the **Endpoint** (looks like `energybm-db.xxxx.us-east-1.rds.amazonaws.com`)
+4. Once created, note the **Endpoint** (looks like `energybm-db.xxxx.us-east-2.rds.amazonaws.com`)
 
 ---
 
@@ -166,7 +166,7 @@ eb init
 ```
 Answer the prompts:
 ```
-region:       us-east-1
+region:       us-east-2
 application:  energybm (create new)
 platform:     Node.js 20
 SSH:          Yes (or No if you don't need shell access)
@@ -187,7 +187,7 @@ This takes ~5 minutes. Once done, get the URL:
 ```bash
 eb status
 ```
-Note the **CNAME** (looks like `energybm-prod.us-east-1.elasticbeanstalk.com`)
+Note the **CNAME** (looks like `energybm-prod.us-east-2.elasticbeanstalk.com`)
 
 ---
 
@@ -203,16 +203,20 @@ eb setenv \
   JWT_SECRET="<generate-32-char-random-string>" \
   AWS_ACCESS_KEY_ID="<s3-user-access-key-from-step-8>" \
   AWS_SECRET_ACCESS_KEY="<s3-user-secret-from-step-8>" \
-  AWS_REGION="us-east-1" \
+  AWS_REGION="us-east-2" \
   AWS_S3_BUCKET="energybm-uploads" \
-  APPROVED_ORIGINS="https://<cloudfront-domain>.cloudfront.net,https://energybm-frontend.s3-website-us-east-1.amazonaws.com" \
-  RAILWAY_PUBLIC_DOMAIN=""
+  APPROVED_ORIGINS="https://<cloudfront-domain>.cloudfront.net,https://energybm-frontend.s3-website-us-east-2.amazonaws.com"
 ```
 
 Generate a JWT secret:
 ```bash
 node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 ```
+
+> **Required:** In production the server refuses to boot (exits with an error) if
+> `JWT_SECRET` is unset or left at the built-in default. Make sure it is set here
+> before deploying, or the environment will crash-loop. Verify with
+> `eb printenv energybm-prod | grep JWT_SECRET`.
 
 ---
 
@@ -224,7 +228,7 @@ eb deploy
 
 Test it:
 ```bash
-curl http://energybm-prod.us-east-1.elasticbeanstalk.com/api/health
+curl http://energybm-prod.us-east-2.elasticbeanstalk.com/api/health
 ```
 
 ---
@@ -235,11 +239,11 @@ Set the backend URL then build:
 
 ```bash
 # Windows PowerShell:
-$env:VITE_API_URL = "http://energybm-prod.us-east-1.elasticbeanstalk.com"
+$env:VITE_API_URL = "http://energybm-prod.us-east-2.elasticbeanstalk.com"
 npm run build
 
 # Mac/Linux:
-VITE_API_URL="http://energybm-prod.us-east-1.elasticbeanstalk.com" npm run build
+VITE_API_URL="http://energybm-prod.us-east-2.elasticbeanstalk.com" npm run build
 ```
 
 Upload to S3:
@@ -253,7 +257,7 @@ aws s3 cp dist/index.html s3://energybm-frontend/index.html \
 ```
 
 Frontend is now live at:
-`http://energybm-frontend.s3-website-us-east-1.amazonaws.com`
+`http://energybm-frontend.s3-website-us-east-2.amazonaws.com`
 
 ---
 
@@ -266,7 +270,7 @@ aws cloudfront create-distribution --distribution-config '{
     "Quantity": 1,
     "Items": [{
       "Id": "S3-energybm-frontend",
-      "DomainName": "energybm-frontend.s3-website-us-east-1.amazonaws.com",
+      "DomainName": "energybm-frontend.s3-website-us-east-2.amazonaws.com",
       "CustomOriginConfig": {
         "HTTPPort": 80, "HTTPSPort": 443,
         "OriginProtocolPolicy": "http-only"
@@ -314,7 +318,7 @@ Or for a quick HTTPS backend, use **AWS Certificate Manager** + **ALB** through 
 Once CloudFront is active:
 ```bash
 # Windows PowerShell:
-$env:VITE_API_URL = "http://energybm-prod.us-east-1.elasticbeanstalk.com"
+$env:VITE_API_URL = "http://energybm-prod.us-east-2.elasticbeanstalk.com"
 npm run build
 aws s3 sync dist/ s3://energybm-frontend/ --delete
 
@@ -330,10 +334,10 @@ aws cloudfront create-invalidation \
 
 | Service | URL |
 |---------|-----|
-| Frontend (S3) | http://energybm-frontend.s3-website-us-east-1.amazonaws.com |
+| Frontend (S3) | http://energybm-frontend.s3-website-us-east-2.amazonaws.com |
 | Frontend (CloudFront HTTPS) | https://xxxx.cloudfront.net |
-| Backend (EB) | http://energybm-prod.us-east-1.elasticbeanstalk.com |
-| CMS Admin | http://energybm-prod.us-east-1.elasticbeanstalk.com (root) |
+| Backend (EB) | http://energybm-prod.us-east-2.elasticbeanstalk.com |
+| CMS Admin | http://energybm-prod.us-east-2.elasticbeanstalk.com (root) |
 | Database | RDS endpoint:5432 |
 | Uploads | S3 bucket energybm-uploads (private, presigned URLs) |
 
@@ -349,6 +353,6 @@ aws cloudfront create-invalidation \
 | `AWS_ACCESS_KEY_ID` | EB env | S3 user key |
 | `AWS_SECRET_ACCESS_KEY` | EB env | S3 user secret |
 | `AWS_S3_BUCKET` | EB env | `energybm-uploads` |
-| `AWS_REGION` | EB env | `us-east-1` |
+| `AWS_REGION` | EB env | `us-east-2` |
 | `APPROVED_ORIGINS` | EB env | CloudFront domain |
 | `NODE_ENV` | EB env | `production` |

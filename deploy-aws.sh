@@ -9,7 +9,7 @@ set -euo pipefail
 # ── CONFIG — edit these before first run ──────────────────────
 APP_NAME="energybm"
 ENV_NAME="energybm-prod"
-REGION="us-east-1"                     # change if needed
+REGION="us-east-2"                     # Ohio — matches the live energybm-prod environment
 FRONTEND_BUCKET="energybm-frontend"    # must be globally unique
 UPLOADS_BUCKET="energybm-uploads"      # must be globally unique
 NODE_VERSION="20"
