@@ -49,11 +49,18 @@ export async function fetchFromAPI(path, fallback) {
   const base = import.meta.env.VITE_API_URL ?? ''
   try {
     const res = await fetch(`${base}${path}`, { credentials: 'include' })
-    if (!res.ok) return fetchMock(fallback)
+    if (!res.ok) throw new Error(`HTTP ${res.status}`)
     const data = await res.json()
-    if (Array.isArray(data) && data.length === 0) return fetchMock(fallback)
+    // In development, mock data acts as seed content when the CMS is empty.
+    if (import.meta.env.DEV && Array.isArray(data) && data.length === 0) return fetchMock(fallback)
     return data
-  } catch {
-    return fetchMock(fallback)
+  } catch (error) {
+    // In production never substitute mock/demo content for real data — surface an
+    // empty result so pages render their empty state instead of fabricated content.
+    if (import.meta.env.DEV) return fetchMock(fallback)
+    console.warn(`API request failed for ${path}:`, error)
+    // Content lists collapse to empty (never fabricated); object-shaped fallbacks
+    // (settings, dashboard config) return their defaults to avoid runtime crashes.
+    return Array.isArray(fallback) ? [] : fallback
   }
 }

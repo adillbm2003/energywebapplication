@@ -10,7 +10,7 @@ export const news = [
     category: 'Renewable Energy',
     featured: true,
     author: 'Department of Energy',
-    publishedAt: '2026-05-15',
+    publishDate: '2026-05-15',
     image: PAGE_IMAGES.solarFieldBermuda,
     content: [
       'The Department of Energy is pleased to announce that Bermuda has surpassed 25 megawatts of installed solar photovoltaic capacity across residential, commercial, and utility-scale installations.',
@@ -27,7 +27,7 @@ export const news = [
     category: 'Transport',
     featured: true,
     author: 'Department of Energy',
-    publishedAt: '2026-04-28',
+    publishDate: '2026-04-28',
     image: PAGE_IMAGES.electricBus,
     content: [
       'A coordinated expansion of electric vehicle charging infrastructure will see new fast-charging stations installed at key locations across Bermuda.',
@@ -43,7 +43,7 @@ export const news = [
     category: 'Policy',
     featured: false,
     author: 'Department of Energy',
-    publishedAt: '2026-04-10',
+    publishDate: '2026-04-10',
     image: PAGE_IMAGES.consultation,
     content: [
       'The Department of Energy has published proposed amendments to the Clean Energy Act for public consultation.',
@@ -59,7 +59,7 @@ export const news = [
     category: 'Education',
     featured: false,
     author: 'Department of Energy',
-    publishedAt: '2026-03-22',
+    publishDate: '2026-03-22',
     image: PAGE_IMAGES.educationOutreach,
     content: [
       'The Energy Bursary Programme has awarded scholarships to twelve outstanding Bermudian students for the 2026 academic year.',
@@ -75,7 +75,7 @@ export const news = [
     category: 'Space',
     featured: false,
     author: 'Department of Energy',
-    publishedAt: '2026-03-05',
+    publishDate: '2026-03-05',
     image: PAGE_IMAGES.satellite,
     content: [
       'Bermuda continues to strengthen its position as a leading jurisdiction for space and satellite services.',
@@ -91,7 +91,7 @@ export const news = [
     category: 'Renewable Energy',
     featured: false,
     author: 'Department of Energy',
-    publishedAt: '2026-02-18',
+    publishDate: '2026-02-18',
     image: PAGE_IMAGES.bhcHousing,
     content: [
       'The Community Solar Pilot Programme allows eligible residents and small businesses to subscribe to shared solar installations.',

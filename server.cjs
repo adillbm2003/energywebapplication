@@ -45,8 +45,19 @@ async function fetchTableColumns() {
 }
 
 const app = express();
+// Trust the first proxy (nginx / Elastic Beanstalk / CloudFront) so that
+// req.secure, req.ip and express-rate-limit see the real client protocol/IP.
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 8000;
-const JWT_SECRET = process.env.JWT_SECRET || 'doe-secret-session-token-key-2026';
+const DEFAULT_JWT_SECRET = 'doe-secret-session-token-key-2026';
+const JWT_SECRET = process.env.JWT_SECRET || DEFAULT_JWT_SECRET;
+// In production a strong, explicit secret is mandatory. A guessable default
+// combined with the DB-unavailable auth fallback would allow token forgery.
+if (process.env.NODE_ENV === 'production' &&
+    (!process.env.JWT_SECRET || process.env.JWT_SECRET === DEFAULT_JWT_SECRET)) {
+  console.error('FATAL: JWT_SECRET must be set to a strong, unique value in production.');
+  process.exit(1);
+}
 const JWT_EXPIRES_IN = '2h';
 
 // AWS S3 Configuration
@@ -103,15 +114,28 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 // Rate Limiting
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100000,
+  max: 5000,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { error: 'Too many requests, please try again later.' }
 });
 app.use(globalLimiter);
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 1000,
+  max: 50,
+  standardHeaders: true,
+  legacyHeaders: false,
   message: { error: 'Too many login attempts. Please try again after 15 minutes.' }
+});
+
+// Stricter limiter for unauthenticated public form submissions (spam/abuse guard)
+const publicFormLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many submissions. Please try again later.' }
 });
 
 // ── AUTHENTICATION & RBAC MIDDLEWARES ────────────────────────────────────────
@@ -165,6 +189,30 @@ async function authenticate(req, res, next) {
     return res.status(401).json({ error: "Unauthorized: Invalid or expired token" });
   }
 }
+
+// Optional authentication: populates req.user when a valid token is present,
+// but never rejects the request. Used on the public list feeds so that
+// authenticated CMS staff receive every item (including drafts) while
+// anonymous visitors only ever see published/live content.
+function optionalAuthenticate(req, res, next) {
+  let token = req.cookies.token;
+  if (!token) {
+    const auth = req.headers['authorization'];
+    if (auth && auth.startsWith('Bearer ')) token = auth.slice(7);
+  }
+  if (!token) return next();
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = { id: decoded.id, username: decoded.username, role: decoded.role };
+  } catch (err) {
+    // Invalid/expired token on a public route — treat the caller as anonymous.
+  }
+  next();
+}
+
+// Statuses that represent pre-publication / embargoed / hidden content and must
+// never be exposed on the unauthenticated public distribution feed.
+const NON_PUBLIC_STATUSES = ['Draft', 'Scheduled', 'Pending', 'Hidden'];
 
 function authorize(...allowedRoles) {
   return (req, res, next) => {
@@ -449,6 +497,12 @@ app.get('/readiness', async (req, res) => {
 app.get('/uploads/:filename', async (req, res) => {
   const filename = req.params.filename;
 
+  // Reject path-traversal attempts — only a bare filename is ever valid here.
+  if (!filename || filename.includes('/') || filename.includes('\\') ||
+      filename.includes('..') || path.isAbsolute(filename)) {
+    return res.status(400).json({ error: "Invalid filename" });
+  }
+
   // Allow configured origins (including Vercel frontend) to load images cross-origin
   const origin = req.headers.origin;
   const allowed = allowAllOrigins || !origin ||
@@ -576,26 +630,21 @@ app.post('/api/auth/forgot-password', async (req, res, next) => {
     );
 
     await logAction(user.username, "Requested password reset", "auth", user.username);
-    // Token is NOT logged to prevent exposure in log aggregators. Deliver via email in production.
-
-    // Return the token in development environments to ease testing
-    const devToken = process.env.NODE_ENV !== 'production' ? token : null;
+    // The reset token is delivered out-of-band (email) only — it is never
+    // returned in the API response, even in development, to avoid leaking it via
+    // response logging or shared dev environments.
 
     res.json({
       success: true,
-      message: "If this email matches an authorized staff account, reset instructions will be sent shortly.",
-      token: devToken
+      message: "If this email matches an authorized staff account, reset instructions will be sent shortly."
     });
   } catch (err) {
     next(err);
   }
 });
 
-app.post('/api/auth/reset-password', async (req, res, next) => {
+app.post('/api/auth/reset-password', validate(schemas.resetPassword), async (req, res, next) => {
   const { token, newPassword } = req.body;
-  if (!token || !newPassword) {
-    return res.status(400).json({ error: "Token and new password are required" });
-  }
   try {
     const result = await db.query(
       'SELECT * FROM users WHERE reset_token = $1 AND reset_token_expires > NOW()',
@@ -987,7 +1036,7 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
 });
 
 // ── PUBLIC CONTACT & NEWSLETTER ENDPOINTS ────────────────────────────────────
-app.post('/api/contact', validate(schemas.contact), async (req, res, next) => {
+app.post('/api/contact', publicFormLimiter, validate(schemas.contact), async (req, res, next) => {
   try {
     const { name, email, subject, message } = req.body;
     // Log the submission to the audit trail so CMS users can see it
@@ -1000,7 +1049,7 @@ app.post('/api/contact', validate(schemas.contact), async (req, res, next) => {
   }
 });
 
-app.post('/api/newsletter', validate(schemas.newsletter), async (req, res, next) => {
+app.post('/api/newsletter', publicFormLimiter, validate(schemas.newsletter), async (req, res, next) => {
   try {
     const { email } = req.body;
     await logAction(email, 'Newsletter subscription', 'newsletter', email);
@@ -1015,7 +1064,6 @@ app.post('/api/newsletter', validate(schemas.newsletter), async (req, res, next)
 // ── SYSTEM CONFIGURATION & DATA API ENDPOINTS ───────────────────────────────
 app.get('/api/db', authenticate, async (req, res, next) => {
   try {
-    await runPostgresScheduler();
     const data = await getFullDb();
     res.json(data);
   } catch (err) {
@@ -1107,11 +1155,21 @@ function makeCollectionRoutes(collectionName) {
   const tableName = collectionToTable[collectionName];
 
   // GET List (Public for Website distribution feed)
-  app.get(`/api/${collectionName}`, async (req, res, next) => {
+  app.get(`/api/${collectionName}`, optionalAuthenticate, async (req, res, next) => {
     try {
-      await runPostgresScheduler();
       const orderBy = getCollectionOrderBy(collectionName);
-      const result = await db.query(`SELECT * FROM ${tableName} ORDER BY ${orderBy}`);
+      // Anonymous callers only receive published/live content; authenticated CMS
+      // staff receive every row (including drafts) for management.
+      const hasStatus = (tableColumns[tableName] || []).includes('status');
+      let queryText = `SELECT * FROM ${tableName}`;
+      const params = [];
+      if (!req.user && hasStatus) {
+        const placeholders = NON_PUBLIC_STATUSES.map((_, i) => `$${i + 1}`).join(', ');
+        queryText += ` WHERE (status IS NULL OR status NOT IN (${placeholders}))`;
+        params.push(...NON_PUBLIC_STATUSES);
+      }
+      queryText += ` ORDER BY ${orderBy}`;
+      const result = await db.query(queryText, params);
       res.json(db.snakeToCamel(result.rows));
     } catch (err) {
       next(err);
@@ -1121,7 +1179,7 @@ function makeCollectionRoutes(collectionName) {
   // POST Create
   app.post(`/api/${collectionName}`, authenticate, checkWritePermission(collectionName), async (req, res, next) => {
     try {
-      const id = `${collectionName.slice(0, 3)}-${Date.now()}`;
+      const id = `${collectionName.slice(0, 3)}-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
       const itemData = { id, ...req.body };
       const userName = req.user.username;
       
@@ -1185,6 +1243,20 @@ function makeCollectionRoutes(collectionName) {
           throw new Error("Record not found");
         }
         const currentItem = db.snakeToCamel(getRes.rows[0]);
+
+        // Editors may not modify content that is already published/live, nor
+        // transition an item into a published/live state. This is defence in
+        // depth on top of checkWritePermission, which only sees the incoming
+        // status and would otherwise allow edits when status is omitted.
+        if (req.user.role === 'Editor') {
+          const RESTRICTED = ['Published', 'Approved', 'In Force', 'Open', 'Completed'];
+          const resultingStatus = req.body.status !== undefined ? req.body.status : currentItem.status;
+          if (RESTRICTED.includes(currentItem.status) || RESTRICTED.includes(resultingStatus)) {
+            const e = new Error('EDITOR_FORBIDDEN');
+            e.code = 'EDITOR_FORBIDDEN';
+            throw e;
+          }
+        }
 
         // Versioning for eligible collections
         if (['policies', 'consultations', 'staticPages'].includes(collectionName)) {
@@ -1258,6 +1330,9 @@ function makeCollectionRoutes(collectionName) {
     } catch (err) {
       if (err.message === "Record not found") {
         return res.status(404).json({ error: `${collectionName} record not found` });
+      }
+      if (err.code === 'EDITOR_FORBIDDEN' || err.message === 'EDITOR_FORBIDDEN') {
+        return res.status(403).json({ error: "Forbidden: Editor role cannot modify published or approved content." });
       }
       next(err);
     }
@@ -1999,8 +2074,12 @@ app.listen(PORT, async () => {
   await fetchTableColumns();
   try {
     await runPostgresScheduler();
-    // Run scheduler once every 24 hours
-    setInterval(runPostgresScheduler, 24 * 60 * 60 * 1000);
+    // Run the publish/expiry scheduler every 5 minutes so scheduled content goes
+    // live close to its target time. (Previously this only ran on startup + every
+    // 24h, and was additionally invoked on every public GET, which was costly.)
+    setInterval(() => {
+      runPostgresScheduler().catch(err => console.error("Scheduled scheduler run failed:", err));
+    }, 5 * 60 * 1000);
   } catch (err) {
     console.error("Failed to run startup scheduler:", err);
   }

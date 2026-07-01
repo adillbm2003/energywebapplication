@@ -2,7 +2,7 @@
   "apps": [
     {
       "name": "doe-energy-cms",
-      "script": "server.js",
+      "script": "server.cjs",
       "instances": "max",
       "exec_mode": "cluster",
       "watch": false,
