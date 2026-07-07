@@ -6,6 +6,7 @@ const path = require('path');
 const fs = require('fs');
 const db = require('./db.cjs');
 const { validate, schemas } = require('./server/validate.cjs');
+const { sendMail } = require('./server/mailer.cjs');
 
 // Production Dependencies
 const jwt = require('jsonwebtoken');
@@ -210,6 +211,12 @@ function optionalAuthenticate(req, res, next) {
 // Statuses that represent pre-publication / embargoed / hidden content and must
 // never be exposed on the unauthenticated public distribution feed.
 const NON_PUBLIC_STATUSES = ['Draft', 'Scheduled', 'Pending', 'Hidden'];
+
+// Public base URL for building links in outbound email (e.g. password reset).
+function getServerBaseUrl(req) {
+  if (process.env.APP_PUBLIC_DOMAIN) return `https://${process.env.APP_PUBLIC_DOMAIN}`;
+  return `${req.protocol}://${req.get('host')}`;
+}
 
 function authorize(...allowedRoles) {
   return (req, res, next) => {
@@ -626,9 +633,23 @@ app.post('/api/auth/forgot-password', async (req, res, next) => {
     );
 
     await logAction(user.username, "Requested password reset", "auth", user.username);
-    // The reset token is delivered out-of-band (email) only — it is never
-    // returned in the API response, even in development, to avoid leaking it via
-    // response logging or shared dev environments.
+
+    // Deliver the reset link/token by email only. The token is never returned in
+    // the API response (even in dev) to avoid leaking it via response logging.
+    const resetLink = `${getServerBaseUrl(req)}/?reset_token=${token}`;
+    sendMail({
+      to: user.email,
+      subject: 'Bermuda Department of Energy — Password Reset',
+      text: `A password reset was requested for your Energy CMS account.\n\n`
+        + `Open this link to set a new password (valid for 1 hour):\n${resetLink}\n\n`
+        + `Or enter this token on the reset screen:\n${token}\n\n`
+        + `If you did not request this, you can safely ignore this email.`,
+      html: `<p>A password reset was requested for your Energy CMS account.</p>`
+        + `<p><a href="${resetLink}">Click here to set a new password</a> (valid for 1 hour).</p>`
+        + `<p>Or enter this token on the reset screen:</p>`
+        + `<p style="font-family:monospace;font-size:15px;background:#f1f5f9;padding:8px 12px;border-radius:6px;">${token}</p>`
+        + `<p>If you did not request this, you can safely ignore this email.</p>`,
+    }).catch(err => console.error('Reset email dispatch error:', err));
 
     res.json({
       success: true,
@@ -1035,10 +1056,27 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
 app.post('/api/contact', publicFormLimiter, validate(schemas.contact), async (req, res, next) => {
   try {
     const { name, email, subject, message } = req.body;
-    // Log the submission to the audit trail so CMS users can see it
+    const id = `contact-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    // Persist so CMS staff can retrieve submissions (no longer lost to the console).
+    await db.query(
+      `INSERT INTO contact_submissions (id, name, email, subject, message) VALUES ($1, $2, $3, $4, $5)`,
+      [id, name, email, subject || 'General Enquiry', message]
+    );
     await logAction(email, 'Contact form submission', 'contact', `${name} — ${subject || 'General Enquiry'}`);
-    // TODO: wire to SMTP/Sendgrid here when email service is configured
-    console.log(`[Contact] From: ${name} <${email}> | Subject: ${subject} | Message: ${message}`);
+
+    // Best-effort notification to the department inbox (never blocks the response).
+    try {
+      const settingsRes = await db.query('SELECT contact_email FROM settings WHERE id = 1');
+      const notifyTo = settingsRes.rows[0]?.contact_email || process.env.CONTACT_NOTIFY_EMAIL;
+      if (notifyTo) {
+        sendMail({
+          to: notifyTo,
+          subject: `New contact enquiry: ${subject || 'General Enquiry'}`,
+          text: `From: ${name} <${email}>\nSubject: ${subject || 'General Enquiry'}\n\n${message}`,
+        }).catch(() => {});
+      }
+    } catch (_) { /* notification is optional */ }
+
     res.json({ success: true, message: 'Your message has been received. We will respond within 3 business days.' });
   } catch (err) {
     next(err);
@@ -1048,10 +1086,44 @@ app.post('/api/contact', publicFormLimiter, validate(schemas.contact), async (re
 app.post('/api/newsletter', publicFormLimiter, validate(schemas.newsletter), async (req, res, next) => {
   try {
     const { email } = req.body;
+    const id = `sub-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    // Persist the subscriber (idempotent on email) so the list survives restarts.
+    await db.query(
+      `INSERT INTO newsletter_subscribers (id, email) VALUES ($1, $2)
+       ON CONFLICT (email) DO UPDATE SET status = 'Subscribed'`,
+      [id, email]
+    );
     await logAction(email, 'Newsletter subscription', 'newsletter', email);
-    // TODO: wire to mailing list provider here
-    console.log(`[Newsletter] New subscriber: ${email}`);
     res.json({ success: true, message: 'Thank you for subscribing to energy updates.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── CMS RETRIEVAL: form submissions (authenticated staff) ─────────────────────
+app.get('/api/contact-submissions', authenticate, authorize('Approver', 'Administrator'), async (req, res, next) => {
+  try {
+    const result = await db.query('SELECT * FROM contact_submissions ORDER BY submitted_at DESC');
+    res.json(db.snakeToCamel(result.rows));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete('/api/contact-submissions/:id', authenticate, authorize('Administrator'), async (req, res, next) => {
+  try {
+    await db.query('DELETE FROM contact_submissions WHERE id = $1', [req.params.id]);
+    await logAction(req.user.username, 'Deleted contact submission', 'contact', req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get('/api/newsletter-subscribers', authenticate, authorize('Approver', 'Administrator'), async (req, res, next) => {
+  try {
+    const result = await db.query('SELECT * FROM newsletter_subscribers ORDER BY subscribed_at DESC');
+    res.json(db.snakeToCamel(result.rows));
   } catch (err) {
     next(err);
   }
@@ -1902,6 +1974,11 @@ async function runMigrationsInline() {
     await client.query(`CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp DESC);`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_news_publish_date ON news(publish_date DESC);`);
     await client.query(`CREATE INDEX IF NOT EXISTS idx_policies_status ON policies(status);`);
+    // Public form capture — contact enquiries and newsletter subscribers are
+    // persisted so CMS staff can retrieve them (no longer lost to the console).
+    await client.query(`CREATE TABLE IF NOT EXISTS contact_submissions (id VARCHAR(50) PRIMARY KEY, name TEXT, email TEXT, subject TEXT, message TEXT, status VARCHAR(30) DEFAULT 'New', submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
+    await client.query(`CREATE TABLE IF NOT EXISTS newsletter_subscribers (id VARCHAR(50) PRIMARY KEY, email TEXT UNIQUE NOT NULL, status VARCHAR(30) DEFAULT 'Subscribed', subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
+    await client.query(`CREATE INDEX IF NOT EXISTS idx_contact_submitted ON contact_submissions(submitted_at DESC);`);
     // Seed statistics_history with EV and solar adoption data if empty
     const statsCheck = await client.query("SELECT COUNT(*) FROM statistics_history");
     if (parseInt(statsCheck.rows[0].count, 10) === 0) {
