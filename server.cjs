@@ -2134,10 +2134,11 @@ async function runMigrationsInline() {
     }
     // Remove the Permanent Secretary's photo (keep name/role/bio) per request.
     // The seed above only runs on an empty table, so existing databases still hold
-    // the old portrait — clear it here if it is still the originally-seeded image
-    // (a deliberately re-uploaded photo via the CMS is left untouched).
+    // a portrait (in production this is a CMS-uploaded /uploads/... image). Clear it
+    // unconditionally so no photo is shown. NOTE: this runs on every boot, so to
+    // re-enable her photo later this line must be removed.
     await client.query(
-      "UPDATE leadership SET image_url = '' WHERE id = 'lead-002' AND image_url = '/images/portraits/ps-robinson-james.jpg'"
+      "UPDATE leadership SET image_url = '' WHERE id = 'lead-002' AND image_url <> ''"
     );
     // Seed news articles
     const newsCheck = await client.query("SELECT COUNT(*) FROM news");
