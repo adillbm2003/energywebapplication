@@ -13,19 +13,41 @@ import {
   energyEfficiencyMetrics,
 } from '../data/dashboard'
 import { fetchFromAPI, fetchMock } from './api'
+import { PAGE_IMAGES } from '../constants/branding'
+
+// Pick an image for a KPI from its label (keyword match) so the picture always
+// matches the metric — regardless of the order the rows arrive from the DB.
+// (Previously images were assigned by array index, which mismatched real DB KPIs
+// e.g. "Registered EVs" showed a solar photo and "Solar Installations" a wind one.)
+export function kpiImage(label) {
+  const l = String(label || '').toLowerCase()
+  if (/charger|charging/.test(l)) return PAGE_IMAGES.charging
+  if (/electric vehicle|registered ev|\bevs?\b|vehicle/.test(l)) return PAGE_IMAGES.ev
+  if (/fleet|\bbus|transport/.test(l)) return PAGE_IMAGES.bus
+  if (/battery|storage/.test(l)) return PAGE_IMAGES.battery
+  if (/market share|adoption/.test(l)) return PAGE_IMAGES.analytics
+  if (/solar|capacity|installation|\bpv\b/.test(l)) return PAGE_IMAGES.solar
+  if (/penetration|renewable/.test(l)) return PAGE_IMAGES.solar
+  if (/efficiency/.test(l)) return PAGE_IMAGES.efficiency
+  if (/wind/.test(l)) return PAGE_IMAGES.wind
+  return PAGE_IMAGES.solar
+}
 
 // Map flat KPI rows from the DB into the shape the dashboard expects
 function mapKpis(rows, fallback) {
   if (!rows || rows.length === 0) return fallback
   // DB rows: { id, name, value, unit, lastUpdated }
   // Dashboard shape: { label, value, unit, change, image }
-  return rows.map((row, i) => ({
-    label: row.name || row.label,
-    value: row.value,
-    unit: row.unit || '',
-    change: row.change ?? fallback[i]?.change ?? null,
-    image: row.image || fallback[i]?.image || null,
-  }))
+  return rows.map((row, i) => {
+    const label = row.name || row.label
+    return {
+      label,
+      value: row.value,
+      unit: row.unit || '',
+      change: row.change ?? fallback[i]?.change ?? null,
+      image: row.image || kpiImage(label),
+    }
+  })
 }
 
 export const dashboardService = {

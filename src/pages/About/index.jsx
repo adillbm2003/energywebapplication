@@ -7,7 +7,7 @@ import { useAsyncData } from '../../hooks/useAsyncData'
 import { leadershipService } from '../../services'
 
 const VALUES = [
-  { title: 'Transparency', description: 'Open, accountable governance in energy policy and public engagement.', image: PAGE_IMAGES.government },
+  { title: 'Transparency', description: 'Open, accountable governance in energy policy and public engagement.', image: PAGE_IMAGES.transparency },
   { title: 'Sustainability', description: 'Long-term environmental stewardship and climate resilience for Bermuda.', image: PAGE_IMAGES.wind },
   { title: 'Innovation', description: 'Embracing new technologies to modernise our energy systems.', image: PAGE_IMAGES.innovation },
   { title: 'Equity', description: 'Ensuring fair access to clean energy benefits for all Bermudians.', image: PAGE_IMAGES.solar },

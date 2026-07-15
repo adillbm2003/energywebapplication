@@ -48,6 +48,7 @@ export const PAGE_IMAGES = {
   contact: '/images/bermuda.jpg',
   policy: '/images/consultation.jpg',
   portrait: '/images/portrait.jpg',
+  transparency: '/images/transparency.jpg',
 }
 
 export const IMAGE_FALLBACK = PAGE_IMAGES.solar

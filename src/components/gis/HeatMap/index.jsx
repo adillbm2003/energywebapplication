@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react'
-import { MapContainer, TileLayer, Circle, CircleMarker, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
@@ -118,6 +118,10 @@ function MapLayers({ sites, activeId, onSelect }) {
             <Circle
               center={[lat, lng]}
               radius={getHeatRadiusMeters(site.capacity)}
+              // Non-interactive: the translucent heat blobs must NOT capture pointer
+              // events, otherwise a large blob sits on top of nearby markers and
+              // blocks their hover/click (why some dots were unreachable before).
+              interactive={false}
               pathOptions={{
                 color,
                 fillColor: color,
@@ -137,8 +141,22 @@ function MapLayers({ sites, activeId, onSelect }) {
               }}
               eventHandlers={{
                 click: () => onSelect(isActive ? null : site),
+                mouseover: (e) => e.target.bringToFront(),
               }}
-            />
+            >
+              <Tooltip direction="top" offset={[0, -6]} opacity={1} sticky>
+                <div className="text-[12px] leading-snug">
+                  <div className="font-semibold text-navy-900">{site.name}</div>
+                  <div className="text-slate-600">
+                    {[site.parish, site.type].filter(Boolean).join(' · ')}
+                  </div>
+                  <div className="font-semibold text-teal-700">
+                    {formatNumber(site.capacity, { maximumFractionDigits: 2 })} kW
+                  </div>
+                  {site.status && <div className="text-slate-500">{site.status}</div>}
+                </div>
+              </Tooltip>
+            </CircleMarker>
           </Fragment>
         )
       })}
@@ -153,6 +171,8 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
   const filtered = useMemo(() => {
     return installations.filter((item) => {
       if (!validCoord(item.lat, item.lng)) return false
+      // Hide expired installations from the map (per request).
+      if (String(item.status || '').toLowerCase().includes('expire')) return false
       if (selectedParish && selectedParish !== 'all' && item.parish !== selectedParish) return false
       if (selectedType && selectedType !== 'all' && item.type !== selectedType) return false
       return true

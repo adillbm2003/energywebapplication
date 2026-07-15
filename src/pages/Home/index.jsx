@@ -58,7 +58,7 @@ export default function Home() {
         ctaTo={ROUTES.renewableDashboard}
         secondaryLabel="View Consultations"
         secondaryTo={ROUTES.consultations}
-        useDefaultImage
+        backgroundImage={PAGE_IMAGES.solar}
       />
 
       <section className="section-padding bg-white" aria-labelledby="priorities-heading">

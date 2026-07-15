@@ -48,7 +48,7 @@ export const spacePages = {
   'space-insurance': {
     title: 'Space Insurance',
     subtitle: 'World-leading insurance and reinsurance jurisdiction',
-    image: PAGE_IMAGES.government,
+    image: PAGE_IMAGES.bermuda,
     content: [
       'Bermuda is recognised as the world\'s leading market for space insurance, with decades of experience underwriting launch, in-orbit, and third-party liability risks.',
       'Opportunities exist for space-related insurance products covering satellites, launches, space assets, and related risks.',
