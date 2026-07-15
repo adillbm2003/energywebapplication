@@ -2,7 +2,7 @@ import { fetchFromAPI, toRelativeUrl } from './api'
 
 const STATIC_TEAM = [
   { id: 'lead-001', name: 'The Honourable Minister', role: 'Minister of Energy', imageUrl: '/images/portrait.jpg', bio: '', displayOrder: 1 },
-  { id: 'lead-002', name: 'Permanent Secretary for Energy', role: 'Permanent Secretary', imageUrl: '/images/portrait.jpg', bio: '', displayOrder: 2 },
+  { id: 'lead-002', name: 'Permanent Secretary for Energy', role: 'Permanent Secretary', imageUrl: '', bio: '', displayOrder: 2 },
   { id: 'lead-003', name: 'Director of Energy Policy', role: 'Director of Energy Policy', imageUrl: '/images/portrait.jpg', bio: '', displayOrder: 3 },
   { id: 'lead-004', name: 'Director of Renewable Energy', role: 'Director of Renewable Energy', imageUrl: '/images/portrait.jpg', bio: '', displayOrder: 4 },
 ]

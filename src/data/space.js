@@ -89,7 +89,7 @@ export const spacePages = {
     ],
     contact: {
       email: 'space@gov.bm',
-      phone: '+1 (441) 295-5000',
+      phone: '+1 (441) 444-0597',
       address: 'Department of Energy, Government Administration Building, 30 Parliament Street, Hamilton HM 12, Bermuda',
     },
   },

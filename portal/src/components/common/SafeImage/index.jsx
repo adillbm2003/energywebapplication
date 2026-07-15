@@ -18,9 +18,11 @@ export default function SafeImage({
       className={cn(className)}
       loading={loading}
       onError={(event) => {
-        if (event.currentTarget.src !== fallback) {
-          event.currentTarget.src = fallback
-        }
+        const img = event.currentTarget
+        // Guard against an infinite loop when the fallback image itself 404s.
+        if (img.dataset.fallbackApplied) return
+        img.dataset.fallbackApplied = 'true'
+        img.src = fallback
       }}
       {...props}
     />

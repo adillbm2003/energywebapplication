@@ -31,7 +31,20 @@ pool.on('error', (err) => {
 // Helper functions for casing conversions
 function snakeToCamel(obj) {
   if (obj === null || typeof obj !== 'object') return obj;
-  if (obj instanceof Date) return obj.toISOString().split('T')[0]; // Format Date objects as YYYY-MM-DD
+  if (obj instanceof Date) {
+    // A DATE column comes back as local midnight — return YYYY-MM-DD using LOCAL
+    // components (not toISOString, which is UTC and shifts the day back by one in
+    // any UTC+ timezone). A TIMESTAMP with a real time-of-day is returned in full
+    // ISO form so audit logs / version history no longer lose their time.
+    const hasTime = obj.getHours() || obj.getMinutes() || obj.getSeconds() || obj.getMilliseconds();
+    if (!hasTime) {
+      const y = obj.getFullYear();
+      const m = String(obj.getMonth() + 1).padStart(2, '0');
+      const d = String(obj.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+    return obj.toISOString();
+  }
   if (Array.isArray(obj)) return obj.map(snakeToCamel);
   
   const newObj = {};

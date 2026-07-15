@@ -29,7 +29,7 @@ const LEGAL_FALLBACK = {
     content: [
       'The Department of Energy is committed to ensuring energy.bm is accessible to all users, including people with disabilities.',
       'We aim to conform to WCAG 2.1 Level AA standards, including keyboard navigation, screen reader compatibility, sufficient colour contrast, and resizable text.',
-      'If you encounter accessibility barriers on this website, please contact us at energy@gov.bm or +1 (441) 295-5000. We will endeavour to provide information in an alternative format.',
+      'If you encounter accessibility barriers on this website, please contact us at energy@gov.bm or +1 (441) 444-0597. We will endeavour to provide information in an alternative format.',
       'This statement will be reviewed and updated as the website evolves.',
     ],
   },

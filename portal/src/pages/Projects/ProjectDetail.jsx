@@ -49,6 +49,7 @@ export default function ProjectDetail() {
                 <p className="mt-3 text-slate-600 leading-relaxed">{project.summary}</p>
               </div>
 
+              {project.milestones?.length > 0 && (
               <div>
                 <h2 className="text-xl font-bold text-navy-900">Milestones</h2>
                 <ol className="mt-4 space-y-3">
@@ -72,6 +73,7 @@ export default function ProjectDetail() {
                   ))}
                 </ol>
               </div>
+              )}
 
               {project.gallery?.length > 0 && (
                 <div>

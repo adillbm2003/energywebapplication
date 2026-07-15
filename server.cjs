@@ -159,8 +159,11 @@ async function authenticate(req, res, next) {
         return res.status(401).json({ error: "Unauthorized: User account is inactive" });
       }
     } catch (dbErr) {
-      // Database unavailable — trust JWT claims directly (demo / first-run mode)
-      user = { id: decoded.id, username: decoded.username, email: decoded.email || 'energy@gov.bm', role: decoded.role, isActive: true };
+      // Database unavailable — fail closed. Previously this trusted the JWT claims
+      // directly (skipping the is_active / existence check), which turned any DB
+      // blip into an auth-bypass that also honoured forged/stale role claims.
+      console.error("Auth DB error:", dbErr.message);
+      return res.status(503).json({ error: "Authentication service temporarily unavailable" });
     }
 
     req.user = user;
@@ -535,16 +538,6 @@ app.get('/uploads/:filename', async (req, res) => {
   }
 });
 
-// Default admin used when the database is unavailable (demo / first-run mode)
-const DEMO_ADMIN = {
-  id: 'usr-admin',
-  username: 'energy_admin',
-  email: 'energy@gov.bm',
-  passwordHash: bcrypt.hashSync('bermuda2026', 10),
-  role: 'Administrator',
-  isActive: true,
-};
-
 // ── AUTHENTICATION ROUTES ────────────────────────────────────────────────────
 app.post('/api/auth/login', loginLimiter, async (req, res, next) => {
   const { email, password } = req.body;
@@ -560,11 +553,11 @@ app.post('/api/auth/login', loginLimiter, async (req, res, next) => {
       }
       user = db.snakeToCamel(result.rows[0]);
     } catch (dbErr) {
-      // Database unavailable — fall back to demo admin account
-      if (email !== DEMO_ADMIN.email) {
-        return res.status(401).json({ error: "Invalid email or password" });
-      }
-      user = DEMO_ADMIN;
+      // Database unavailable — fail closed. Previously this fell back to a
+      // hardcoded demo admin (energy@gov.bm / bermuda2026), which allowed anyone
+      // to authenticate as Administrator whenever the DB errored. Never do that.
+      console.error("Login DB error:", dbErr.message);
+      return res.status(503).json({ error: "Authentication service temporarily unavailable" });
     }
     if (!user.isActive) {
       return res.status(401).json({ error: "User account is deactivated" });
@@ -920,17 +913,17 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         const fleetData = parseVehiclesExcel(req.file.path);
         await db.query(`CREATE TABLE IF NOT EXISTS data_cache (key TEXT PRIMARY KEY, value JSONB, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)`);
         await db.query(`INSERT INTO data_cache (key,value,updated_at) VALUES ($1,$2,CURRENT_TIMESTAMP) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value,updated_at=CURRENT_TIMESTAMP`, ['vehicle_fleet', JSON.stringify(fleetData)]);
-        logAction(req.user, 'UPLOAD', 'Data File', `Vehicles fleet — ${fleetData.total} records imported`);
+        logAction(req.user.username, 'UPLOAD', 'Data File', `Vehicles fleet — ${fleetData.total} records imported`);
         return res.json({ success: true, filename: req.file.filename, size: req.file.size, total: fleetData.total });
       } catch (parseErr) {
         console.error('Vehicles Excel parse error:', parseErr);
-        logAction(req.user, 'UPLOAD', 'Data File', DATA_FILES[key].label);
+        logAction(req.user.username, 'UPLOAD', 'Data File', DATA_FILES[key].label);
         return res.json({ success: true, filename: req.file.filename, size: req.file.size });
       }
     }
 
     if (key !== 'solar') {
-      logAction(req.user, 'UPLOAD', 'Data File', DATA_FILES[key].label);
+      logAction(req.user.username, 'UPLOAD', 'Data File', DATA_FILES[key].label);
       return res.json({ success: true, filename: req.file.filename, size: req.file.size });
     }
 
@@ -1043,7 +1036,7 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         } catch (rowErr) { console.error(`Solar row ${i} error:`, rowErr.message); }
       }
 
-      logAction(req.user, 'UPLOAD', 'Data File', `Solar data — ${inserted} installations imported`);
+      logAction(req.user.username, 'UPLOAD', 'Data File', `Solar data — ${inserted} installations imported`);
       res.json({ success: true, filename: req.file.filename, size: req.file.size, inserted });
     } catch (parseErr) {
       console.error('Solar Excel parse error:', parseErr);
@@ -1158,14 +1151,23 @@ app.put('/api/settings', authenticate, authorize('Administrator'), async (req, r
     const dbItem = db.camelToSnake(req.body);
     delete dbItem.id;
 
-    const keys = Object.keys(dbItem);
-    const setClauses = keys.map((k, i) => `${k} = $${i + 1}`).join(', ');
-    const values = keys.map(k => dbItem[k]);
+    // Only allow keys that are real columns on the settings table. This prevents
+    // both a SQL syntax error (unknown column) and a SQL-injection sink from
+    // interpolating arbitrary body keys as column names.
+    const allowed = tableColumns['settings'] || [];
+    const keys = Object.keys(dbItem).filter(k => allowed.includes(k) && k !== 'id');
 
-    await db.query(`UPDATE settings SET ${setClauses} WHERE id = 1`, values);
-    
+    // Make sure the singleton row exists (defensive — also seeded at startup).
+    await db.query(`INSERT INTO settings (id) VALUES (1) ON CONFLICT (id) DO NOTHING`);
+
+    if (keys.length > 0) {
+      const setClauses = keys.map((k, i) => `${k} = $${i + 1}`).join(', ');
+      const values = keys.map(k => dbItem[k]);
+      await db.query(`UPDATE settings SET ${setClauses} WHERE id = 1`, values);
+    }
+
     const result = await db.query('SELECT * FROM settings WHERE id = 1');
-    const { id, ...updatedSettings } = result.rows[0];
+    const { id, ...updatedSettings } = result.rows[0] || {};
 
     await logAction(req.user.username, "Updated settings", "settings", "Global Site Settings");
     res.json({ success: true, settings: db.snakeToCamel(updatedSettings) });
@@ -1790,7 +1792,15 @@ app.post('/api/statistics/upload', authenticate, checkWritePermission('kpis'), u
     }
     await logAction(req.user.username, `Uploaded statistics file (${rows.length} rows)`, 'statistics', req.file.originalname);
     res.json({ success: true, inserted: rows.length, message: `${rows.length} statistics rows uploaded successfully` });
-  } catch (err) { next(err); }
+  } catch (err) {
+    next(err);
+  } finally {
+    // This route uses disk-storage multer; remove the temp CSV so uploads/ doesn't
+    // accumulate orphaned files on every import.
+    if (req.file && req.file.path) {
+      try { fs.unlinkSync(req.file.path); } catch (_) {}
+    }
+  }
 });
 
 // Get all statistics history entries
@@ -1916,8 +1926,20 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'cms-admin.html'));
 });
 
-// Direct static file fallback for other root resources
-app.use(express.static(__dirname));
+// Serve ONLY the specific root assets the CMS admin page needs.
+// Previously this was `express.static(__dirname)`, which served the entire
+// project directory — exposing server.cjs/db.cjs source, package.json,
+// .env.example, the committed spreadsheets, and the seeded admin bcrypt hash
+// to any unauthenticated visitor. Now restricted to an explicit whitelist.
+const ROOT_STATIC_WHITELIST = new Set([
+  '/app.js', '/styles.css', '/cms-admin.html', '/logo.png', '/gov-bermuda-logo.jpg',
+]);
+app.use((req, res, next) => {
+  if (req.method === 'GET' && ROOT_STATIC_WHITELIST.has(req.path)) {
+    return res.sendFile(path.join(__dirname, req.path));
+  }
+  next();
+});
 
 // Global Error Handler
 app.use((err, req, res, next) => {
@@ -1951,6 +1973,22 @@ async function runMigrationsInline() {
     await client.query(`CREATE TABLE IF NOT EXISTS education (id VARCHAR(50) PRIMARY KEY, title TEXT, category VARCHAR(100), description TEXT, attachment TEXT, target_site VARCHAR(50), type VARCHAR(100), file_size VARCHAR(50), image TEXT);`);
     await client.query(`CREATE TABLE IF NOT EXISTS media (id VARCHAR(50) PRIMARY KEY, name TEXT, type VARCHAR(50), size VARCHAR(50), uploaded_by VARCHAR(100), date DATE, url TEXT);`);
     await client.query(`CREATE TABLE IF NOT EXISTS settings (id INT PRIMARY KEY DEFAULT 1 CHECK (id = 1), site_name TEXT, contact_email TEXT, footer_info TEXT, social_facebook TEXT, social_twitter TEXT, social_instagram TEXT, active_theme TEXT, contact_phone TEXT, contact_office_location TEXT, contact_hours TEXT, contact_department_list TEXT, allowed_file_types TEXT, max_upload_size TEXT, featured_guide TEXT, featured_tip TEXT, featured_resource TEXT, featured_infographic TEXT);`);
+    // Guarantee the singleton settings row (id=1) exists. Without this, PUT /api/settings
+    // does `UPDATE ... WHERE id = 1` matching 0 rows and then reads an empty result → 500.
+    await client.query(`INSERT INTO settings (id) VALUES (1) ON CONFLICT (id) DO NOTHING;`);
+    // ── Schema patches: columns the CMS admin form writes but the original CREATE
+    //    statements omitted. Without these, the generic-CRUD allowedColumns filter
+    //    silently dropped the values on save (policy PDFs/dates, installer contact
+    //    details, project end dates, education download links, innovation categories).
+    await client.query(`ALTER TABLE policies ADD COLUMN IF NOT EXISTS external_url TEXT;`);
+    await client.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS end_date DATE;`);
+    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS company TEXT;`);
+    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS contact_name TEXT;`);
+    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS email TEXT;`);
+    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS phone TEXT;`);
+    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS license_number TEXT;`);
+    await client.query(`ALTER TABLE education ADD COLUMN IF NOT EXISTS download_url TEXT;`);
+    await client.query(`ALTER TABLE innovation_topics ADD COLUMN IF NOT EXISTS category VARCHAR(100);`);
     await client.query(`CREATE TABLE IF NOT EXISTS energy_guides (id VARCHAR(50) PRIMARY KEY, title TEXT, category VARCHAR(100), summary TEXT, cover_image TEXT, pdf_attachment TEXT, featured_image TEXT, key_takeaways TEXT, estimated_savings VARCHAR(100), publish_date DATE, featured_flag BOOLEAN DEFAULT FALSE, status VARCHAR(50), target_site VARCHAR(50), modified_by VARCHAR(100));`);
     await client.query(`CREATE TABLE IF NOT EXISTS infographics (id VARCHAR(50) PRIMARY KEY, title TEXT, image TEXT, description TEXT, category VARCHAR(100), publish_date DATE, status VARCHAR(50), target_site VARCHAR(50), modified_by VARCHAR(100));`);
     await client.query(`CREATE TABLE IF NOT EXISTS roadmaps (id VARCHAR(50) PRIMARY KEY, title TEXT, description TEXT, timeline_type VARCHAR(100), milestones JSONB, status VARCHAR(50) DEFAULT 'Active', target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
@@ -2084,7 +2122,7 @@ async function runMigrationsInline() {
     if (parseInt(leadershipCheck.rows[0].count, 10) === 0) {
       const team = [
         ['lead-001','The Honourable Alexa Lightbourne','Minister of Home Affairs','/images/portraits/minister-lightbourne.jpg',"The Honourable Alexa Lightbourne is the Minister of Home Affairs, responsible for the Department of Energy and Bermuda's national energy transition.",1],
-        ['lead-002','Valerie Robinson James','Permanent Secretary, Ministry of Home Affairs','/images/portraits/ps-robinson-james.jpg',"Valerie Robinson James is the Permanent Secretary for the Ministry of Home Affairs, responsible for the Department of Energy.",2],
+        ['lead-002','Valerie Robinson James','Permanent Secretary, Ministry of Home Affairs','',"Valerie Robinson James is the Permanent Secretary for the Ministry of Home Affairs, responsible for the Department of Energy.",2],
         ['lead-003','Adrian Dill','Director of the Department of Energy','/images/portraits/director-dill.jpg',"Adrian Dill is the Director of the Department of Energy, leading Bermuda's energy policy, renewable programmes, and regulatory oversight.",3],
       ];
       for (const [id, name, role, imageUrl, bio, displayOrder] of team) {
@@ -2094,6 +2132,13 @@ async function runMigrationsInline() {
         );
       }
     }
+    // Remove the Permanent Secretary's photo (keep name/role/bio) per request.
+    // The seed above only runs on an empty table, so existing databases still hold
+    // the old portrait — clear it here if it is still the originally-seeded image
+    // (a deliberately re-uploaded photo via the CMS is left untouched).
+    await client.query(
+      "UPDATE leadership SET image_url = '' WHERE id = 'lead-002' AND image_url = '/images/portraits/ps-robinson-james.jpg'"
+    );
     // Seed news articles
     const newsCheck = await client.query("SELECT COUNT(*) FROM news");
     if (parseInt(newsCheck.rows[0].count, 10) === 0) {
@@ -2118,21 +2163,46 @@ async function runMigrationsInline() {
         );
       }
     }
-    // Seed NESP 2026 as a closed (past) consultation; remove any fuels-related consultations
+    // Seed NESP 2026 as a closed (past) consultation only if it does not already
+    // exist. Do NOT force status back to 'Closed' on every boot — that would undo
+    // a legitimate manual re-open by CMS staff.
     await client.query(`
       INSERT INTO consultations (id, title, description, start_date, end_date, status, external_url)
       VALUES ('con-nesp-2026', 'National Energy Security Policy (NESP) 2026',
         'Public consultation on Bermuda''s updated National Energy Security Policy, covering renewable energy targets, grid resilience, and energy affordability for 2026–2030.',
         '2026-05-01', '2026-07-31', 'Closed', 'https://forum.gov.bm/en/')
-      ON CONFLICT (id) DO UPDATE SET status = 'Closed'
+      ON CONFLICT (id) DO NOTHING
     `);
-    await client.query(`DELETE FROM consultations WHERE title ILIKE '%fuel%'`);
+    // NOTE: previously this ran `DELETE FROM consultations WHERE title ILIKE '%fuel%'`
+    // on every startup, which silently and permanently destroyed any legitimate
+    // staff-created consultation whose title contained "fuel" (e.g. "Fuel Import
+    // Duty Review"). That one-off seed-cleanup line has been removed.
     // Seed default admin user if not exists
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token VARCHAR(255);`);
     await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMP;`);
-    const userCheck = await client.query("SELECT COUNT(*) FROM users WHERE email = 'energy@gov.bm'");
-    if (parseInt(userCheck.rows[0].count, 10) === 0) {
-      await client.query(`INSERT INTO users (id, username, email, password_hash, role, is_active) VALUES ('usr-admin','energy_admin','energy@gov.bm','$2b$10$go00jDF64O/N3vkCzB.0kOv/Y2050sltz5sY.XsRFPIP50KjTtylu','Administrator',TRUE) ON CONFLICT DO NOTHING;`);
+    // Seed the initial administrator only if no users exist at all. Credentials
+    // come from env (SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD) so production is not
+    // stuck with a publicly-known default. If SEED_ADMIN_PASSWORD is unset we still
+    // seed the legacy account for first-run/demo, but log a loud warning to rotate it.
+    const anyUsers = await client.query("SELECT COUNT(*) FROM users");
+    if (parseInt(anyUsers.rows[0].count, 10) === 0) {
+      const seedEmail = process.env.SEED_ADMIN_EMAIL || 'energy@gov.bm';
+      const seedPassword = process.env.SEED_ADMIN_PASSWORD;
+      if (seedPassword) {
+        const hash = bcrypt.hashSync(seedPassword, 10);
+        await client.query(
+          `INSERT INTO users (id, username, email, password_hash, role, is_active) VALUES ('usr-admin','energy_admin',$1,$2,'Administrator',TRUE) ON CONFLICT DO NOTHING;`,
+          [seedEmail, hash]
+        );
+        console.log(`[Startup] Seeded administrator ${seedEmail} from SEED_ADMIN_PASSWORD.`);
+      } else {
+        // Legacy default hash = password "bermuda2026".
+        await client.query(
+          `INSERT INTO users (id, username, email, password_hash, role, is_active) VALUES ('usr-admin','energy_admin',$1,'$2b$10$go00jDF64O/N3vkCzB.0kOv/Y2050sltz5sY.XsRFPIP50KjTtylu','Administrator',TRUE) ON CONFLICT DO NOTHING;`,
+          [seedEmail]
+        );
+        console.warn('[SECURITY] Seeded default admin with the publicly-known password. Set SEED_ADMIN_PASSWORD and rotate this account immediately.');
+      }
     }
     console.log('[Startup] Database tables verified/created.');
   } catch (err) {

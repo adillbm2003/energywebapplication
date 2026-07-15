@@ -7,7 +7,7 @@ export const BRANDING = {
   departmentName: 'Department of Energy',
   governmentName: 'Government of Bermuda',
   domain: 'energy.bm',
-  phone: '+1 (441) 295-5000',
+  phone: '+1 (441) 444-0597',
   colors: {
     govBlue: '#2E5496',
     navy: '#0B1F3A',

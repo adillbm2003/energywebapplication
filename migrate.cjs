@@ -3,13 +3,23 @@ const path = require('path');
 const { Pool } = require('pg');
 require('dotenv').config();
 
-const pool = new Pool({
-  host: process.env.PGHOST || 'localhost',
-  port: parseInt(process.env.PGPORT || '5432', 10),
-  user: process.env.PGUSER || 'postgres',
-  password: process.env.PGPASSWORD || 'postgres',
-  database: process.env.PGDATABASE || 'cms_energy_bm',
-});
+// Honor DATABASE_URL + SSL exactly like db.cjs. Managed Postgres (RDS/Heroku)
+// typically only provides DATABASE_URL; without this branch `node migrate.cjs`
+// silently connected to localhost/cms_energy_bm (the discrete-var defaults) or
+// failed the TLS handshake — migrating the wrong database or erroring out.
+const sslConfig = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
+  ? { rejectUnauthorized: false }
+  : false;
+const pool = process.env.DATABASE_URL
+  ? new Pool({ connectionString: process.env.DATABASE_URL, ssl: sslConfig })
+  : new Pool({
+      host: process.env.PGHOST || 'localhost',
+      port: parseInt(process.env.PGPORT || '5432', 10),
+      user: process.env.PGUSER || 'postgres',
+      password: process.env.PGPASSWORD || 'postgres',
+      database: process.env.PGDATABASE || 'cms_energy_bm',
+      ssl: sslConfig,
+    });
 
 // Helper to convert camelCase keys to snake_case for the database columns
 function camelToSnakeKey(key) {

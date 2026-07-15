@@ -382,7 +382,12 @@ function confirmDelete(msg, cb) {
   dlg.style.display = 'flex'
   document.getElementById('confirm-ok').onclick = () => {
     dlg.style.display = 'none'
-    cb()
+    // cb is typically async (it performs a DELETE). Await its rejection so a 403
+    // (e.g. an Editor hitting an admin-only delete) or 404 surfaces as a toast
+    // instead of a silent unhandled promise rejection.
+    Promise.resolve()
+      .then(() => cb())
+      .catch(e => toast(e && e.message ? e.message : 'Action failed', 'error'))
   }
   document.getElementById('confirm-cancel').onclick = cancelConfirm
 }
@@ -683,7 +688,7 @@ async function renderDashboard() {
 async function renderNews() {
   const items = await fetchCollection('news')
   const vc = document.getElementById('view-container')
-  const canWrite = STATE.role === 'admin' || STATE.role === 'editor'
+  const canWrite = ['Administrator', 'Editor', 'Approver'].includes(STATE.role)
 
   vc.innerHTML = `
     <div class="view-header">
@@ -877,9 +882,9 @@ async function renderPolicies() {
         <thead><tr><th>Title</th><th>Category</th><th>Date</th><th>Status</th><th class="th-actions">Actions</th></tr></thead>
         <tbody id="pol-tbody">
           ${items.map(p => `<tr class="pol-rows">
-            <td class="td-title"><span class="td-title-text" title="${esc(p.title)}">${esc(p.title)}</span>${p.fileUrl?'<span style="font-size:.7rem;margin-left:.4rem;color:var(--c-text-light)">📎</span>':''}</td>
+            <td class="td-title"><span class="td-title-text" title="${esc(p.title)}">${esc(p.title)}</span>${(p.pdfLink||p.fileUrl)?'<span style="font-size:.7rem;margin-left:.4rem;color:var(--c-text-light)">📎</span>':''}</td>
             <td class="td-muted">${esc(p.category||'—')}</td>
-            <td class="td-muted">${formatDate(p.date)}</td>
+            <td class="td-muted">${formatDate(p.effectiveDate||p.date)}</td>
             <td>${statusBadge(p.status)}</td>
             <td class="td-actions">
               <button class="btn-icon btn-edit write-only" onclick="openPolicyDrawer('${esc(p.id)}')" title="Edit">✏️</button>
@@ -895,7 +900,8 @@ async function renderPolicies() {
 
 function openPolicyDrawer(id) {
   const item = id ? (STATE.db.policies||[]).find(p=>p.id===id)||{} : {}
-  STATE.currentImageUrls = { policyDoc: item.fileUrl||'' }
+  const policyDoc = item.pdfLink || item.fileUrl || ''
+  STATE.currentImageUrls = { policyDoc }
 
   openDrawer({
     title: id ? 'Edit Policy' : 'New Policy',
@@ -927,7 +933,7 @@ function openPolicyDrawer(id) {
       <div class="field-row">
         <div class="form-field">
           <label class="form-label">Date</label>
-          <input id="p-date" type="date" class="form-input" value="${esc((item.date||'').split('T')[0])}">
+          <input id="p-date" type="date" class="form-input" value="${esc(((item.effectiveDate||item.date)||'').split('T')[0])}">
         </div>
         <div class="form-field">
           <label class="form-label">External URL</label>
@@ -936,7 +942,7 @@ function openPolicyDrawer(id) {
       </div>
       <div class="form-field">
         <label class="form-label">Document / PDF</label>
-        <div id="p-doc-list">${item.fileUrl?`<ul class="file-list"><li class="file-item"><span class="file-ico">📄</span><span class="file-name">${esc(item.fileUrl.split('/').pop())}</span><button class="file-rm" onclick="clearFileField('policyDoc','p-doc-list')">✕</button></li></ul>`:''}</div>
+        <div id="p-doc-list">${policyDoc?`<ul class="file-list"><li class="file-item"><span class="file-ico">📄</span><span class="file-name">${esc(policyDoc.split('/').pop())}</span><button class="file-rm" onclick="clearFileField('policyDoc','p-doc-list')">✕</button></li></ul>`:''}</div>
         <div id="p-doc-zone" class="upload-zone">
           <input type="file" id="p-doc-input" accept=".pdf,.doc,.docx">
           <svg class="upload-icon" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -957,9 +963,13 @@ async function savePolicy(id) {
   const uploads = await resolveUploads()
   const payload = {
     title, description: val('p-desc'), category: val('p-category'),
-    status: val('p-status'), date: val('p-date'),
+    status: val('p-status'),
+    // Real policies columns are effective_date / pdf_link / external_url. Sending
+    // date / fileUrl (as before) meant the server's allowedColumns filter silently
+    // dropped the date and the attached document.
+    effectiveDate: val('p-date'),
     externalUrl: val('p-url'),
-    fileUrl: uploads['policyDoc'] || STATE.currentImageUrls['policyDoc'] || ''
+    pdfLink: uploads['policyDoc'] || STATE.currentImageUrls['policyDoc'] || ''
   }
   if (id) await api('PUT', `/api/policies/${id}`, payload)
   else     await api('POST', '/api/policies', payload)
@@ -1209,7 +1219,7 @@ function filterTableStatus(val, tbodyId, rowClass, attr) {
 async function renderKpis() {
   const items = await fetchCollection('kpis')
   const vc = document.getElementById('view-container')
-  const canWrite = STATE.role === 'admin' || STATE.role === 'editor'
+  const canWrite = ['Administrator', 'Editor', 'Approver'].includes(STATE.role)
   vc.innerHTML = `
     <div class="view-header">
       <div><h2 class="view-title">KPI Dashboard</h2><p class="view-sub">Edit key performance indicators shown on the portal</p></div>
@@ -1703,16 +1713,18 @@ function openEducationDrawer(id) {
         </select></div>
     </div>
     <div class="form-field"><label class="form-label">Resource URL / Link</label>
-      <input id="edu-url" type="url" class="form-input" value="${esc(item.resourceUrl||item.url||item.videoUrl||'')}" placeholder="https://…"></div>
+      <input id="edu-url" type="url" class="form-input" value="${esc(item.attachment||item.resourceUrl||item.url||item.videoUrl||'')}" placeholder="https://…"></div>
     <div class="form-field"><label class="form-label">Download URL (PDF/file)</label>
-      <input id="edu-dl" type="url" class="form-input" value="${esc(item.downloadUrl||'')}" placeholder="https://…"></div>
+      <input id="edu-dl" type="url" class="form-input" value="${esc(item.downloadUrl||item.download_url||'')}" placeholder="https://…"></div>
   `, saveFn:()=>saveEducation(id), saveLabel:id?'Update':'Save' })
 }
 
 async function saveEducation(id) {
   const title = val('edu-title')
   if (!title) { toast('Title is required','warning'); return }
-  const payload = { title, description:val('edu-desc'), type:val('edu-type'), category:val('edu-cat'), resourceUrl:val('edu-url'), url:val('edu-url'), videoUrl:val('edu-url'), downloadUrl:val('edu-dl') }
+  // Real education columns are `attachment` (the resource link) and `download_url`.
+  // Sending resourceUrl/url/videoUrl meant every link was silently dropped on save.
+  const payload = { title, description:val('edu-desc'), type:val('edu-type'), category:val('edu-cat'), attachment:val('edu-url'), downloadUrl:val('edu-dl') }
   if (id) await api('PUT',`/api/education/${id}`,payload)
   else     await api('POST','/api/education',payload)
   toast(id?'Resource updated':'Resource added'); closeDrawer(); await renderEducation()
@@ -1975,7 +1987,7 @@ async function loadMedia() {
           </div>
           <div class="media-actions">
             <button class="btn btn-sm btn-outline" onclick="copyMediaUrl('${esc(f.url)}')" title="Copy URL">📋 Copy</button>
-            <button class="btn btn-sm btn-del write-only" onclick="deleteMediaFile('${esc(f.filename||f.url.split('/').pop())}','${esc(f.url)}')" title="Delete">🗑️</button>
+            <button class="btn btn-sm btn-del write-only" onclick="deleteMediaFile('${esc(f.id)}','${esc(f.url)}')" title="Delete">🗑️</button>
           </div>
         </div>`
       }).join('')}
@@ -1999,10 +2011,12 @@ function copyMediaUrl(url) {
   navigator.clipboard.writeText(window.location.origin + url).then(() => toast('URL copied to clipboard'))
 }
 
-async function deleteMediaFile(filename, url) {
+async function deleteMediaFile(id, url) {
+  // DELETE /api/media/:id matches the media row's id (e.g. med-169…), NOT the
+  // bare filename that was passed before (which always 404'd).
   confirmDelete('Delete this file? Any content using it will lose the image.', async () => {
     try {
-      await api('DELETE', `/api/media/${encodeURIComponent(filename)}`)
+      await api('DELETE', `/api/media/${encodeURIComponent(id)}`)
       toast('File deleted'); await loadMedia()
     } catch(e) { toast(e.message||'Delete failed','error') }
   })

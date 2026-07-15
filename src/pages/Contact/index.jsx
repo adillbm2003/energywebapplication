@@ -6,7 +6,7 @@ import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 
 const OFFICE_INFO = [
   { label: 'Address', value: 'Government Administration Building, 30 Parliament Street, Hamilton HM 12, Bermuda' },
-  { label: 'Phone', value: '+1 (441) 295-5000' },
+  { label: 'Phone', value: '+1 (441) 444-0597' },
   { label: 'Email', value: 'energy@gov.bm' },
   { label: 'Hours', value: 'Monday ? Friday, 8:30 AM ? 5:00 PM' },
 ]

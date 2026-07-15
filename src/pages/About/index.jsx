@@ -30,7 +30,7 @@ export default function About() {
         <div className="container-page space-y-16">
           <ContentBlock
             title="Our Mission"
-            image={PAGE_IMAGES.bermuda}
+            image={PAGE_IMAGES.home}
             imageAlt="Bermuda coastline"
           >
             <p>
@@ -82,7 +82,9 @@ export default function About() {
           <div className="grid gap-4 sm:grid-cols-2">
             {(team ?? []).map((member) => (
               <div key={member.id} className="flex gap-4 overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
-                <img src={member.imageUrl} alt="" className="hidden w-24 shrink-0 self-stretch object-cover object-top sm:block" loading="lazy" />
+                {member.imageUrl && (
+                  <img src={member.imageUrl} alt="" className="hidden w-24 shrink-0 self-stretch object-cover object-top sm:block" loading="lazy" />
+                )}
                 <div className="card-padding flex gap-4">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#2E5496] text-sm font-bold text-white sm:hidden" aria-hidden="true">
                     {member.name.charAt(0)}

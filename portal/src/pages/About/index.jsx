@@ -51,7 +51,7 @@ export default function About() {
         <div className="container-page space-y-16">
           <ContentBlock
             title="Our Mission"
-            image={PAGE_IMAGES.hamiltonStreet}
+            image={PAGE_IMAGES.home}
             imageAlt="Hamilton, Bermuda"
           >
             <p>
@@ -112,12 +112,14 @@ export default function About() {
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {team.filter(m => m.status === 'Active').map((member, index) => (
                 <div key={member.id} className="flex gap-4 overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
-                  <img
-                    src={getPortrait(member, index)}
-                    alt=""
-                    className="h-full w-28 shrink-0 object-cover object-top"
-                    loading="lazy"
-                  />
+                  {member.imageUrl && (
+                    <img
+                      src={getPortrait(member, index)}
+                      alt=""
+                      className="h-full w-28 shrink-0 object-cover object-top"
+                      loading="lazy"
+                    />
+                  )}
                   <div className="card-padding flex flex-col justify-center">
                     <p className="text-xs font-semibold uppercase tracking-widest text-teal-700">{member.role}</p>
                     <p className="mt-1 font-semibold text-navy-900 leading-snug">{member.name}</p>
