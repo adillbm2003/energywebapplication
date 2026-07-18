@@ -1136,6 +1136,8 @@ async function renderProjects() {
 
 function openProjectDrawer(id) {
   const item = id ? (STATE.db.projects||[]).find(p=>p.id===id)||{} : {}
+  STATE.pendingUploads = {}
+  STATE.currentImageUrls = { projectImage: item.image||'' }
   openDrawer({
     title: id ? 'Edit Project' : 'New Project',
     body: `
@@ -1169,19 +1171,33 @@ function openProjectDrawer(id) {
           <input id="pr-end" type="date" class="form-input" value="${esc(((item.endDate||item.end_date)||'').split('T')[0])}">
         </div>
       </div>
+      <div class="form-field">
+        <label class="form-label">Project Image</label>
+        <div id="pr-img-preview">${item.image?`<div class="upload-preview"><img src="${esc(item.image)}" class="upload-img" alt="Project image"><button type="button" class="upload-remove" onclick="clearImageField('projectImage','pr-img-preview','pr-img-zone')">✕</button></div>`:''}</div>
+        <div id="pr-img-zone" class="upload-zone" style="${item.image?'display:none':''}">
+          <input type="file" id="pr-img-input" accept="image/*">
+          <svg class="upload-icon" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <div class="upload-prompt"><p>Drag &amp; drop image here</p><p style="font-size:.8rem;color:var(--c-text-light)">or click to browse</p></div>
+          <p class="upload-hint">JPG, PNG, WebP — max 8 MB</p>
+        </div>
+      </div>
     `,
     saveFn: () => saveProject(id),
     saveLabel: id ? 'Update' : 'Save'
   })
+  setupImageZone('pr-img-zone', 'pr-img-input', 'pr-img-preview', 'projectImage')
 }
 
 async function saveProject(id) {
   const name = val('pr-name')
   if (!name) { toast('Project name is required','warning'); return }
+  const uploads = await resolveUploads()
+  const image = uploads['projectImage'] || STATE.currentImageUrls['projectImage'] || ''
   const payload = {
     name, title: name, description: val('pr-desc'), status: val('pr-status'),
     budget: val('pr-budget'), startDate: val('pr-start'), endDate: val('pr-end'),
-    start_date: val('pr-start'), end_date: val('pr-end')
+    start_date: val('pr-start'), end_date: val('pr-end'),
+    ...(image ? { image } : {})
   }
   if (id) await api('PUT', `/api/projects/${id}`, payload)
   else     await api('POST', '/api/projects', payload)
