@@ -2005,6 +2005,7 @@ async function runMigrationsInline() {
     await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS email TEXT;`);
     await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS phone TEXT;`);
     await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS license_number TEXT;`);
+    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS logo TEXT;`);
     await client.query(`ALTER TABLE education ADD COLUMN IF NOT EXISTS download_url TEXT;`);
     await client.query(`ALTER TABLE innovation_topics ADD COLUMN IF NOT EXISTS category VARCHAR(100);`);
     await client.query(`CREATE TABLE IF NOT EXISTS energy_guides (id VARCHAR(50) PRIMARY KEY, title TEXT, category VARCHAR(100), summary TEXT, cover_image TEXT, pdf_attachment TEXT, featured_image TEXT, key_takeaways TEXT, estimated_savings VARCHAR(100), publish_date DATE, featured_flag BOOLEAN DEFAULT FALSE, status VARCHAR(50), target_site VARCHAR(50), modified_by VARCHAR(100));`);

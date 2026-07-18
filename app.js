@@ -1550,6 +1550,8 @@ async function renderInstallers() {
 
 function openInstallerDrawer(id) {
   const item = id ? (STATE.db.installers||[]).find(i=>i.id===id)||{} : {}
+  STATE.pendingUploads = {}
+  STATE.currentImageUrls = { installerLogo: item.logo||'' }
   openDrawer({
     title: id ? 'Edit Installer' : 'New Installer',
     body: `
@@ -1572,18 +1574,32 @@ function openInstallerDrawer(id) {
           </select></div>
       </div>
       <div class="form-field"><label class="form-label">Website</label>
-        <input id="ins-web" type="url" class="form-input" value="${esc(item.website||item.url||'')}" placeholder="https://…"></div>`,
+        <input id="ins-web" type="url" class="form-input" value="${esc(item.website||item.url||'')}" placeholder="https://…"></div>
+      <div class="form-field">
+        <label class="form-label">Company Logo</label>
+        <div id="ins-logo-preview">${item.logo?`<div class="upload-preview"><img src="${esc(item.logo)}" class="upload-img" alt="Logo"><button type="button" class="upload-remove" onclick="clearImageField('installerLogo','ins-logo-preview','ins-logo-zone')">✕</button></div>`:''}</div>
+        <div id="ins-logo-zone" class="upload-zone" style="${item.logo?'display:none':''}">
+          <input type="file" id="ins-logo-input" accept="image/*">
+          <svg class="upload-icon" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <div class="upload-prompt"><p>Drag &amp; drop logo here</p><p style="font-size:.8rem;color:var(--c-text-light)">or click to browse</p></div>
+          <p class="upload-hint">JPG, PNG, SVG, WebP — max 8 MB</p>
+        </div>
+      </div>`,
     saveFn: () => saveInstaller(id)
   })
+  setupImageZone('ins-logo-zone', 'ins-logo-input', 'ins-logo-preview', 'installerLogo')
 }
 
 async function saveInstaller(id) {
   const company = val('ins-company')
   if (!company) { toast('Company name is required','warning'); return }
+  const uploads = await resolveUploads()
+  const logo = uploads['installerLogo'] || STATE.currentImageUrls['installerLogo'] || ''
   const payload = { company, name:company, contactName: val('ins-name'),
     email: val('ins-email'), phone: val('ins-phone'),
     licenseNumber: val('ins-lic'), licence: val('ins-lic'),
-    status: val('ins-status'), website: val('ins-web') }
+    status: val('ins-status'), website: val('ins-web'),
+    ...(logo ? { logo } : {}) }
   if (id) await api('PUT', `/api/installers/${id}`, payload)
   else     await api('POST', '/api/installers', payload)
   toast(id ? 'Installer updated' : 'Installer added')
