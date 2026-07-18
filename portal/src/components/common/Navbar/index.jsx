@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { MAIN_NAV } from '../../../constants/navigation'
 import Logo from '../Logo'
 import { BRANDING } from '../../../constants/branding'
+import { useSiteSettings } from '../../../contexts/SiteSettingsContext'
 import { cn } from '../../../utils/cn'
 
 const navLinkClass = ({ isActive }) =>
@@ -223,6 +224,7 @@ export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
+  const { phone } = useSiteSettings()
 
   useEffect(() => { setMobileOpen(false) }, [location])
 
@@ -249,10 +251,10 @@ export default function Navbar() {
             <span className="sm:hidden">Gov. of Bermuda</span>
           </Link>
           <a
-            href={`tel:${BRANDING.phone.replace(/\s/g, '')}`}
+            href={`tel:${phone.replace(/\s/g, '')}`}
             className="hover:text-white transition-colors"
           >
-            {BRANDING.phone}
+            {phone}
           </a>
         </div>
       </div>

@@ -875,7 +875,10 @@ const multerExcel = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
       const path = require('path');
-      cb(null, path.join(__dirname, 'portal', 'public', 'documents'));
+      const fs = require('fs');
+      const dir = path.join(__dirname, 'portal', 'public', 'documents');
+      fs.mkdirSync(dir, { recursive: true });
+      cb(null, dir);
     },
     filename: (req, file, cb) => {
       const key = req.params.key;
@@ -932,7 +935,14 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       const XLSX = require('xlsx');
       const wb = XLSX.readFile(req.file.path);
       const ws = wb.Sheets[wb.SheetNames[0]];
-      const raw = XLSX.utils.sheet_to_json(ws, { defval: '' });
+      // Use header:1 to get raw arrays so we can handle duplicate column names (two lat/lon pairs)
+      const rawArr = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+      const headers = rawArr[0] || [];
+      const raw = rawArr.slice(1).map(r => {
+        const obj = {};
+        headers.forEach((h, i) => { if (h) obj[h] = r[i] ?? ''; });
+        return obj;
+      });
 
       // Flexible case-insensitive column lookup
       const colMap = {};
@@ -975,8 +985,18 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       let inserted = 0;
       for (let i = 0; i < raw.length; i++) {
         const row = raw[i];
-        const rawLat = getCol(row,'lat','latitude');
-        const rawLng = getCol(row,'lon','lng','longitude','long');
+        // Use raw array indices for lat/lon to correctly handle duplicate column names.
+        // The spreadsheet has two lat/lon pairs; we prefer the last (second) pair which
+        // contains geocoded coords. Fall back to first pair if second is empty.
+        const rawRow = rawArr[i + 1] || [];
+        const latIdxA = headers.indexOf('lat'), lonIdxA = headers.indexOf('lon');
+        const latIdxB = headers.lastIndexOf('lat'), lonIdxB = headers.lastIndexOf('lon');
+        // Prefer primary coords (A); fall back to secondary (B) for records like the Finger
+        // where the primary address columns are empty but secondary address has geocodes.
+        const rawLat = (rawRow[latIdxA] !== '' && rawRow[latIdxA] != null) ? rawRow[latIdxA]
+                     : (rawRow[latIdxB] !== '' && rawRow[latIdxB] != null) ? rawRow[latIdxB] : '';
+        const rawLng = (rawRow[lonIdxA] !== '' && rawRow[lonIdxA] != null) ? rawRow[lonIdxA]
+                     : (rawRow[lonIdxB] !== '' && rawRow[lonIdxB] != null) ? rawRow[lonIdxB] : '';
         const parsedLat = parseFloat(String(rawLat).trim());
         let parsedLng = parseFloat(String(rawLng).trim());
         if (Number.isFinite(parsedLng) && parsedLng > 0 && parsedLng < 70) parsedLng = -parsedLng;
@@ -993,18 +1013,22 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         else { const c = PARISH_COORDS[parish] || PARISH_COORDS['Bermuda']; lat = c[0]+Math.sin(i*7.3)*0.003; lng = c[1]+Math.cos(i*5.1)*0.003; }
         if (parish === 'Bermuda') parish = nearestParish(lat, lng);
 
-        const rawCap = getCol(row,'Extracted AC Capacity','AC Capacity','AC Capacity (kW)','Capacity (kW)','Capacity','capacity');
+        const rawCap = getCol(row,'Extracted AC Capacity (kW)','Extracted AC Capacity','AC Capacity (kW)','AC Capacity','Capacity (kW)','Capacity','capacity');
         let capacity = parseFloat(String(rawCap).trim());
         if (!Number.isFinite(capacity) || capacity <= 0) {
           const desc2 = String(getCol(row,'Permit Description') || '');
-          const m2 = desc2.match(/(\d+\.?\d*)\s*kw/i);
+          // Match kW but NOT kWh (avoid treating annual output as capacity)
+          const m2 = desc2.match(/(\d+\.?\d*)\s*kw(?!h)/i);
           capacity = m2 ? parseFloat(m2[1]) : 0;
         }
-        if (capacity > 1000) capacity = capacity / 1000;
+        // Only convert if clearly in watts (>10000W = >10kW), never for MW-scale systems
+        if (capacity > 10000) capacity = capacity / 1000;
 
         const annualOutput = parseFloat(String(getCol(row,'Annual Output (kWh)','Annual Output','Annual Output kWh') || 0)) || 0;
         const wc = String(getCol(row,'Permit Work Class','Permit Type','Work Class') || '').toLowerCase();
-        const type = wc.includes('commercial') ? 'Commercial' : wc.includes('utility') ? 'Utility' : 'Residential';
+        // Utility = explicitly utility class OR capacity >500kW regardless of permit class
+        const typeFromWC = wc.includes('commercial') ? 'Commercial' : wc.includes('utility') ? 'Utility' : 'Residential';
+        const type = (capacity > 500) ? 'Utility' : typeFromWC;
         const address = String(getCol(row,'Adresss','Address','Permit Address','address') || '').trim();
         const firstLine = address.split(/[\n\r,]/)[0].trim();
         const desc = String(getCol(row,'Permit Description') || '').slice(0,120);
@@ -1973,13 +1997,7 @@ async function runMigrationsInline() {
     await client.query(`CREATE TABLE IF NOT EXISTS education (id VARCHAR(50) PRIMARY KEY, title TEXT, category VARCHAR(100), description TEXT, attachment TEXT, target_site VARCHAR(50), type VARCHAR(100), file_size VARCHAR(50), image TEXT);`);
     await client.query(`CREATE TABLE IF NOT EXISTS media (id VARCHAR(50) PRIMARY KEY, name TEXT, type VARCHAR(50), size VARCHAR(50), uploaded_by VARCHAR(100), date DATE, url TEXT);`);
     await client.query(`CREATE TABLE IF NOT EXISTS settings (id INT PRIMARY KEY DEFAULT 1 CHECK (id = 1), site_name TEXT, contact_email TEXT, footer_info TEXT, social_facebook TEXT, social_twitter TEXT, social_instagram TEXT, active_theme TEXT, contact_phone TEXT, contact_office_location TEXT, contact_hours TEXT, contact_department_list TEXT, allowed_file_types TEXT, max_upload_size TEXT, featured_guide TEXT, featured_tip TEXT, featured_resource TEXT, featured_infographic TEXT);`);
-    // Guarantee the singleton settings row (id=1) exists. Without this, PUT /api/settings
-    // does `UPDATE ... WHERE id = 1` matching 0 rows and then reads an empty result → 500.
-    await client.query(`INSERT INTO settings (id) VALUES (1) ON CONFLICT (id) DO NOTHING;`);
-    // ── Schema patches: columns the CMS admin form writes but the original CREATE
-    //    statements omitted. Without these, the generic-CRUD allowedColumns filter
-    //    silently dropped the values on save (policy PDFs/dates, installer contact
-    //    details, project end dates, education download links, innovation categories).
+    await client.query(`INSERT INTO settings (id, site_name, contact_email, contact_phone) VALUES (1, 'Department of Energy', 'energy@gov.bm', '441-444-0597') ON CONFLICT (id) DO UPDATE SET contact_phone = COALESCE(NULLIF(settings.contact_phone,''), EXCLUDED.contact_phone);`);
     await client.query(`ALTER TABLE policies ADD COLUMN IF NOT EXISTS external_url TEXT;`);
     await client.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS end_date DATE;`);
     await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS company TEXT;`);

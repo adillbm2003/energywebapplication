@@ -1,5 +1,6 @@
 import { BrowserRouter } from 'react-router-dom'
 import AppRoutes from './routes/AppRoutes'
+import { SiteSettingsProvider } from './contexts/SiteSettingsContext'
 
 const routerBasename =
   import.meta.env.BASE_URL === '/' ? undefined : import.meta.env.BASE_URL.replace(/\/$/, '')
@@ -7,7 +8,9 @@ const routerBasename =
 function App() {
   return (
     <BrowserRouter basename={routerBasename}>
-      <AppRoutes />
+      <SiteSettingsProvider>
+        <AppRoutes />
+      </SiteSettingsProvider>
     </BrowserRouter>
   )
 }

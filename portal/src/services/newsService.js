@@ -2,6 +2,13 @@ import { news } from '../data/news'
 import { fetchMockById, fetchFromAPI } from './api'
 import { slugify } from '../utils/format'
 import { sortByNewest } from '../utils/sortContent'
+import { PAGE_IMAGES } from '../constants/branding'
+
+function pickNewsImage(n) {
+  const text = `${n.title || ''} ${n.slug || ''}`.toLowerCase()
+  if (text.includes('bursary') && text.includes('recipient')) return PAGE_IMAGES.summerStudentPhoto
+  return n.image
+}
 
 export const newsService = {
   getAll: async () => {
@@ -16,7 +23,7 @@ export const newsService = {
         : n.content
           ? n.content.split(/\r?\n\r?\n+/).map(s => s.trim()).filter(Boolean)
           : [],
-      image: n.image,
+      image: pickNewsImage(n),
       publishDate: n.publishDate,
       slug: slugify(n.title) || n.id,
       category: n.category || 'Renewable Energy',

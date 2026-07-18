@@ -13,10 +13,10 @@ const TABS = [
 ]
 
 const QUICK_ACCESS = [
-  { label: 'Renewable Dashboard', to: ROUTES.renewableDashboard, image: PAGE_IMAGES.solar },
-  { label: 'Transition Dashboard', to: ROUTES.transitionDashboard, image: PAGE_IMAGES.ev },
+  { label: 'Renewable Dashboard', to: ROUTES.renewableDashboard, image: PAGE_IMAGES.bermudaEnergyDashboard },
+  { label: 'Transition Dashboard', to: ROUTES.transitionDashboard, image: PAGE_IMAGES.bermudaEnergyDashboard },
   { label: 'Energy Registry', to: ROUTES.registry, image: PAGE_IMAGES.registry },
-  { label: 'GIS Heat Map', to: ROUTES.gis, image: PAGE_IMAGES.grid },
+  { label: 'GIS Heat Map', to: ROUTES.gis, image: PAGE_IMAGES.gisHeatmap },
   { label: 'Education Centre', to: ROUTES.education, image: PAGE_IMAGES.education },
   { label: 'Energy Simulator', href: 'https://simulator.energy.bm/', image: PAGE_IMAGES.simulator },
 ]

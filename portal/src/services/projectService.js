@@ -10,14 +10,14 @@ function pickProjectImage(p) {
 
   const text = `${p.title || ''} ${p.description || ''} ${p.category || ''}`.toLowerCase()
 
-  if (text.includes('bus') || text.includes('transport') || text.includes('fleet electrif') || text.includes('public transport')) return PAGE_IMAGES.electricBuses
-  if (text.includes('ev charging') || text.includes('electric vehicle infra') || text.includes('charging station') || text.includes('charger')) return PAGE_IMAGES.electricBus
-  if (text.includes('electric vehicle') || text.includes(' ev ') || text.includes('evs ')) return PAGE_IMAGES.evExpo
+  if (text.includes('bus') || text.includes('transport') || text.includes('fleet electrif') || text.includes('public transport')) return PAGE_IMAGES.dptElectrification
+  if (text.includes('ev charging') || text.includes('electric vehicle infra') || text.includes('charging station') || text.includes('charger')) return PAGE_IMAGES.charging
+  if (text.includes('electric vehicle') || text.includes(' ev ') || text.includes('evs ')) return PAGE_IMAGES.ev
   if (text.includes('balcony')) return PAGE_IMAGES.balconySolar
   if (text.includes('bhc') || text.includes('housing corporation') || text.includes('community solar')) return PAGE_IMAGES.bhcHousing
-  if (text.includes('efficiency') || text.includes('retrofit') || text.includes('hvac') || text.includes('led lighting')) return PAGE_IMAGES.balconySolar
+  if (text.includes('efficiency') || text.includes('retrofit') || text.includes('hvac') || text.includes('led lighting')) return PAGE_IMAGES.efficiency
   if (text.includes('wind') || text.includes('turbine')) return PAGE_IMAGES.windTurbine
-  if (text.includes('battery') || text.includes('storage')) return PAGE_IMAGES.battery
+  if (text.includes('battery') || text.includes('storage')) return PAGE_IMAGES.batteryRooms
   if (text.includes('gis') || text.includes('geospatial') || text.includes('mapping')) return PAGE_IMAGES.gisHeatmap
   if (text.includes('space') || text.includes('satellite')) return PAGE_IMAGES.spaceSatellites
   if (text.includes('floating')) return PAGE_IMAGES.floatingSolar

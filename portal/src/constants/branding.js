@@ -1,15 +1,15 @@
-import govLogo from '../assets/images/brand/gov-bermuda-logo.jpg'
+import govLogo from '../assets/images/brand/bermuda-crest-colour.png'
 
 const base = import.meta.env.BASE_URL || '/';
 
 export const BRANDING = {
   logo: govLogo,
-  logoPublic: base + 'gov-bermuda-logo.jpg',
+  logoPublic: base + 'bermuda-crest-colour.png',
   logoAlt: 'Government of Bermuda — Department of Energy',
   departmentName: 'Department of Energy',
   governmentName: 'Government of Bermuda',
   domain: 'energy.bm',
-  phone: '+1 (441) 444-0597',
+  phone: '441-444-0597',
   colors: {
     govBlue: '#2E5496',
     navy: '#0B1F3A',
@@ -62,7 +62,7 @@ export const PAGE_IMAGES = {
   educationOutreach: base + 'images/education-outreach.jpg',
   electricBus: base + 'images/electric-bus.jpg',
   electricBuses: base + 'images/electric-buses.jpg',
-  gisHeatmap: base + 'images/gis-heatmap.jpg',
+  gisHeatmap: base + 'images/heat-gis.png',
   satellite: base + 'images/satellite.jpg',
   spaceSatellites: base + 'images/space-satellites.jpg',
   solarFieldBermuda: base + 'images/solar-field-bermuda.jpg',
@@ -75,6 +75,12 @@ export const PAGE_IMAGES = {
   solarWorkers: base + 'images/solar-workers.jpg',
   windTurbine: base + 'images/wind-turbine.jpg',
   evExpo: base + 'images/ev-expo.jpg',
+  batteryRooms: base + 'images/battery-rooms.jpg',
+  dptElectrification: base + 'images/dpt-electrification.jpg',
+  evFleetBermuda: base + 'images/ev-fleet-bermuda.jpg',
+  bermudaEnergyDashboard: base + 'images/bermuda-energy-dashboard.png',
+  summerStudentPhoto: base + 'images/summer-student-photo.jpg',
+  bmw3: base + 'images/bmw-3.jpg',
   portrait: base + 'images/portrait.jpg',
   portrait1: base + 'images/portraits/774909.jpg',
   portrait2: base + 'images/portraits/91227.jpg',

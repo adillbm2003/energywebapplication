@@ -170,7 +170,7 @@ export const educationResources = [
     description: 'A practical room-by-room checklist for Bermuda homeowners: LED lighting, ENERGY STAR appliances, smart thermostat settings, insulation checks, and BELCO time-of-use rate tips to significantly lower your electricity bill.',
     downloadUrl: '#',
     fileSize: '890 KB',
-    image: PAGE_IMAGES.balconySolar,
+    image: PAGE_IMAGES.efficiency,
     relatedRoute: ROUTES.simulator,
   },
   {
@@ -181,7 +181,7 @@ export const educationResources = [
     description: 'Everything you need to know about owning, charging, and maintaining an EV in Bermuda — including duty concessions, public charging locations, BELCO EV tariffs, and range considerations for the island.',
     downloadUrl: '#',
     fileSize: '1.5 MB',
-    image: PAGE_IMAGES.electricBuses,
+    image: PAGE_IMAGES.ev,
     relatedRoute: ROUTES.transitionDashboard,
   },
   {
@@ -247,7 +247,7 @@ export const educationResources = [
     description: 'Step-by-step guide to conducting a home energy audit in Bermuda: identifying where your electricity goes, using a plug-in energy meter, reading your BELCO bill, and prioritising upgrades for the best return on investment.',
     downloadUrl: '#',
     fileSize: '1.0 MB',
-    image: PAGE_IMAGES.bhcHousing,
+    image: PAGE_IMAGES.solarRooftop,
     relatedRoute: ROUTES.simulator,
   },
   {
@@ -258,7 +258,7 @@ export const educationResources = [
     description: 'How Bermuda\'s traditional architecture — white roofs, deep overhangs, natural ventilation — embodies passive solar design. Modern green building strategies to reduce cooling loads and meet Bermuda\'s planning requirements.',
     downloadUrl: '#',
     fileSize: '1.4 MB',
-    image: PAGE_IMAGES.bhcHousing,
+    image: PAGE_IMAGES.balconySolar,
     relatedRoute: ROUTES.education,
   },
   {
@@ -269,7 +269,7 @@ export const educationResources = [
     description: 'Guide to EV charging in Bermuda: Level 1 (120V), Level 2 (240V) home chargers, and public DC fast chargers. Covers BELCO EV tariff, installation costs ($800–$2,000), and the government\'s expanding public charging network.',
     downloadUrl: '#',
     fileSize: '1.2 MB',
-    image: PAGE_IMAGES.electricBus,
+    image: PAGE_IMAGES.charging,
     relatedRoute: ROUTES.vehicles,
   },
   {

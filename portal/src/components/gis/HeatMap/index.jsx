@@ -1,5 +1,5 @@
 ﻿import { Fragment, useEffect, useMemo, useState } from 'react'
-import { MapContainer, TileLayer, Circle, CircleMarker, useMap } from 'react-leaflet'
+import { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
@@ -23,6 +23,10 @@ const MAP_STYLES = {
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     attribution: 'Tiles &copy; Esri',
   },
+}
+
+function getEffectiveType(item) {
+  return item.capacity > 500 ? 'Utility' : item.type
 }
 
 function getMarkerColor(capacity) {
@@ -118,7 +122,13 @@ function MapLayers({ sites, activeId, onSelect }) {
               eventHandlers={{
                 click: () => onSelect(isActive ? null : site),
               }}
-            />
+            >
+              <Tooltip direction="top" offset={[0, -4]} opacity={1}>
+                <span className="text-xs font-semibold">{site.name}</span>
+                <br />
+                <span className="text-xs text-slate-600">{formatNumber(site.capacity, { maximumFractionDigits: 1 })} kW</span>
+              </Tooltip>
+            </CircleMarker>
           </Fragment>
         )
       })}
@@ -133,7 +143,7 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
   const filtered = useMemo(() => {
     return installations.filter((item) => {
       if (selectedParish && selectedParish !== 'all' && item.parish !== selectedParish) return false
-      if (selectedType && selectedType !== 'all' && item.type !== selectedType) return false
+      if (selectedType && selectedType !== 'all' && getEffectiveType(item) !== selectedType) return false
       return true
     })
   }, [installations, selectedParish, selectedType])
@@ -215,7 +225,7 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
                   <h3 className="text-h4 text-navy-900">{active.name}</h3>
                 </div>
                 <p className="mt-1 text-body-small text-slate-600">
-                  {active.parish} · {active.type}
+                  {active.parish} · {getEffectiveType(active)}
                 </p>
                 <p className="mt-1 text-body-small font-semibold text-teal-700">
                   {formatNumber(active.capacity, { maximumFractionDigits: 1 })} kW installed capacity

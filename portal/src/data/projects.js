@@ -86,7 +86,7 @@ export const projects = [
     expectedCompletion: '2028-03-31',
     progress: 35,
     budget: '$15.0M',
-    image: PAGE_IMAGES.electricBuses,
+    image: PAGE_IMAGES.dptElectrification,
     milestones: [
       { title: 'Fleet assessment', date: '2024-03-01', completed: true },
       { title: 'Pilot electric buses', date: '2025-12-31', completed: true },
@@ -107,7 +107,7 @@ export const projects = [
     expectedCompletion: '2026-12-31',
     progress: 72,
     budget: '$6.4M',
-    image: PAGE_IMAGES.balconySolar,
+    image: PAGE_IMAGES.efficiency,
     milestones: [
       { title: 'Audits complete', date: '2024-01-01', completed: true },
       { title: 'Phase 1 retrofits', date: '2025-06-30', completed: true },
@@ -127,7 +127,7 @@ export const projects = [
     expectedCompletion: '2027-06-30',
     progress: 40,
     budget: '$4.2M',
-    image: PAGE_IMAGES.electricBus,
+    image: PAGE_IMAGES.charging,
     milestones: [
       { title: 'Site identification', date: '2025-01-15', completed: true },
       { title: 'Hamilton stations', date: '2025-08-01', completed: true },

@@ -82,8 +82,8 @@ export const bursaryPathwayImages = {
   'GIS & Geospatial Technologies': PAGE_IMAGES.gisHeatmap,
   'Battery Energy Storage': PAGE_IMAGES.battery,
   'Electric Vehicle Infrastructure': PAGE_IMAGES.electricBuses,
-  'Energy Efficiency': PAGE_IMAGES.balconySolar,
+  'Energy Efficiency': PAGE_IMAGES.efficiency,
   'Public Sector Energy Planning': PAGE_IMAGES.govSolarField,
   'Utility Operations': PAGE_IMAGES.govSolarField,
-  'Emerging Technologies': PAGE_IMAGES.satellite,
+  'Emerging Technologies': PAGE_IMAGES.innovation,
 }

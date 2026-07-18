@@ -86,46 +86,6 @@ export default function TransitionDashboard() {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
-          <DashboardPanelImage src={PAGE_IMAGES.charging} />
-          <div className="card-padding">
-            <SectionHeading title="Charging Infrastructure by Parish" className="mb-4" />
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={charging || []}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="parish" tick={{ fontSize: 11 }} />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="level2" name="Level 2" fill="#0077B6" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="fast" name="Fast Charging" fill="#C9A227" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
-          <DashboardPanelImage src={PAGE_IMAGES.transport} />
-          <div className="card-padding">
-            <SectionHeading title="Public Transport Electrification" className="mb-4" />
-            <div className="h-72">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={transport || []}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                  <XAxis dataKey="year" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="electric" name="Electric" stackId="a" fill="#0077B6" />
-                  <Bar dataKey="hybrid" name="Hybrid" stackId="a" fill="#C9A227" />
-                  <Bar dataKey="diesel" name="Diesel" stackId="a" fill="#94a3b8" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   )

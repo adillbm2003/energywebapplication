@@ -9,6 +9,7 @@ export const installerService = {
       .map((item) => ({
         id: item.id,
         name: item.name,
+        logo: item.logo || null,
         website: item.website || item.contact || null,
         parish: item.parish,
         description: item.description,

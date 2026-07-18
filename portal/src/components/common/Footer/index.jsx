@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { FOOTER_LINKS } from '../../../constants/navigation'
 import { EXTERNAL_LINKS } from '../../../constants/externalLinks'
 import { BRANDING } from '../../../constants/branding'
+import { useSiteSettings } from '../../../contexts/SiteSettingsContext'
 import Logo from '../Logo'
 import NewsletterForm from '../../forms/NewsletterForm'
 
@@ -48,6 +49,7 @@ const SOCIAL_LINKS = [
 
 export default function Footer() {
   const year = new Date().getFullYear()
+  const { phone } = useSiteSettings()
 
   return (
     <footer className="bg-navy-900 text-slate-300" role="contentinfo">
@@ -78,8 +80,8 @@ export default function Footer() {
               ))}
             </div>
             <p className="mt-5 text-xs text-slate-500">
-              <a href={`tel:${BRANDING.phone.replace(/\s/g, '')}`} className="hover:text-teal-400 transition-colors">
-                {BRANDING.phone}
+              <a href={`tel:${phone.replace(/\s/g, '')}`} className="hover:text-teal-400 transition-colors">
+                {phone}
               </a>
             </p>
           </div>

@@ -13,7 +13,6 @@ import { ROUTES } from '../../constants/routes'
 import { formatNumber } from '../../utils/format'
 
 const defaultParishes = [...new Set(gisInstallations.map(i => i.parish))].sort()
-const defaultTypes = [...new Set(gisInstallations.map(i => i.type))].filter(Boolean).sort()
 
 export default function GIS() {
   useDocumentTitle('GIS Heat Map')
@@ -23,7 +22,13 @@ export default function GIS() {
 
   const { data: installations } = useAsyncData(() => gisService.getInstallations(), [], gisInstallations)
   const { data: parishes } = useAsyncData(() => gisService.getParishes(), [], defaultParishes)
-  const { data: types } = useAsyncData(() => gisService.getTypes(), [], defaultTypes)
+
+  // Derive types from live data, overriding: capacity >500kW = Utility
+  const types = useMemo(() => {
+    const list = installations ?? gisInstallations
+    const effectiveTypes = list.map(i => i.capacity > 500 ? 'Utility' : i.type)
+    return [...new Set(effectiveTypes)].filter(Boolean).sort()
+  }, [installations])
 
   const summary = useMemo(() => {
     const list = installations ?? []

@@ -32,20 +32,6 @@ export const energyAwarenessGuides = [
     pdfUrl: null,
   },
   {
-    id: 'guide-ev',
-    categoryLabel: 'Public Safety',
-    title: 'EV Charging Guide',
-    icon: '🚗',
-    statKey: 'Registered EVs',
-    staticKeyGuidance: 'Class 2 Charging',
-    guidanceNote: 'Safety checks required by the Planning Department for residences.',
-    description:
-      'Residential socket modifications, public charging network locations, safety standards, and utility grid load balancing guidance for EV owners in Bermuda.',
-    learnMoreTo: ROUTES.transitionDashboard,
-    downloadTitle: 'EV Charging Guide',
-    pdfUrl: null,
-  },
-  {
     id: 'guide-efficiency',
     categoryLabel: 'Home Conservation',
     title: 'Energy Efficiency Guide',

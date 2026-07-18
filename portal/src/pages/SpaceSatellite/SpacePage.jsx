@@ -8,11 +8,13 @@ import { spaceService } from '../../services'
 import { SPACE_NAV } from '../../constants/navigation'
 import { ROUTES } from '../../constants/routes'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import { useSiteSettings } from '../../contexts/SiteSettingsContext'
 import { downloadMockDocument, isExternalUrl } from '../../utils/mockDownload'
 
 export default function SpacePage() {
   const { slug } = useParams()
   const { data: page, loading, error } = useAsyncData(() => spaceService.getPage(slug), [slug])
+  const { phone } = useSiteSettings()
 
   useDocumentTitle(page?.title || 'Space & Satellite')
 
@@ -117,7 +119,7 @@ export default function SpacePage() {
                     </div>
                     <div className="flex gap-2">
                       <dt className="font-medium text-slate-700 min-w-[60px]">Phone:</dt>
-                      <dd>{page.contact.phone}</dd>
+                      <dd>{phone}</dd>
                     </div>
                     {page.contact.hours && (
                       <div className="flex gap-2">
