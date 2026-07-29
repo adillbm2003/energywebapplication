@@ -1,5 +1,5 @@
 import { news } from '../data/news'
-import { fetchFromAPI, fetchMockById, toRelativeUrl } from './api'
+import { fetchFromAPI, toRelativeUrl } from './api'
 import { sortByNewest } from '../utils/sortContent'
 
 export const newsService = {

@@ -1,5 +1,5 @@
 import { spacePages } from '../data/space'
-import { fetchFromAPI, fetchMockById, fetchMock } from './api'
+import { fetchFromAPI, fetchMockById } from './api'
 
 const mockList = Object.entries(spacePages).map(([key, value]) => ({ slug: key, ...value }))
 

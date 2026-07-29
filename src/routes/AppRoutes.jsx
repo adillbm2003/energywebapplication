@@ -3,7 +3,6 @@ import { Routes, Route, Navigate } from 'react-router-dom'
 import MainLayout from '../layouts/MainLayout'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import ErrorBoundary from '../components/ErrorBoundary'
-import { ROUTES } from '../constants/routes'
 
 const Home = lazy(() => import('../pages/Home'))
 const About = lazy(() => import('../pages/About'))

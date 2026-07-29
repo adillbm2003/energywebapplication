@@ -7,7 +7,8 @@ const STATE = {
   view: 'dashboard',
   user: null,
   role: 'viewer',
-  token: localStorage.getItem('cms_token') || null,
+  // No token is held in JS. The session lives in an httpOnly cookie that script
+  // cannot read, so an injection cannot steal it. All requests send credentials.
   db: { news:[], policies:[], consultations:[], projects:[], kpis:[],
         installers:[], education:[], innovation:[], bursaryRecipients:[],
         leadership:[], settings:{}, solarInstallations:[] },
@@ -36,15 +37,29 @@ const NAV = [
   { id:'bursary', label:'Bursary Recipients', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>' },
   { id:'leadership', label:'Leadership Team', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' },
   { section:'ADMIN' },
+  { id:'users', label:'Staff Accounts', adminOnly:true, icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>' },
   { id:'media', label:'Media Library', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' },
   { id:'logs', label:'Audit Logs', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>' },
   { id:'settings', label:'Settings', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>' },
 ]
 
 // ─── UTILITIES ───────────────────────────────
+// HTML-escape a value for interpolation into markup.
+//
+// The single-quote and backtick cases matter as much as the angle brackets here:
+// this codebase embeds escaped values inside inline handlers, e.g.
+//   onclick="openDrawer('${esc(item.id)}')"
+// Without escaping ' a value containing an apostrophe closes the JS string and
+// everything after it executes. Escaping only & < > " left that route open.
 function esc(s) {
   if (s == null) return ''
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/`/g, '&#96;')
 }
 
 function formatDate(d) {
@@ -88,7 +103,6 @@ function emptyState(msg, btnLabel, btnFn) {
 // ─── API LAYER ────────────────────────────────
 async function api(method, path, body) {
   const headers = {}
-  if (STATE.token) headers['Authorization'] = 'Bearer ' + STATE.token
   const opts = { method, headers, credentials: 'include' }
   if (body !== undefined) {
     headers['Content-Type'] = 'application/json'
@@ -96,8 +110,7 @@ async function api(method, path, body) {
   }
   const res = await fetch(path, opts)
   if (res.status === 401) {
-    STATE.token = null
-    localStorage.removeItem('cms_token')
+    STATE.user = null
     document.getElementById('app').style.display = 'none'
     document.getElementById('login-screen').style.display = 'flex'
     showScreen('login')
@@ -111,9 +124,7 @@ async function api(method, path, body) {
 async function uploadFile(file) {
   const fd = new FormData()
   fd.append('file', file)
-  const headers = {}
-  if (STATE.token) headers['Authorization'] = 'Bearer ' + STATE.token
-  const res = await fetch('/api/upload', { method: 'POST', credentials: 'include', headers, body: fd })
+  const res = await fetch('/api/upload', { method: 'POST', credentials: 'include', body: fd })
   if (!res.ok) {
     const err = await res.json().catch(() => ({}))
     throw new Error(err.error || err.message || 'Upload failed')
@@ -143,17 +154,15 @@ async function fetchCollection(name) {
 // ─── AUTH ─────────────────────────────────────
 async function init() {
   setupForms()
-  if (STATE.token) {
-    try {
-      const me = await api('GET', '/api/auth/me')
-      STATE.user = me
-      STATE.role = me.role || 'Viewer'
-      showApp()
-      return
-    } catch {
-      STATE.token = null
-      localStorage.removeItem('cms_token')
-    }
+  // Probe the session cookie directly — there is no client-side token to inspect.
+  try {
+    const me = await api('GET', '/api/auth/me')
+    STATE.user = me
+    STATE.role = me.role || 'Viewer'
+    showApp()
+    return
+  } catch {
+    // Not signed in (or the session expired) — fall through to the login screen.
   }
   showScreen('login')
 }
@@ -175,8 +184,6 @@ async function doLogin(e) {
   btn.textContent = 'Signing in…'
   try {
     const data = await api('POST', '/api/auth/login', { email, password: pass })
-    STATE.token = data.token
-    localStorage.setItem('cms_token', data.token)
     STATE.user = data.user
     STATE.role = data.user?.role || 'Viewer'
     showApp()
@@ -290,7 +297,7 @@ function setupNav() {
   const nav = document.getElementById('sb-nav')
   nav.innerHTML = NAV.map(item => {
     if (item.section) return `<div class="nav-section">${item.section}</div>`
-    return `<div class="nav-item" data-view="${item.id}" onclick="navigate('${item.id}')">
+    return `<div class="nav-item${item.adminOnly ? ' admin-only' : ''}" data-view="${item.id}" onclick="navigate('${item.id}')">
       <span class="nav-icon">${item.icon}</span>
       <span class="nav-label">${item.label}</span>
     </div>`
@@ -328,6 +335,7 @@ async function renderView(viewId) {
       case 'innovation':     await renderInnovation(); break
       case 'bursary':        await renderBursary(); break
       case 'leadership':     await renderLeadership(); break
+      case 'users':          await renderUsers(); break
       case 'media':          await renderMedia(); break
       case 'logs':           await renderLogs(); break
       case 'settings':       await renderSettings(); break
@@ -688,7 +696,7 @@ async function renderDashboard() {
 async function renderNews() {
   const items = await fetchCollection('news')
   const vc = document.getElementById('view-container')
-  const canWrite = ['Administrator', 'Editor', 'Approver'].includes(STATE.role)
+  // Write controls are shown/hidden by applyRbac() via the .write-only class.
 
   vc.innerHTML = `
     <div class="view-header">
@@ -1312,6 +1320,9 @@ async function renderSolarRegistry() {
     if (iRes.ok) preview = await iRes.json()
   } catch (_) {}
 
+  // Cache the rows so the edit drawer can look a record up by id.
+  STATE.db.solarInstallations = preview
+
   const fmtNum = n => Number.isFinite(n) ? n.toLocaleString() : '—'
   const statCard = (label, value, sub='') => `
     <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;min-width:130px">
@@ -1333,6 +1344,9 @@ async function renderSolarRegistry() {
       <div>
         <h2 class="view-title">Solar PV Registry</h2>
         <p class="view-sub">Permit data powering the GIS heat map and solar statistics</p>
+      </div>
+      <div class="view-actions write-only">
+        <button class="btn btn-primary" onclick="openSolarDrawer()">+ Add Installation</button>
       </div>
     </div>
 
@@ -1405,6 +1419,7 @@ async function renderSolarRegistry() {
           <th style="text-align:right">Capacity (kW)</th>
           <th style="text-align:right">Annual kWh</th>
           <th style="text-align:right">Lat / Lng</th>
+          <th class="write-only" style="text-align:right">Actions</th>
         </tr></thead>
         <tbody id="sol-tbody">
           ${shown.map(s => `<tr class="sol-rows">
@@ -1415,6 +1430,10 @@ async function renderSolarRegistry() {
             <td class="td-muted" style="text-align:right">${s.capacity ? s.capacity.toFixed(3) : '—'}</td>
             <td class="td-muted" style="text-align:right">${s.annualOutput ? fmtNum(s.annualOutput) : '—'}</td>
             <td class="td-muted" style="text-align:right;font-family:monospace;font-size:11px">${s.lat ? s.lat.toFixed(4)+', '+s.lng.toFixed(4) : '—'}</td>
+            <td class="write-only" style="text-align:right;white-space:nowrap">
+              <button class="btn btn-sm" onclick="openSolarDrawer('${esc(s.id)}')">Edit</button>
+              <button class="btn btn-sm btn-danger admin-only" onclick="deleteSolar('${esc(s.id)}')">Delete</button>
+            </td>
           </tr>`).join('')}
         </tbody>
       </table>
@@ -1434,8 +1453,7 @@ async function uploadSolarExcel(input) {
   try {
     const fd = new FormData()
     fd.append('file', file)
-    const dfHeaders = STATE.token ? { 'Authorization': 'Bearer ' + STATE.token } : {}
-    const res = await fetch('/api/data-files/solar', { method: 'POST', credentials: 'include', headers: dfHeaders, body: fd })
+    const res = await fetch('/api/data-files/solar', { method: 'POST', credentials: 'include', body: fd })
     if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Upload failed') }
     const data = await res.json()
     const rowInfo = data.inserted != null ? ` — ${data.inserted.toLocaleString()} installations imported` : ` (${(data.size/1024).toFixed(0)} KB)`
@@ -1488,22 +1506,25 @@ function openSolarDrawer(id) {
 async function saveSolar(id) {
   const address = val('sol-addr')
   if (!address) { toast('Address is required','warning'); return }
-  const payload = { address, name:address, location:address,
-    capacity: val('sol-cap'), capacityKw: val('sol-cap'),
-    type: val('sol-type'), systemType: val('sol-type'),
-    installDate: val('sol-date'), date: val('sol-date'),
+  // Keys must match real solar_installations columns — the server drops anything else.
+  const payload = {
+    address, name: address,
+    capacity: val('sol-cap'),
+    type: val('sol-type'),
+    installDate: val('sol-date'),
     status: val('sol-status'),
-    lat: val('sol-lat'), latitude: val('sol-lat'),
-    lng: val('sol-lng'), longitude: val('sol-lng') }
-  if (id) await api('PUT', `/api/solar/${id}`, payload)
-  else     await api('POST', '/api/solar', payload)
+    lat: val('sol-lat'),
+    lng: val('sol-lng'),
+  }
+  if (id) await api('PUT', `/api/solarInstallations/${id}`, payload)
+  else     await api('POST', '/api/solarInstallations', payload)
   toast(id ? 'Installation updated' : 'Installation added')
   closeDrawer(); await renderSolarRegistry()
 }
 
 async function deleteSolar(id) {
   confirmDelete('Delete this solar installation record?', async () => {
-    await api('DELETE', `/api/solar/${id}`)
+    await api('DELETE', `/api/solarInstallations/${id}`)
     toast('Installation deleted'); await renderSolarRegistry()
   })
 }
@@ -1670,8 +1691,7 @@ async function handleStatFile(file) {
   result.innerHTML = '<div class="alert alert-info">Uploading…</div>'
   try {
     const fd = new FormData(); fd.append('file', file)
-    const headers = STATE.token ? { 'Authorization': `Bearer ${STATE.token}` } : {}
-    const res = await fetch('/api/statistics/upload', { method:'POST', headers, body:fd })
+    const res = await fetch('/api/statistics/upload', { method:'POST', credentials:'include', body:fd })
     const data = await res.json()
     if (res.ok) {
       result.innerHTML = '<div class="alert alert-success">Statistics file uploaded and processed successfully.</div>'
@@ -1980,6 +2000,102 @@ async function saveLeadership(id) {
 
 async function deleteLeadership(id) {
   confirmDelete('Remove this team member?', async()=>{ await api('DELETE',`/api/leadership/${id}`); toast('Member removed'); await renderLeadership() })
+}
+
+// ─── STAFF ACCOUNTS (Administrator only) ──────
+const USER_ROLES = ['Viewer', 'Editor', 'Approver', 'Administrator']
+
+const ROLE_HELP = {
+  Viewer: 'Read-only access to all content.',
+  Editor: 'Can create and edit drafts, but cannot publish or approve.',
+  Approver: 'Can publish, approve content and review submissions.',
+  Administrator: 'Full access including staff accounts, settings and deletion.',
+}
+
+async function renderUsers() {
+  const vc = document.getElementById('view-container')
+  if (STATE.role !== 'Administrator') {
+    vc.innerHTML = emptyState('Only administrators can manage staff accounts.')
+    return
+  }
+  const users = await api('GET', '/api/users')
+  STATE.db.users = users
+  vc.innerHTML = `
+    <div class="view-header">
+      <div><h2 class="view-title">Staff Accounts</h2><p class="view-sub">${users.length} account${users.length!==1?'s':''}</p></div>
+      <div class="view-actions"><button class="btn btn-primary" onclick="openUserDrawer()">+ Add Staff Account</button></div>
+    </div>
+    ${users.length===0 ? emptyState('No staff accounts yet.','Add Staff Account','openUserDrawer()') : `
+    <div class="table-wrap"><table class="cms-table">
+      <thead><tr><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th class="th-actions">Actions</th></tr></thead>
+      <tbody>
+        ${users.map(u=>`<tr>
+          <td class="td-title">${esc(u.username)}${u.id===STATE.user?.id?' <span class="td-muted">(you)</span>':''}</td>
+          <td class="td-muted">${esc(u.email)}</td>
+          <td>${badge(u.role, u.role==='Administrator'?'red':u.role==='Approver'?'green':u.role==='Editor'?'orange':'gray')}</td>
+          <td>${statusBadge(u.isActive?'Active':'Inactive')}</td>
+          <td class="td-actions">
+            <button class="btn-icon btn-edit" onclick="openUserDrawer('${esc(u.id)}')" title="Edit">✏️</button>
+            ${u.id===STATE.user?.id?'':`<button class="btn-icon btn-del" onclick="deleteUser('${esc(u.id)}')" title="Delete">🗑️</button>`}
+          </td>
+        </tr>`).join('')}
+      </tbody>
+    </table></div>`}
+  `
+}
+
+function openUserDrawer(id) {
+  const item = id ? (STATE.db.users||[]).find(u=>u.id===id)||{} : {}
+  openDrawer({ title: id?'Edit Staff Account':'New Staff Account', body:`
+    <div class="field-row">
+      <div class="form-field"><label class="form-label">Username <span class="form-required">*</span></label>
+        <input id="usr-username" class="form-input" value="${esc(item.username||'')}" placeholder="jsmith" required></div>
+      <div class="form-field"><label class="form-label">Email <span class="form-required">*</span></label>
+        <input id="usr-email" type="email" class="form-input" value="${esc(item.email||'')}" placeholder="name@gov.bm" required></div>
+    </div>
+    <div class="form-field">
+      <label class="form-label">Password ${id?'':'<span class="form-required">*</span>'}</label>
+      <input id="usr-password" type="password" class="form-input" autocomplete="new-password"
+             placeholder="${id?'Leave blank to keep the current password':'At least 8 characters'}">
+    </div>
+    <div class="form-field"><label class="form-label">Role <span class="form-required">*</span></label>
+      <select id="usr-role" class="form-input" onchange="document.getElementById('usr-role-help').textContent = (${JSON.stringify(ROLE_HELP)})[this.value] || ''">
+        ${USER_ROLES.map(r=>`<option value="${r}" ${item.role===r?'selected':''}>${r}</option>`).join('')}
+      </select>
+      <p id="usr-role-help" class="form-hint">${esc(ROLE_HELP[item.role||'Viewer'])}</p>
+    </div>
+    <div class="form-field">
+      <label class="form-label"><input id="usr-active" type="checkbox" ${item.id===undefined||item.isActive?'checked':''}> Account active</label>
+      <p class="form-hint">Inactive accounts cannot sign in but are retained for audit history.</p>
+    </div>
+  `, saveFn:()=>saveUser(id), saveLabel:id?'Update':'Create' })
+}
+
+async function saveUser(id) {
+  const username = val('usr-username')
+  const email    = val('usr-email')
+  const password = val('usr-password')
+  const role     = val('usr-role')
+  const isActive = document.getElementById('usr-active').checked
+
+  if (!username || !email) { toast('Username and email are required','warning'); return }
+  if (!id && !password)    { toast('A password is required for new accounts','warning'); return }
+  if (password && password.length < 8) { toast('Password must be at least 8 characters','warning'); return }
+
+  const payload = { username, email, role, isActive }
+  if (password) payload.password = password
+
+  if (id) await api('PUT', `/api/users/${id}`, payload)
+  else     await api('POST', '/api/users', payload)
+  toast(id?'Account updated':'Account created'); closeDrawer(); await renderUsers()
+}
+
+async function deleteUser(id) {
+  const u = (STATE.db.users||[]).find(x=>x.id===id)
+  confirmDelete(`Delete the account "${u?.username||id}"? This cannot be undone.`, async()=>{
+    await api('DELETE', `/api/users/${id}`)
+    toast('Account deleted'); await renderUsers()
+  })
 }
 
 // ─── MEDIA LIBRARY ────────────────────────────

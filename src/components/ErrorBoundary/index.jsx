@@ -1,3 +1,5 @@
+// `React` must stay in scope: JSX in this file is compiled with the classic
+// runtime under the test transform, which emits React.createElement calls.
 import React, { Component } from 'react'
 import Button from '../ui/Button'
 

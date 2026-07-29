@@ -204,7 +204,7 @@ export default function RenewableDashboard() {
                         innerRadius={64}
                         outerRadius={104}
                         paddingAngle={3}
-                        label={({ name, value }) => `${value}%`}
+                        label={({ value }) => `${value}%`}
                         labelLine={false}
                       >
                         {capacityByType?.map((entry) => (

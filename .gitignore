@@ -10,7 +10,6 @@ lerna-debug.log*
 # Dependencies
 node_modules
 node_modules/
-portal/node_modules/
 
 # Environment variables
 .env
@@ -22,7 +21,6 @@ portal/node_modules/
 dist
 dist-ssr
 build
-portal/dist/
 .vite
 
 # Uploads (user content)
@@ -52,3 +50,6 @@ Thumbs.db
 # Deployment zip artifacts
 *.zip
 .env.vercel.prod
+
+# Local verification screenshots
+screenshots/

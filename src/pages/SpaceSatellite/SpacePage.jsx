@@ -8,7 +8,6 @@ import { spaceService } from '../../services'
 import { SPACE_NAV } from '../../constants/navigation'
 import { ROUTES } from '../../constants/routes'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
-import { isExternalUrl } from '../../utils/mockDownload'
 import RelatedArticles from '../../components/ui/RelatedArticles'
 
 export default function SpacePage() {

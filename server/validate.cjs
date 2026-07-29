@@ -35,6 +35,27 @@ const schemas = {
     name: z.string().max(255).optional(),
   }).passthrough(),
 
+  createUser: z.object({
+    username: z.string().trim().min(3, 'Username must be at least 3 characters').max(50),
+    email: z.string().trim().email('A valid email is required').max(255),
+    password: z.string().min(8, 'Password must be at least 8 characters').max(200),
+    role: z.enum(['Viewer', 'Editor', 'Approver', 'Administrator']),
+    isActive: z.boolean().optional().default(true),
+  }),
+
+  updateUser: z.object({
+    username: z.string().trim().min(3).max(50).optional(),
+    email: z.string().trim().email('A valid email is required').max(255).optional(),
+    password: z.string().min(8, 'Password must be at least 8 characters').max(200).optional(),
+    role: z.enum(['Viewer', 'Editor', 'Approver', 'Administrator']).optional(),
+    isActive: z.boolean().optional(),
+  }),
+
+  changePassword: z.object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z.string().min(8, 'New password must be at least 8 characters').max(200),
+  }),
+
   statistics: z.object({
     dataType: z.string().min(1),
     period: z.string().min(1),

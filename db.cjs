@@ -1,14 +1,55 @@
 require('dotenv').config();
+const fs = require('fs');
 const { Pool } = require('pg');
+
+/**
+ * TLS configuration for the database connection.
+ *
+ * This used to hardcode `rejectUnauthorized: false` in production, which encrypts
+ * the connection but does not authenticate the server — anything that can
+ * intercept the route to RDS can present its own certificate and read or alter
+ * every query. Certificate verification is now enabled whenever a CA is supplied:
+ *
+ *   PG_CA_CERT                  path to a CA bundle (e.g. the RDS global bundle),
+ *                               or the PEM contents inline
+ *   PG_SSL_REJECT_UNAUTHORIZED  'true' verifies against the system CA store
+ *                               'false' explicitly opts out (logs a warning)
+ *
+ * Download the RDS bundle with:
+ *   curl -o rds-ca.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+ */
+function buildSslConfig() {
+  const wantsSsl = process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging';
+  if (!wantsSsl) return false;
+
+  const caSetting = process.env.PG_CA_CERT;
+  if (caSetting) {
+    const ca = caSetting.includes('-----BEGIN')
+      ? caSetting
+      : fs.readFileSync(caSetting, 'utf8');
+    return { ca, rejectUnauthorized: true };
+  }
+
+  if (process.env.PG_SSL_REJECT_UNAUTHORIZED === 'true') {
+    return { rejectUnauthorized: true };
+  }
+
+  console.warn(
+    '[SECURITY] Database TLS certificate verification is DISABLED. The connection ' +
+    'is encrypted but the server is not authenticated. Set PG_CA_CERT to the RDS CA ' +
+    'bundle (or PG_SSL_REJECT_UNAUTHORIZED=true) to enable verification.'
+  );
+  return { rejectUnauthorized: false };
+}
+
+const sslConfig = buildSslConfig();
 
 let pool;
 
 if (process.env.DATABASE_URL) {
   pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    ssl: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging' 
-      ? { rejectUnauthorized: false } 
-      : false
+    ssl: sslConfig
   });
 } else {
   pool = new Pool({
@@ -17,9 +58,7 @@ if (process.env.DATABASE_URL) {
     user: process.env.PGUSER || 'postgres',
     password: process.env.PGPASSWORD || 'postgres',
     database: process.env.PGDATABASE || 'cms_energy_bm',
-    ssl: process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging'
-      ? { rejectUnauthorized: false }
-      : false
+    ssl: sslConfig
   });
 }
 

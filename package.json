@@ -10,11 +10,11 @@
     "dev": "vite",
     "build": "vite build",
     "build:gh-pages": "vite build --mode gh-pages && node scripts/copy-spa-fallback.mjs",
-    "build:portal": "cd portal && npm install --legacy-peer-deps && npm run build",
     "lint": "eslint .",
     "preview": "vite preview",
     "start": "node server.cjs",
     "migrate": "node migrate.cjs",
+    "migrate:status": "node migrate.cjs --status",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
@@ -60,6 +60,7 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
     "jsdom": "^24.0.0",
+    "supertest": "^7.0.0",
     "vite": "^8.0.12",
     "vitest": "^2.0.0"
   }

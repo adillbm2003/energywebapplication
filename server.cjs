@@ -7,6 +7,7 @@ const fs = require('fs');
 const db = require('./db.cjs');
 const { validate, schemas } = require('./server/validate.cjs');
 const { sendMail } = require('./server/mailer.cjs');
+const { applySchemaAndSeed } = require('./server/schema.cjs');
 
 // Production Dependencies
 const jwt = require('jsonwebtoken');
@@ -80,8 +81,38 @@ if (!process.env.AWS_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID === 'mock-ke
 }
 
 // ── SECURITY MIDDLEWARE ──────────────────────────────────────────────────────
+// Content-Security-Policy. `script-src` still needs 'unsafe-inline' because the
+// CMS admin page (app.js) drives its UI with inline onclick handlers; removing
+// that requires rewriting app.js to use addEventListener throughout. Everything
+// else is locked down, so an injected string cannot pull in a remote script,
+// embed a plugin, reframe the page, or exfiltrate to an arbitrary host.
+const CSP_CONNECT_SRC = ["'self'", ...approvedOriginsForCsp()];
+function approvedOriginsForCsp() {
+  const list = (process.env.APPROVED_ORIGINS || '').split(',').map(o => o.trim()).filter(Boolean);
+  return list.includes('*') ? ['*'] : list;
+}
+
 app.use(helmet({
-  contentSecurityPolicy: false, // Keep disabled to allow simple visual rendering of previews
+  contentSecurityPolicy: {
+    useDefaults: false,
+    directives: {
+      'default-src': ["'self'"],
+      'base-uri': ["'self'"],
+      'script-src': ["'self'", "'unsafe-inline'"],
+      'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+      'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
+      // Map tiles (OpenStreetMap / Esri), S3 presigned uploads and CloudFront assets.
+      'img-src': ["'self'", 'data:', 'blob:', 'https:'],
+      'connect-src': CSP_CONNECT_SRC,
+      // The CMS embeds the live public site in preview iframes; when that site is
+      // on CloudFront it is a different origin and must be allowed explicitly.
+      'frame-src': ["'self'", process.env.CLOUDFRONT_URL || 'https://d3s0m5di5jxhm9.cloudfront.net'],
+      'frame-ancestors': ["'self'"],
+      'object-src': ["'none'"],
+      'form-action': ["'self'"],
+      'upgrade-insecure-requests': [],
+    },
+  },
   crossOriginEmbedderPolicy: false
 }));
 
@@ -136,6 +167,22 @@ const publicFormLimiter = rateLimit({
   message: { error: 'Too many submissions. Please try again later.' }
 });
 
+// Session cookie options, used identically at login, refresh and sliding renewal.
+// These previously disagreed (`sameSite: 'lax'` at login vs `'strict'` on renewal,
+// and two different `secure` heuristics), so a renewed cookie could be rejected
+// or silently downgraded mid-session.
+function sessionCookieOptions(req) {
+  const isLocalHost = Boolean(req.headers.host) &&
+    (req.headers.host.startsWith('localhost') || req.headers.host.startsWith('127.0.0.1'));
+  return {
+    httpOnly: true,
+    secure: !isLocalHost && (req.secure || req.headers['x-forwarded-proto'] === 'https'),
+    sameSite: 'lax',
+    maxAge: 2 * 60 * 60 * 1000,
+    path: '/',
+  };
+}
+
 // ── AUTHENTICATION & RBAC MIDDLEWARES ────────────────────────────────────────
 async function authenticate(req, res, next) {
   let token = req.cookies.token;
@@ -175,12 +222,7 @@ async function authenticate(req, res, next) {
         JWT_SECRET,
         { expiresIn: JWT_EXPIRES_IN }
       );
-      res.cookie('token', newToken, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production' && !(req.headers.host && (req.headers.host.includes('localhost') || req.headers.host.includes('127.0.0.1'))),
-        sameSite: 'strict',
-        maxAge: 2 * 60 * 60 * 1000
-      });
+      res.cookie('token', newToken, sessionCookieOptions(req));
     } catch (tokenErr) {
       console.error("Failed to renew sliding session token:", tokenErr);
     }
@@ -233,7 +275,10 @@ function authorize(...allowedRoles) {
   };
 }
 
-function checkWritePermission(collectionName) {
+// The role rules below are the same for every collection; the parameter is kept
+// at the call sites for readability and so per-collection rules can be added
+// here later without touching every route.
+function checkWritePermission(_collectionName) {
   return (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ error: "Unauthorized: Authenticated session required" });
@@ -298,10 +343,58 @@ function getCollectionOrderBy(collectionName) {
   return collectionSortOrder[collectionName] || 'id DESC';
 }
 
+// Collections whose tables carry a `status` column and therefore need the
+// draft/embargo filter applied on the public feed. Used as the fail-closed
+// default when live schema metadata is unavailable.
+const COLLECTIONS_WITH_STATUS = new Set([
+  'news', 'policies', 'consultations', 'projects', 'tracker', 'installers',
+  'solarInstallations', 'innovation', 'staticPages', 'bursaries', 'leadership',
+  'spaceContent', 'energyGuides', 'infographics', 'roadmaps',
+]);
+
+const TABLES_WITH_STATUS = new Set(
+  [...COLLECTIONS_WITH_STATUS].map(c => collectionToTable[c]).filter(Boolean)
+);
+
+/**
+ * Whether `tableName` has a `status` column, resolved from live schema metadata
+ * when available and lazily loaded if the boot-time load did not populate it.
+ * Falls back to the static list above so a metadata failure can never silently
+ * disable the public draft filter.
+ */
+async function tableHasStatusColumn(tableName) {
+  if (!tableColumns[tableName]) {
+    try {
+      const colsRes = await db.query(
+        `SELECT column_name FROM information_schema.columns
+         WHERE table_schema = 'public' AND table_name = $1`,
+        [tableName]
+      );
+      if (colsRes.rows.length > 0) {
+        tableColumns[tableName] = colsRes.rows.map(r => r.column_name);
+      }
+    } catch (err) {
+      console.error(`Could not resolve columns for ${tableName}:`, err.message);
+    }
+  }
+  if (tableColumns[tableName]) {
+    return tableColumns[tableName].includes('status');
+  }
+  return TABLES_WITH_STATUS.has(tableName);
+}
+
+// Collision-free identifier generator. The previous `${Date.now()}-${random}`
+// scheme could collide inside a single millisecond (notably the bulk statistics
+// import, which paired it with ON CONFLICT DO NOTHING and silently dropped rows).
+const { randomUUID } = require('crypto');
+function newId(prefix) {
+  return `${prefix}-${randomUUID()}`;
+}
+
 // Database logging helper (runs inside existing transactions when client is passed)
 async function logAction(user, action, contentType, contentName, client = db) {
   try {
-    const id = `log-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const id = newId('log');
     await client.query(
       `INSERT INTO logs (id, user_name, action, content_type, content_name, timestamp)
        VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP)`,
@@ -449,6 +542,71 @@ async function getFullDb() {
   return dbData;
 }
 
+// ── FILE SIGNATURE ("magic byte") VERIFICATION ───────────────────────────────
+// Maps an extension to the byte signatures a genuine file of that type starts
+// with. Extensions absent from this table carry no reliable signature and are
+// accepted on the extension allow-list alone.
+const FILE_SIGNATURES = {
+  png:  [[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]],
+  gif:  [[0x47, 0x49, 0x46, 0x38, 0x37, 0x61], [0x47, 0x49, 0x46, 0x38, 0x39, 0x61]],
+  jpg:  [[0xff, 0xd8, 0xff]],
+  jpeg: [[0xff, 0xd8, 0xff]],
+  pdf:  [[0x25, 0x50, 0x44, 0x46, 0x2d]],
+  // OOXML containers (docx/xlsx/pptx) are ZIP archives.
+  docx: [[0x50, 0x4b, 0x03, 0x04], [0x50, 0x4b, 0x05, 0x06], [0x50, 0x4b, 0x07, 0x08]],
+  xlsx: [[0x50, 0x4b, 0x03, 0x04], [0x50, 0x4b, 0x05, 0x06], [0x50, 0x4b, 0x07, 0x08]],
+  // Legacy OLE2 compound document (.doc/.xls).
+  doc:  [[0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]],
+  xls:  [[0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]],
+};
+
+// WebP and MP4 need a second check further into the header.
+function matchesContainer(head, ext) {
+  const ascii = (start, len) => head.slice(start, start + len).toString('ascii');
+  if (ext === 'webp') return ascii(0, 4) === 'RIFF' && ascii(8, 4) === 'WEBP';
+  if (ext === 'mp4')  return ascii(4, 4) === 'ftyp';
+  return null;
+}
+
+/**
+ * Returns null when the file's leading bytes are consistent with `ext`,
+ * otherwise a human-readable reason string.
+ */
+function verifyFileSignature(filePath, ext) {
+  let head;
+  try {
+    const fd = fs.openSync(filePath, 'r');
+    head = Buffer.alloc(16);
+    const bytesRead = fs.readSync(fd, head, 0, 16, 0);
+    fs.closeSync(fd);
+    head = head.slice(0, bytesRead);
+  } catch (err) {
+    return 'the uploaded file could not be read for verification';
+  }
+
+  const container = matchesContainer(head, ext);
+  if (container !== null) {
+    return container ? null : `file contents do not match the .${ext} extension`;
+  }
+
+  const signatures = FILE_SIGNATURES[ext];
+  if (!signatures) return null; // No known signature for this type.
+
+  const ok = signatures.some(sig =>
+    head.length >= sig.length && sig.every((byte, i) => head[i] === byte)
+  );
+  return ok ? null : `file contents do not match the .${ext} extension`;
+}
+
+// Server-side data files (source spreadsheets for the fleet/solar importers).
+// These deliberately live outside any `public/` directory: `.ebignore` excludes
+// `public/` at every depth, so the previous `portal/public/documents` location
+// was silently absent from every Elastic Beanstalk deployment.
+const DATA_DIR = path.join(__dirname, 'server', 'data');
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+}
+
 // Multer Upload Setup
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
@@ -462,7 +620,9 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
     const basename = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, '');
-    cb(null, `${basename}-${Date.now()}${ext}`);
+    // Suffix with a UUID, not a timestamp — two uploads of the same filename in
+    // the same millisecond would otherwise overwrite each other in S3.
+    cb(null, `${basename}-${randomUUID()}${ext}`);
   }
 });
 const upload = multer({ storage: storage, limits: { fileSize: 50 * 1024 * 1024 } });
@@ -573,18 +733,14 @@ app.post('/api/auth/login', loginLimiter, async (req, res, next) => {
       { expiresIn: JWT_EXPIRES_IN }
     );
     
-    res.cookie('token', token, {
-      httpOnly: true,
-      secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
-      sameSite: 'lax',
-      maxAge: 2 * 60 * 60 * 1000
-    });
-    
+    res.cookie('token', token, sessionCookieOptions(req));
+
     await logAction(user.username, "Logged in successfully", "auth", user.username);
-    
+
+    // The token is deliberately NOT returned in the body. It is delivered only as
+    // an httpOnly cookie so that a script injection cannot read or exfiltrate it.
     res.json({
       success: true,
-      token,
       user: {
         id: user.id,
         username: user.username,
@@ -685,7 +841,9 @@ app.post('/api/auth/reset-password', validate(schemas.resetPassword), async (req
 });
 
 app.post('/api/auth/logout', (req, res) => {
-  res.clearCookie('token');
+  // Clearing must use matching attributes or the browser keeps the cookie.
+  const { maxAge, ...clearOpts } = sessionCookieOptions(req);
+  res.clearCookie('token', clearOpts);
   res.json({ success: true, message: "Logged out successfully" });
 });
 
@@ -701,12 +859,7 @@ app.post('/api/auth/refresh', async (req, res) => {
       JWT_SECRET, 
       { expiresIn: JWT_EXPIRES_IN }
     );
-    res.cookie('token', newToken, {
-      httpOnly: true,
-      secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
-      sameSite: 'lax',
-      maxAge: 2 * 60 * 60 * 1000
-    });
+    res.cookie('token', newToken, sessionCookieOptions(req));
     res.json({ success: true });
   } catch (err) {
     res.status(401).json({ error: "Invalid or expired token" });
@@ -715,6 +868,142 @@ app.post('/api/auth/refresh', async (req, res) => {
 
 app.get('/api/auth/me', authenticate, (req, res) => {
   res.json(req.user);
+});
+
+// Change your own password (any authenticated role).
+app.put('/api/auth/password', authenticate, validate(schemas.changePassword), async (req, res, next) => {
+  const { currentPassword, newPassword } = req.body;
+  try {
+    const result = await db.query('SELECT password_hash FROM users WHERE id = $1', [req.user.id]);
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    if (!bcrypt.compareSync(currentPassword, result.rows[0].password_hash)) {
+      return res.status(401).json({ error: 'Current password is incorrect' });
+    }
+    await db.query(
+      'UPDATE users SET password_hash = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+      [bcrypt.hashSync(newPassword, 10), req.user.id]
+    );
+    await logAction(req.user.username, 'Changed own password', 'auth', req.user.username);
+    res.json({ success: true, message: 'Password updated successfully.' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// ── USER MANAGEMENT (Administrator only) ─────────────────────────────────────
+// Without these routes the four-role RBAC system was unusable: the only account
+// that could ever exist was the one created by the startup seed.
+const USER_COLUMNS = 'id, username, email, role, is_active, created_at, updated_at';
+
+app.get('/api/users', authenticate, authorize('Administrator'), async (req, res, next) => {
+  try {
+    const result = await db.query(`SELECT ${USER_COLUMNS} FROM users ORDER BY username ASC`);
+    res.json(db.snakeToCamel(result.rows));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.post('/api/users', authenticate, authorize('Administrator'), validate(schemas.createUser), async (req, res, next) => {
+  const { username, email, password, role, isActive } = req.body;
+  try {
+    const id = newId('usr');
+    const result = await db.query(
+      `INSERT INTO users (id, username, email, password_hash, role, is_active)
+       VALUES ($1, $2, $3, $4, $5, $6)
+       RETURNING ${USER_COLUMNS}`,
+      [id, username, email, bcrypt.hashSync(password, 10), role, isActive]
+    );
+    await logAction(req.user.username, `Created user (${role})`, 'users', username);
+    res.status(201).json({ success: true, user: db.snakeToCamel(result.rows[0]) });
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'That username or email is already in use' });
+    }
+    next(err);
+  }
+});
+
+app.put('/api/users/:id', authenticate, authorize('Administrator'), validate(schemas.updateUser), async (req, res, next) => {
+  const targetId = req.params.id;
+  const { username, email, password, role, isActive } = req.body;
+  try {
+    const existing = await db.query('SELECT id, username, role, is_active FROM users WHERE id = $1', [targetId]);
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const current = db.snakeToCamel(existing.rows[0]);
+
+    // Never let the last active administrator demote or deactivate themselves out
+    // of existence — that would lock everyone out of user management permanently.
+    const losingAdmin =
+      current.role === 'Administrator' &&
+      ((role !== undefined && role !== 'Administrator') || isActive === false);
+    if (losingAdmin) {
+      const admins = await db.query(
+        "SELECT COUNT(*)::int AS count FROM users WHERE role = 'Administrator' AND is_active = TRUE AND id <> $1",
+        [targetId]
+      );
+      if (admins.rows[0].count === 0) {
+        return res.status(409).json({ error: 'Cannot remove the last active administrator' });
+      }
+    }
+
+    const sets = [];
+    const values = [];
+    const push = (col, val) => { values.push(val); sets.push(`${col} = $${values.length}`); };
+    if (username !== undefined) push('username', username);
+    if (email !== undefined) push('email', email);
+    if (role !== undefined) push('role', role);
+    if (isActive !== undefined) push('is_active', isActive);
+    if (password !== undefined) push('password_hash', bcrypt.hashSync(password, 10));
+    if (sets.length === 0) {
+      return res.status(400).json({ error: 'No changes supplied' });
+    }
+    sets.push('updated_at = CURRENT_TIMESTAMP');
+
+    values.push(targetId);
+    const result = await db.query(
+      `UPDATE users SET ${sets.join(', ')} WHERE id = $${values.length} RETURNING ${USER_COLUMNS}`,
+      values
+    );
+    await logAction(req.user.username, 'Updated user', 'users', current.username);
+    res.json({ success: true, user: db.snakeToCamel(result.rows[0]) });
+  } catch (err) {
+    if (err.code === '23505') {
+      return res.status(409).json({ error: 'That username or email is already in use' });
+    }
+    next(err);
+  }
+});
+
+app.delete('/api/users/:id', authenticate, authorize('Administrator'), async (req, res, next) => {
+  const targetId = req.params.id;
+  try {
+    if (targetId === req.user.id) {
+      return res.status(409).json({ error: 'You cannot delete your own account' });
+    }
+    const existing = await db.query('SELECT username, role FROM users WHERE id = $1', [targetId]);
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    if (existing.rows[0].role === 'Administrator') {
+      const admins = await db.query(
+        "SELECT COUNT(*)::int AS count FROM users WHERE role = 'Administrator' AND is_active = TRUE AND id <> $1",
+        [targetId]
+      );
+      if (admins.rows[0].count === 0) {
+        return res.status(409).json({ error: 'Cannot delete the last active administrator' });
+      }
+    }
+    await db.query('DELETE FROM users WHERE id = $1', [targetId]);
+    await logAction(req.user.username, 'Deleted user', 'users', existing.rows[0].username);
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
 });
 
 // ── VEHICLES FLEET DATA — DB cache first, local file fallback ────────────────
@@ -767,7 +1056,10 @@ app.get('/api/vehicles/fleet', async (req, res) => {
     } catch (_) {}
 
     // Fall back to the file bundled in the deployment zip
-    const filePath = path.join(__dirname, 'portal', 'public', 'documents', 'Vehicles by Fuel Type.xls');
+    const filePath = path.join(DATA_DIR, 'Vehicles by Fuel Type.xls');
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'No fleet data available. Upload the vehicles spreadsheet in the CMS.' });
+    }
     res.json(parseVehiclesExcel(filePath));
   } catch (err) {
     console.error('Fleet data error:', err.message);
@@ -828,6 +1120,12 @@ app.get('/api/solar/installations', async (req, res) => {
       status: row.status || 'Unknown',
       description: row.description || '',
       address: row.address || '',
+      // install_date is selected but was omitted from this projection, so the GIS
+      // layer and the CMS data preview both rendered "—" for every issue date
+      // even though the column was populated.
+      installDate: row.install_date instanceof Date
+        ? row.install_date.toISOString().split('T')[0]
+        : (row.install_date || null),
       annualOutput: parseFloat(row.annual_output) || 0,
       lat: parseFloat(row.lat) || 0,
       lng: parseFloat(row.lng) || 0,
@@ -856,11 +1154,8 @@ const DATA_FILES = {
 };
 
 app.get('/api/data-files', authenticate, (req, res) => {
-  const path = require('path');
-  const fs = require('fs');
-  const docsDir = path.join(__dirname, 'portal', 'public', 'documents');
   const result = Object.entries(DATA_FILES).map(([key, meta]) => {
-    const filePath = path.join(docsDir, meta.filename);
+    const filePath = path.join(DATA_DIR, meta.filename);
     let fileInfo = null;
     if (fs.existsSync(filePath)) {
       const stat = fs.statSync(filePath);
@@ -874,11 +1169,8 @@ app.get('/api/data-files', authenticate, (req, res) => {
 const multerExcel = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
-      const path = require('path');
-      const fs = require('fs');
-      const dir = path.join(__dirname, 'portal', 'public', 'documents');
-      fs.mkdirSync(dir, { recursive: true });
-      cb(null, dir);
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+      cb(null, DATA_DIR);
     },
     filename: (req, file, cb) => {
       const key = req.params.key;
@@ -934,7 +1226,27 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
     try {
       const XLSX = require('xlsx');
       const wb = XLSX.readFile(req.file.path);
-      const ws = wb.Sheets[wb.SheetNames[0]];
+
+      // Pick the sheet that actually holds permit records. Exported workbooks
+      // frequently lead with a pivot-table "Summary" sheet, and blindly taking
+      // SheetNames[0] would import a handful of aggregate rows — after the
+      // TRUNCATE had already discarded the real registry.
+      const pickDataSheet = () => {
+        for (const name of wb.SheetNames) {
+          const head = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: '' })[0] || [];
+          const norm = head.map(h => String(h).toLowerCase().trim());
+          if (norm.includes('permit number') || norm.includes('permit no') || norm.includes('permitnumber')) {
+            return name;
+          }
+        }
+        return wb.SheetNames[0];
+      };
+      const sheetName = pickDataSheet();
+      if (sheetName !== wb.SheetNames[0]) {
+        console.log(`[Solar import] Using sheet "${sheetName}" (skipped "${wb.SheetNames[0]}").`);
+      }
+      const ws = wb.Sheets[sheetName];
+
       // Use header:1 to get raw arrays so we can handle duplicate column names (two lat/lon pairs)
       const rawArr = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
       const headers = rawArr[0] || [];
@@ -977,33 +1289,83 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       const PARISH_MAP = { 'Town of St. George':"St. George's", 'St. George':"St. George's", 'City of Hamilton':'Hamilton', 'Smiths':"Smith's" };
       const ACTIVE = new Set(['Complete','Issued','Under Construction']);
 
-      // Ensure extra columns exist
+      // Ensure extra columns exist (DDL, idempotent, outside the data transaction)
       await db.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS annual_output NUMERIC DEFAULT 0`);
       await db.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS address TEXT`);
-      await db.query('TRUNCATE solar_installations');
 
-      let inserted = 0;
+      // TRUNCATE + reload runs as one transaction. Previously the truncate was
+      // committed immediately and rows were inserted one-by-one with per-row
+      // errors swallowed, so a mid-import failure left the registry (and every
+      // page that reads it) permanently half-populated with no way back.
+      // Resolve the coordinate columns once, up front. Exports label these
+      // inconsistently ("lat"/"lon" in one extract, "latitude"/"longitude" in
+      // another); matching only the short form silently produced a registry with
+      // no real coordinates, where every marker fell back to a jittered parish
+      // centroid. Some workbooks carry two pairs, so keep first/last of each.
+      const findCoordCols = (names) => {
+        const norm = headers.map(h => String(h).toLowerCase().trim());
+        for (const n of names) {
+          const first = norm.indexOf(n);
+          if (first !== -1) return { first, last: norm.lastIndexOf(n) };
+        }
+        return { first: -1, last: -1 };
+      };
+      const latCols = findCoordCols(['lat', 'latitude', 'y']);
+      const lonCols = findCoordCols(['lon', 'lng', 'long', 'longitude', 'x']);
+      if (latCols.first === -1 || lonCols.first === -1) {
+        console.warn('[Solar import] No coordinate columns found — markers will fall back to parish centroids.');
+      }
+
+      const skipped = [];
+      const filteredOut = [];
+      const inserted = await db.executeTransaction(async (client) => {
+      await client.query('TRUNCATE solar_installations');
+
+      let count = 0;
       for (let i = 0; i < raw.length; i++) {
         const row = raw[i];
-        // Use raw array indices for lat/lon to correctly handle duplicate column names.
-        // The spreadsheet has two lat/lon pairs; we prefer the last (second) pair which
-        // contains geocoded coords. Fall back to first pair if second is empty.
+        // Read coordinates by raw array index so duplicate column names both stay
+        // reachable. Prefer the primary pair; fall back to the secondary pair for
+        // records whose primary columns are blank but which were geocoded later.
         const rawRow = rawArr[i + 1] || [];
-        const latIdxA = headers.indexOf('lat'), lonIdxA = headers.indexOf('lon');
-        const latIdxB = headers.lastIndexOf('lat'), lonIdxB = headers.lastIndexOf('lon');
-        // Prefer primary coords (A); fall back to secondary (B) for records like the Finger
-        // where the primary address columns are empty but secondary address has geocodes.
-        const rawLat = (rawRow[latIdxA] !== '' && rawRow[latIdxA] != null) ? rawRow[latIdxA]
-                     : (rawRow[latIdxB] !== '' && rawRow[latIdxB] != null) ? rawRow[latIdxB] : '';
-        const rawLng = (rawRow[lonIdxA] !== '' && rawRow[lonIdxA] != null) ? rawRow[lonIdxA]
-                     : (rawRow[lonIdxB] !== '' && rawRow[lonIdxB] != null) ? rawRow[lonIdxB] : '';
+        const pick = (cols) => {
+          const a = cols.first >= 0 ? rawRow[cols.first] : '';
+          if (a !== '' && a != null) return a;
+          const b = cols.last >= 0 ? rawRow[cols.last] : '';
+          return (b !== '' && b != null) ? b : '';
+        };
+        const rawLat = pick(latCols);
+        const rawLng = pick(lonCols);
         const parsedLat = parseFloat(String(rawLat).trim());
         let parsedLng = parseFloat(String(rawLng).trim());
         if (Number.isFinite(parsedLng) && parsedLng > 0 && parsedLng < 70) parsedLng = -parsedLng;
         const hasCoords = Number.isFinite(parsedLat) && Number.isFinite(parsedLng) && parsedLat !== 0 && parsedLng !== 0;
 
         const status = String(getCol(row,'Permit Status') || '').trim();
-        if (!hasCoords && !ACTIVE.has(status)) continue;
+        const permitNoRaw = String(getCol(row,'Permit Number','Permit No','PermitNumber') || '').trim();
+        const addressRaw = String(getCol(row,'Adresss','Address','Permit Address','address') || '').trim();
+        const capacityRaw = String(getCol(row,'Extracted AC Capacity (kW)','Extracted AC Capacity','AC Capacity (kW)','AC Capacity','Capacity (kW)','Capacity','capacity') || '').trim();
+
+        // A record with neither a location nor an active permit status cannot be
+        // placed on the map and is not a live installation — skip it, but record
+        // why so the import totals are explainable rather than silently short.
+        if (!hasCoords && !ACTIVE.has(status)) {
+          filteredOut.push({
+            row: i + 2,
+            id: permitNoRaw || '(blank)',
+            reason: status ? `no coordinates and status "${status}"` : 'blank row',
+          });
+          continue;
+        }
+
+        // A stray coordinate pair with no permit number, address, capacity or
+        // status carries no information. Such rows were previously imported as
+        // "Permit N / 0 kW / Unknown" placeholders and shown to the public on the
+        // official Renewable Energy Registry.
+        if (!permitNoRaw && !addressRaw && !capacityRaw && !status) {
+          filteredOut.push({ row: i + 2, id: '(blank)', reason: 'coordinates only — no permit data' });
+          continue;
+        }
 
         let parish = String(getCol(row,'Permit District','Parish','District') || 'Bermuda').trim();
         parish = PARISH_MAP[parish] ?? parish;
@@ -1024,7 +1386,14 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         // Only convert if clearly in watts (>10000W = >10kW), never for MW-scale systems
         if (capacity > 10000) capacity = capacity / 1000;
 
-        const annualOutput = parseFloat(String(getCol(row,'Annual Output (kWh)','Annual Output','Annual Output kWh') || 0)) || 0;
+        let annualOutput = parseFloat(String(getCol(row,'Annual Output (kWh)','Annual Output','Annual Output kWh') || 0)) || 0;
+        if (!annualOutput) {
+          // Some extracts carry no Annual Output column but state it in the permit
+          // description, e.g. "System Capacity - 5.325, Annual Output - 7790h."
+          const descOut = String(getCol(row,'Permit Description') || '');
+          const mOut = descOut.match(/annual\s*output\s*[-:]?\s*([\d,]+\.?\d*)/i);
+          if (mOut) annualOutput = parseFloat(mOut[1].replace(/,/g, '')) || 0;
+        }
         const wc = String(getCol(row,'Permit Work Class','Permit Type','Work Class') || '').toLowerCase();
         // Utility = explicitly utility class OR capacity >500kW regardless of permit class
         const typeFromWC = wc.includes('commercial') ? 'Commercial' : wc.includes('utility') ? 'Utility' : 'Residential';
@@ -1045,8 +1414,12 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
           const p = new Date(dateVal); if (!isNaN(p)) installDate = p.toISOString().split('T')[0];
         }
 
+        // A malformed row must not abort the whole import, but it is recorded and
+        // reported rather than silently dropped. Each row runs in a SAVEPOINT so a
+        // failure doesn't poison the surrounding transaction.
+        await client.query('SAVEPOINT solar_row');
         try {
-          await db.query(
+          await client.query(
             `INSERT INTO solar_installations (id,name,parish,type,capacity,status,install_date,lat,lng,notes,address,annual_output)
              VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
              ON CONFLICT (id) DO UPDATE SET
@@ -1056,12 +1429,39 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
                updated_at=CURRENT_TIMESTAMP`,
             [id, firstLine||`Permit ${i+1}`, parish, type, capacity||0, status||'Unknown', installDate, lat, lng, desc, address.slice(0,200), annualOutput]
           );
-          inserted++;
-        } catch (rowErr) { console.error(`Solar row ${i} error:`, rowErr.message); }
+          await client.query('RELEASE SAVEPOINT solar_row');
+          count++;
+        } catch (rowErr) {
+          await client.query('ROLLBACK TO SAVEPOINT solar_row');
+          console.error(`Solar row ${i} error:`, rowErr.message);
+          skipped.push({ row: i + 2, id, reason: rowErr.message });
+        }
       }
+      return count;
+      });
 
-      logAction(req.user.username, 'UPLOAD', 'Data File', `Solar data — ${inserted} installations imported`);
-      res.json({ success: true, filename: req.file.filename, size: req.file.size, inserted });
+      if (skipped.length > 0) {
+        console.warn(`[Solar import] ${skipped.length} row(s) failed to insert.`);
+      }
+      if (filteredOut.length > 0) {
+        console.log(`[Solar import] ${filteredOut.length} row(s) excluded (no location and not an active permit).`);
+      }
+      logAction(
+        req.user.username, 'UPLOAD', 'Data File',
+        `Solar data — ${inserted} imported, ${filteredOut.length} excluded, ${skipped.length} failed`
+      );
+      res.json({
+        success: true,
+        filename: req.file.filename,
+        size: req.file.size,
+        sheet: sheetName,
+        totalRows: raw.length,
+        inserted,
+        excluded: filteredOut.length,
+        excludedRows: filteredOut.slice(0, 20),
+        skipped: skipped.length,
+        skippedRows: skipped.slice(0, 20),
+      });
     } catch (parseErr) {
       console.error('Solar Excel parse error:', parseErr);
       res.status(500).json({ error: 'Failed to parse Excel: ' + parseErr.message });
@@ -1073,7 +1473,7 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
 app.post('/api/contact', publicFormLimiter, validate(schemas.contact), async (req, res, next) => {
   try {
     const { name, email, subject, message } = req.body;
-    const id = `contact-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const id = newId('contact');
     // Persist so CMS staff can retrieve submissions (no longer lost to the console).
     await db.query(
       `INSERT INTO contact_submissions (id, name, email, subject, message) VALUES ($1, $2, $3, $4, $5)`,
@@ -1103,7 +1503,7 @@ app.post('/api/contact', publicFormLimiter, validate(schemas.contact), async (re
 app.post('/api/newsletter', publicFormLimiter, validate(schemas.newsletter), async (req, res, next) => {
   try {
     const { email } = req.body;
-    const id = `sub-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const id = newId('sub');
     // Persist the subscriber (idempotent on email) so the list survives restarts.
     await db.query(
       `INSERT INTO newsletter_subscribers (id, email) VALUES ($1, $2)
@@ -1150,6 +1550,13 @@ app.get('/api/newsletter-subscribers', authenticate, authorize('Approver', 'Admi
 app.get('/api/db', authenticate, async (req, res, next) => {
   try {
     const data = await getFullDb();
+    // Audit logs, version history and the recycle bin are Administrator-only via
+    // their dedicated routes; don't hand them to every authenticated Viewer here.
+    if (req.user.role !== 'Administrator') {
+      delete data.logs;
+      delete data.versions;
+      delete data.recycleBin;
+    }
     res.json(data);
   } catch (err) {
     next(err);
@@ -1254,7 +1661,13 @@ function makeCollectionRoutes(collectionName) {
       const orderBy = getCollectionOrderBy(collectionName);
       // Anonymous callers only receive published/live content; authenticated CMS
       // staff receive every row (including drafts) for management.
-      const hasStatus = (tableColumns[tableName] || []).includes('status');
+      //
+      // This must fail CLOSED. It previously read `tableColumns` directly, which
+      // is populated once at boot by fetchTableColumns() — and that function
+      // swallows its own errors. If the metadata load failed (or simply hadn't
+      // finished), every table looked like it had no `status` column and the
+      // filter was skipped entirely, publishing drafts to anonymous visitors.
+      const hasStatus = await tableHasStatusColumn(tableName);
       let queryText = `SELECT * FROM ${tableName}`;
       const params = [];
       if (!req.user && hasStatus) {
@@ -1273,7 +1686,7 @@ function makeCollectionRoutes(collectionName) {
   // POST Create
   app.post(`/api/${collectionName}`, authenticate, checkWritePermission(collectionName), async (req, res, next) => {
     try {
-      const id = `${collectionName.slice(0, 3)}-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+      const id = newId(collectionName.slice(0, 3));
       const itemData = { id, ...req.body };
       const userName = req.user.username;
       
@@ -1359,7 +1772,7 @@ function makeCollectionRoutes(collectionName) {
             [id]
           );
           const nextVerNum = verRes.rows[0].count + 1;
-          const verId = `ver-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+          const verId = newId('ver');
           
           await client.query(
             `INSERT INTO versions (id, item_id, collection_name, version_number, title, modified_at, modified_by, data)
@@ -1445,7 +1858,7 @@ function makeCollectionRoutes(collectionName) {
         }
         const itemToDelete = db.snakeToCamel(getRes.rows[0]);
 
-        const recycleId = `recycle-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        const recycleId = newId('recycle');
         await client.query(
           `INSERT INTO recycle_bin (id, deleted_at, original_collection, item_data)
            VALUES ($1, CURRENT_DATE, $2, $3)`,
@@ -1597,7 +2010,7 @@ app.post('/api/versions/:versionId/restore', authenticate, authorize('Approver',
 
       const countRes = await client.query('SELECT COUNT(*)::int as count FROM versions WHERE item_id = $1', [itemId]);
       const nextVerNum = countRes.rows[0].count + 1;
-      const newVerId = `ver-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newVerId = newId('ver');
 
       await client.query(
         `INSERT INTO versions (id, item_id, collection_name, version_number, title, modified_at, modified_by, data)
@@ -1677,26 +2090,30 @@ app.post('/api/upload', authenticate, authorize('Editor', 'Approver', 'Administr
       return res.status(400).json({ error: `File size (${fileSizeMb.toFixed(2)} MB) exceeds configured max size of ${maxMb} MB.` });
     }
     
-    // ── SECURITY VALIDATION: Validate magic byte true MIME type ────────────────
-    const imageExtensions = ['png', 'jpg', 'jpeg', 'gif'];
-    const documentExtensions = ['pdf', 'docx', 'xlsx'];
-    const mimeCheck = req.file.mimetype;
-    
-    if (imageExtensions.includes(fileExt) && !mimeCheck.startsWith('image/')) {
+    // ── SECURITY VALIDATION: verify the real file signature ────────────────────
+    // This previously checked req.file.mimetype, which is just the browser-supplied
+    // Content-Type header and is fully attacker-controlled — so a .png could hold
+    // anything. Now the file's own leading bytes must match the extension.
+    const sigError = verifyFileSignature(req.file.path, fileExt);
+    if (sigError) {
       try { fs.unlinkSync(req.file.path); } catch (err) {}
-      return res.status(400).json({ error: `Security check failed: File header does not match image extension .${fileExt}` });
+      return res.status(400).json({ error: `Security check failed: ${sigError}` });
     }
-    
+
     // ── VIRUS SCAN INTEGRATION POINT ─────────────────────────────────────────
-    // Secure hook for future ICAP/ClamAV daemon scan.
-    console.log(`[Security Audit] Anti-virus scan run for: ${req.file.originalname} - Result: CLEAN`);
+    // Hook for an ICAP/ClamAV daemon. Nothing is scanned today, so this must not
+    // claim otherwise — the previous line logged "Result: CLEAN" unconditionally,
+    // which would read as evidence of a scan that never ran.
+    if (process.env.AV_SCAN_URL) {
+      console.warn(`[Security Audit] AV_SCAN_URL is set but no scanner is wired up yet; ${req.file.originalname} was NOT scanned.`);
+    }
 
     // Store as a root-relative path so the URL works regardless of which
     // hostname serves the frontend (CloudFront, energy.bm, or EB direct).
     // CloudFront routes /uploads/* → EB → S3 presigned redirect.
     const fileUrl = `/uploads/${req.file.filename}`;
     const fileSizeMbStr = fileSizeMb.toFixed(2) + ' MB';
-    const mediaId = `med-${Date.now()}`;
+    const mediaId = newId('med');
     const newMedia = {
       id: mediaId,
       name: req.file.originalname,
@@ -1806,7 +2223,7 @@ app.post('/api/statistics/upload', authenticate, checkWritePermission('kpis'), u
       const row = {};
       headers.forEach((h, idx) => { row[h] = (cols[idx] || '').trim().replace(/^"|"$/g, ''); });
       if (!row.value) continue;
-      const id = `stat-${Date.now()}-${i}`;
+      const id = newId('stat');
       await db.query(
         `INSERT INTO statistics_history (id, data_type, period, value, unit, notes, uploaded_by, uploaded_at)
          VALUES ($1,$2,$3,$4,$5,$6,$7,NOW()) ON CONFLICT (id) DO NOTHING`,
@@ -1864,7 +2281,7 @@ app.post('/api/statistics', authenticate, checkWritePermission('kpis'), async (r
     if (!dataType || !period || value === undefined) {
       return res.status(400).json({ error: 'dataType, period, and value are required' });
     }
-    const id = `stat-${Date.now()}`;
+    const id = newId('stat');
     await db.query(
       `INSERT INTO statistics_history (id, data_type, period, value, unit, notes, uploaded_by, uploaded_at)
        VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)`,
@@ -1888,7 +2305,7 @@ app.post('/api/statistics/bulk', authenticate, checkWritePermission('kpis'), asy
     for (const entry of entries) {
       const { dataType, period, value, unit, notes } = entry;
       if (!dataType || !period || value === undefined) continue;
-      const id = `stat-${Date.now()}-${inserted}`;
+      const id = newId('stat');
       await db.query(
         `INSERT INTO statistics_history (id, data_type, period, value, unit, notes, uploaded_by, uploaded_at)
          VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP)
@@ -1915,33 +2332,49 @@ app.delete('/api/statistics/:id', authenticate, authorize('Administrator'), asyn
   }
 });
 
-// Serve portal compiled assets statically
-app.use('/portal', express.static(path.join(__dirname, 'portal', 'dist')));
+// ── PUBLIC SPA ────────────────────────────────────────────────────────────────
+// The React site is built from the canonical `src/` tree into `dist/`. On AWS it
+// is served from S3/CloudFront and `dist/` is absent here (excluded by
+// .ebignore); in Docker/self-hosted mode Express serves it directly.
+// `portal/` was a stale second copy of the same app and is no longer referenced.
+const SPA_DIST = path.join(__dirname, 'dist');
+const spaBuilt = fs.existsSync(path.join(SPA_DIST, 'index.html'));
+if (spaBuilt) {
+  console.log('[Startup] Serving the public SPA from ./dist');
+} else {
+  console.log('[Startup] No ./dist build found — the public SPA is expected to be served by CloudFront/S3.');
+}
+
+app.use('/portal', express.static(SPA_DIST));
 
 // Fallback all other portal routes to index.html for React Router SPA
 app.get(/^\/portal(?:\/.*)?$/, (req, res) => {
-  res.sendFile(path.join(__dirname, 'portal', 'dist', 'index.html'));
+  const indexPath = path.join(SPA_DIST, 'index.html');
+  if (!fs.existsSync(indexPath)) {
+    return res.status(404).json({ error: 'The public site build is not present on this server.' });
+  }
+  res.sendFile(indexPath);
 });
 
-// Serve /images/* and /guides/* from local portal/dist if available, else redirect to CloudFront
-const portalDistImages = path.join(__dirname, 'portal', 'dist', 'images');
-const portalDistGuides = path.join(__dirname, 'portal', 'dist', 'guides');
+// Serve /images/* and /guides/* from the local build if available, else redirect to CloudFront
+const distImages = path.join(SPA_DIST, 'images');
+const distGuides = path.join(SPA_DIST, 'guides');
 const CF_URL = process.env.CLOUDFRONT_URL || 'https://d3s0m5di5jxhm9.cloudfront.net';
 app.use('/images', (req, res, next) => {
-  const local = path.join(portalDistImages, req.path);
-  if (require('fs').existsSync(local)) return res.sendFile(local);
+  const local = path.join(distImages, req.path);
+  if (fs.existsSync(local)) return res.sendFile(local);
   res.redirect(302, `${CF_URL}/images${req.url}`);
 });
 app.use('/guides', (req, res, next) => {
-  const local = path.join(portalDistGuides, req.path);
-  if (require('fs').existsSync(local)) return res.sendFile(local);
+  const local = path.join(distGuides, req.path);
+  if (fs.existsSync(local)) return res.sendFile(local);
   res.redirect(302, `${CF_URL}/guides${req.url}`);
 });
 
 // Favicon
 app.get('/favicon.ico', (req, res) => {
-  const fav = path.join(__dirname, 'portal', 'dist', 'favicon.svg');
-  if (require('fs').existsSync(fav)) return res.sendFile(fav);
+  const fav = path.join(SPA_DIST, 'favicon.svg');
+  if (fs.existsSync(fav)) return res.sendFile(fav);
   res.status(204).end();
 });
 
@@ -1956,11 +2389,15 @@ app.get('/', (req, res) => {
 // .env.example, the committed spreadsheets, and the seeded admin bcrypt hash
 // to any unauthenticated visitor. Now restricted to an explicit whitelist.
 const ROOT_STATIC_WHITELIST = new Set([
-  '/app.js', '/styles.css', '/cms-admin.html', '/logo.png', '/gov-bermuda-logo.jpg',
+  '/app.js', '/styles.css', '/cms-admin.html', '/logo.png',
 ]);
 app.use((req, res, next) => {
   if (req.method === 'GET' && ROOT_STATIC_WHITELIST.has(req.path)) {
-    return res.sendFile(path.join(__dirname, req.path));
+    const filePath = path.join(__dirname, req.path);
+    // Fall through to the 404 rather than throwing an ENOENT into the error
+    // handler if a whitelisted asset is missing from the deployment.
+    if (!fs.existsSync(filePath)) return next();
+    return res.sendFile(filePath);
   }
   next();
 });
@@ -1977,254 +2414,9 @@ app.use((err, req, res, next) => {
 async function runMigrationsInline() {
   const client = await db.pool.connect();
   try {
-    await client.query(`
-      CREATE TABLE IF NOT EXISTS schema_migrations (
-        version INT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      );
-    `);
-    await client.query(`CREATE TABLE IF NOT EXISTS kpis (id VARCHAR(50) PRIMARY KEY, name VARCHAR(255), value VARCHAR(50), unit VARCHAR(50), last_updated DATE);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS news (id VARCHAR(50) PRIMARY KEY, title TEXT, summary TEXT, content TEXT, image TEXT, publish_date DATE, scheduled_publish_date DATE, scheduled_expiry_date DATE, status VARCHAR(50), target_site VARCHAR(50), modified_by VARCHAR(100), category VARCHAR(100) DEFAULT 'Renewable Energy', featured BOOLEAN DEFAULT TRUE, slug VARCHAR(255), author VARCHAR(100), tags TEXT, excerpt TEXT, attachment_url TEXT, attachment_name TEXT);`);
-    await client.query(`ALTER TABLE news ADD COLUMN IF NOT EXISTS attachment_url TEXT;`);
-    await client.query(`ALTER TABLE news ADD COLUMN IF NOT EXISTS attachment_name TEXT;`);
-    await client.query(`CREATE TABLE IF NOT EXISTS policies (id VARCHAR(50) PRIMARY KEY, title TEXT, category VARCHAR(100), effective_date DATE, expiry_date DATE, scheduled_publish_date DATE, scheduled_expiry_date DATE, description TEXT, pdf_link TEXT, status VARCHAR(50), target_site VARCHAR(50), modified_by VARCHAR(100));`);
-    await client.query(`CREATE TABLE IF NOT EXISTS consultations (id VARCHAR(50) PRIMARY KEY, title TEXT, description TEXT, start_date DATE, end_date DATE, scheduled_publish_date DATE, scheduled_expiry_date DATE, status VARCHAR(50), related_links TEXT, supporting_docs TEXT, target_site VARCHAR(50), modified_by VARCHAR(100), external_url TEXT);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS static_pages (id VARCHAR(50) PRIMARY KEY, title TEXT, route TEXT, content TEXT, seo_title TEXT, seo_keywords TEXT, seo_description TEXT, status VARCHAR(50), image TEXT, last_updated DATE, author VARCHAR(100), target_site VARCHAR(50), modified_by VARCHAR(100));`);
-    await client.query(`CREATE TABLE IF NOT EXISTS projects (id VARCHAR(50) PRIMARY KEY, title TEXT, description TEXT, timeline VARCHAR(100), status VARCHAR(50), image TEXT, target_site VARCHAR(50), category VARCHAR(100), start_date DATE, progress INT DEFAULT 0, budget TEXT, location TEXT, milestones JSONB, documents JSONB, gallery JSONB);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS tracker (id VARCHAR(50) PRIMARY KEY, name TEXT, type VARCHAR(100), sector VARCHAR(100), stage VARCHAR(100), progress INT, status_label VARCHAR(100), related_docs TEXT, last_updated DATE, target_site VARCHAR(50));`);
-    await client.query(`CREATE TABLE IF NOT EXISTS installers (id VARCHAR(50) PRIMARY KEY, name TEXT, contact TEXT, website TEXT, status VARCHAR(50), parish VARCHAR(100) DEFAULT 'Hamilton', description TEXT, certifications VARCHAR(500) DEFAULT 'Registered Solar PV Installer, Battery Storage', projects INTEGER DEFAULT 0, rating NUMERIC(3,2) DEFAULT 5.0);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS education (id VARCHAR(50) PRIMARY KEY, title TEXT, category VARCHAR(100), description TEXT, attachment TEXT, target_site VARCHAR(50), type VARCHAR(100), file_size VARCHAR(50), image TEXT);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS media (id VARCHAR(50) PRIMARY KEY, name TEXT, type VARCHAR(50), size VARCHAR(50), uploaded_by VARCHAR(100), date DATE, url TEXT);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS settings (id INT PRIMARY KEY DEFAULT 1 CHECK (id = 1), site_name TEXT, contact_email TEXT, footer_info TEXT, social_facebook TEXT, social_twitter TEXT, social_instagram TEXT, active_theme TEXT, contact_phone TEXT, contact_office_location TEXT, contact_hours TEXT, contact_department_list TEXT, allowed_file_types TEXT, max_upload_size TEXT, featured_guide TEXT, featured_tip TEXT, featured_resource TEXT, featured_infographic TEXT);`);
-    await client.query(`INSERT INTO settings (id, site_name, contact_email, contact_phone) VALUES (1, 'Department of Energy', 'energy@gov.bm', '441-444-0597') ON CONFLICT (id) DO UPDATE SET contact_phone = COALESCE(NULLIF(settings.contact_phone,''), EXCLUDED.contact_phone);`);
-    await client.query(`ALTER TABLE policies ADD COLUMN IF NOT EXISTS external_url TEXT;`);
-    await client.query(`ALTER TABLE projects ADD COLUMN IF NOT EXISTS end_date DATE;`);
-    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS company TEXT;`);
-    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS contact_name TEXT;`);
-    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS email TEXT;`);
-    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS phone TEXT;`);
-    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS license_number TEXT;`);
-    await client.query(`ALTER TABLE installers ADD COLUMN IF NOT EXISTS logo TEXT;`);
-    await client.query(`ALTER TABLE education ADD COLUMN IF NOT EXISTS download_url TEXT;`);
-    await client.query(`ALTER TABLE innovation_topics ADD COLUMN IF NOT EXISTS category VARCHAR(100);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS energy_guides (id VARCHAR(50) PRIMARY KEY, title TEXT, category VARCHAR(100), summary TEXT, cover_image TEXT, pdf_attachment TEXT, featured_image TEXT, key_takeaways TEXT, estimated_savings VARCHAR(100), publish_date DATE, featured_flag BOOLEAN DEFAULT FALSE, status VARCHAR(50), target_site VARCHAR(50), modified_by VARCHAR(100));`);
-    await client.query(`CREATE TABLE IF NOT EXISTS infographics (id VARCHAR(50) PRIMARY KEY, title TEXT, image TEXT, description TEXT, category VARCHAR(100), publish_date DATE, status VARCHAR(50), target_site VARCHAR(50), modified_by VARCHAR(100));`);
-    await client.query(`CREATE TABLE IF NOT EXISTS roadmaps (id VARCHAR(50) PRIMARY KEY, title TEXT, description TEXT, timeline_type VARCHAR(100), milestones JSONB, status VARCHAR(50) DEFAULT 'Active', target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS bursaries (id VARCHAR(50) PRIMARY KEY, name TEXT, school TEXT, field_of_study TEXT, academic_year VARCHAR(50), status VARCHAR(50) DEFAULT 'Active', amount VARCHAR(50), photo_url TEXT, guidelines_url TEXT, bio TEXT, achievement TEXT, focus TEXT, target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`ALTER TABLE bursaries ADD COLUMN IF NOT EXISTS achievement TEXT;`);
-    await client.query(`ALTER TABLE bursaries ADD COLUMN IF NOT EXISTS focus TEXT;`);
-    await client.query(`ALTER TABLE bursaries ADD COLUMN IF NOT EXISTS education TEXT;`);
-    await client.query(`ALTER TABLE bursaries ADD COLUMN IF NOT EXISTS background TEXT;`);
-    await client.query(`CREATE TABLE IF NOT EXISTS leadership (id VARCHAR(50) PRIMARY KEY, name TEXT NOT NULL, role TEXT NOT NULL, image_url TEXT, bio TEXT, display_order INT DEFAULT 0, status VARCHAR(50) DEFAULT 'Active', target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS space_content (id VARCHAR(50) PRIMARY KEY, title TEXT, slug VARCHAR(100), category VARCHAR(100), content TEXT, summary TEXT, pdf_link TEXT, image TEXT, status VARCHAR(50) DEFAULT 'Published', target_site VARCHAR(50), modified_by VARCHAR(100), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS recycle_bin (id VARCHAR(50) PRIMARY KEY, deleted_at DATE DEFAULT CURRENT_DATE, original_collection VARCHAR(50), item_data JSONB);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS versions (id VARCHAR(50) PRIMARY KEY, item_id VARCHAR(50), collection_name VARCHAR(50), version_number INT, title TEXT, modified_at TIMESTAMP, modified_by VARCHAR(100), data TEXT);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS logs (id VARCHAR(100) PRIMARY KEY, user_name VARCHAR(100), action TEXT, content_type VARCHAR(50), content_name TEXT, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS users (id VARCHAR(50) PRIMARY KEY, username VARCHAR(50) UNIQUE NOT NULL, email VARCHAR(255) UNIQUE NOT NULL, password_hash VARCHAR(255) NOT NULL, role VARCHAR(50) DEFAULT 'Viewer' CHECK (role IN ('Viewer','Editor','Approver','Administrator')), is_active BOOLEAN DEFAULT TRUE, reset_token VARCHAR(255), reset_token_expires TIMESTAMP, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS innovation_topics (id VARCHAR(50) PRIMARY KEY, title VARCHAR(255) NOT NULL, description TEXT NOT NULL, status VARCHAR(50) NOT NULL, link_to VARCHAR(255), link_label VARCHAR(255), created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS statistics_history (id VARCHAR(50) PRIMARY KEY, data_type VARCHAR(50) NOT NULL, period VARCHAR(20) NOT NULL, value NUMERIC, unit VARCHAR(50), notes TEXT, uploaded_by VARCHAR(100), uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS solar_installations (id TEXT PRIMARY KEY, name TEXT NOT NULL, parish TEXT, type TEXT, capacity NUMERIC, status TEXT DEFAULT 'Active', install_date DATE, installer TEXT, coordinate_x NUMERIC DEFAULT 50, coordinate_y NUMERIC DEFAULT 50, lat NUMERIC, lng NUMERIC, notes TEXT, created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS lat NUMERIC;`);
-    await client.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS lng NUMERIC;`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_versions_item_id ON versions(item_id);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_logs_timestamp ON logs(timestamp DESC);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_news_publish_date ON news(publish_date DESC);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_policies_status ON policies(status);`);
-    // Public form capture — contact enquiries and newsletter subscribers are
-    // persisted so CMS staff can retrieve them (no longer lost to the console).
-    await client.query(`CREATE TABLE IF NOT EXISTS contact_submissions (id VARCHAR(50) PRIMARY KEY, name TEXT, email TEXT, subject TEXT, message TEXT, status VARCHAR(30) DEFAULT 'New', submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`CREATE TABLE IF NOT EXISTS newsletter_subscribers (id VARCHAR(50) PRIMARY KEY, email TEXT UNIQUE NOT NULL, status VARCHAR(30) DEFAULT 'Subscribed', subscribed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);`);
-    await client.query(`CREATE INDEX IF NOT EXISTS idx_contact_submitted ON contact_submissions(submitted_at DESC);`);
-    // Seed statistics_history with EV and solar adoption data if empty
-    const statsCheck = await client.query("SELECT COUNT(*) FROM statistics_history");
-    if (parseInt(statsCheck.rows[0].count, 10) === 0) {
-      const evData = [
-        ['stat-ev-2019','ev','2019',120,'vehicles'],
-        ['stat-ev-2020','ev','2020',185,'vehicles'],
-        ['stat-ev-2021','ev','2021',290,'vehicles'],
-        ['stat-ev-2022','ev','2022',420,'vehicles'],
-        ['stat-ev-2023','ev','2023',580,'vehicles'],
-        ['stat-ev-2024','ev','2024',720,'vehicles'],
-        ['stat-ev-2025','ev','2025',910,'vehicles'],
-      ];
-      const solarData = [
-        ['stat-sol-2019','solar','2019',3.2,'MW'],
-        ['stat-sol-2020','solar','2020',6.1,'MW'],
-        ['stat-sol-2021','solar','2021',9.8,'MW'],
-        ['stat-sol-2022','solar','2022',14.5,'MW'],
-        ['stat-sol-2023','solar','2023',19.2,'MW'],
-        ['stat-sol-2024','solar','2024',24.1,'MW'],
-        ['stat-sol-2025','solar','2025',28.7,'MW'],
-      ];
-      for (const [id, type, period, value, unit] of [...evData, ...solarData]) {
-        await client.query(
-          `INSERT INTO statistics_history (id, data_type, period, value, unit, uploaded_by) VALUES ($1,$2,$3,$4,$5,'system') ON CONFLICT DO NOTHING`,
-          [id, type, period, value, unit]
-        );
-      }
-    }
-    // Seed solar_installations if empty
-    const solarInstCheck = await client.query("SELECT COUNT(*) FROM solar_installations");
-    const installations = [
-      ['gis-001','Hamilton Residence','Hamilton','Residential',8.5,'Active','2022-03-10','BE Solar',32.2952,-64.782],
-      ['gis-002','Devonshire Commercial','Devonshire','Commercial',125.0,'Active','2021-06-15','AES Solar',32.3045,-64.758],
-      ['gis-003','Warwick Home','Warwick','Residential',6.2,'Active','2023-01-20','Sunnyside Solar',32.267,-64.8065],
-      ['gis-004','Pembroke Office','Pembroke','Commercial',45.8,'Active','2021-09-05','Greenlight Energy',32.292,-64.7695],
-      ['gis-005','Southampton Retail','Southampton','Commercial',32.0,'Active','2022-07-12','BE Solar',32.252,-64.821],
-      ['gis-006','BHC Community Solar','Sandys','Community',500.0,'Active','2020-11-30','AES Solar',32.293,-64.857],
-      ['gis-007',"St. George's Site",'St. George\'s','Commercial',18.5,'Active','2023-03-18','Sunnyside Solar',32.384,-64.677],
-      ['gis-008','Paget Residence','Paget','Residential',10.2,'Active','2022-05-22','Greenlight Energy',32.2795,-64.777],
-      ['gis-009','Balcony Solar Pilot','Hamilton','Residential',2.4,'Active','2023-08-01','BE Solar',32.2945,-64.7805],
-      ['gis-010','Dockyard Centre','Sandys','Commercial',28.4,'Active','2021-04-14','AES Solar',32.325,-64.834],
-      ['gis-011','Hamilton Hotel','Hamilton','Commercial',95.0,'Active','2022-10-03','BAC Group',32.296,-64.779],
-      ['gis-012','Devonshire Farm Site','Devonshire','Utility',5000.0,'Active','2019-12-01','AES Solar',32.312,-64.748],
-    ];
-    if (parseInt(solarInstCheck.rows[0].count, 10) === 0) {
-      for (const [id, name, parish, type, capacity, status, installDate, installer, lat, lng] of installations) {
-        await client.query(
-          `INSERT INTO solar_installations (id, name, parish, type, capacity, status, install_date, installer, lat, lng) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) ON CONFLICT DO NOTHING`,
-          [id, name, parish, type, capacity, status, installDate, installer, lat, lng]
-        );
-      }
-    } else {
-      // Ensure all existing rows have lat/lng populated (fixes rows seeded before lat/lng columns were added)
-      for (const [id, , , , , , , , lat, lng] of installations) {
-        await client.query(
-          `UPDATE solar_installations SET lat = $2, lng = $3 WHERE id = $1 AND (lat IS NULL OR lng IS NULL)`,
-          [id, lat, lng]
-        );
-      }
-    }
-    // Seed innovation_topics if empty
-    const innovationCheck = await client.query("SELECT COUNT(*) FROM innovation_topics");
-    if (parseInt(innovationCheck.rows[0].count, 10) === 0) {
-      const topics = [
-        ['inn-1','Smart Grids','Advanced grid management enabling two-way power flows and distributed energy integration.','Active','/dashboard/renewable','View grid data'],
-        ['inn-2','Battery Energy Storage','Grid-scale and residential storage for peak shaving and renewable integration.','Active','/dashboard/renewable','Storage metrics'],
-        ['inn-3','Artificial Intelligence','AI applications for demand forecasting, grid optimisation, and predictive maintenance.','Research','/education','Learning resources'],
-        ['inn-4','Distributed Energy Resources','Coordinating rooftop solar, storage, and flexible loads across the grid.','Active','/registry','Energy registry'],
-        ['inn-5','Virtual Power Plants','Aggregating distributed assets to provide grid services.','Pilot','/projects','View projects'],
-        ['inn-6','Demand Response','Technologies enabling consumers to reduce load during peak periods.','Active','/dashboard/transition','Transition dashboard'],
-        ['inn-7','Digital Twins','Virtual models of energy infrastructure for planning and operations.','Research','/gis','GIS platform'],
-        ['inn-8','Advanced Energy Analytics','Data-driven insights for policy, planning, and operational decisions.','Active','/dashboard/renewable','Explore dashboards'],
-        ['inn-9','Blockchain & Energy Systems','Exploring distributed ledger applications for energy trading and grid management.','Research','/contact','Partner with us'],
-        ['inn-10','Digital Currency & Energy','This section will provide public awareness information on vendors and service providers that accept digital currency, as part of Bermuda\'s emerging technology landscape. This content is for informational purposes only and does not constitute financial advice.','Coming Soon',null,'Content is being developed with industry partners and will be published when ready.'],
-      ];
-      for (const [id, title, description, status, linkTo, linkLabel] of topics) {
-        await client.query(
-          `INSERT INTO innovation_topics (id, title, description, status, link_to, link_label) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING`,
-          [id, title, description, status, linkTo, linkLabel]
-        );
-      }
-    }
-    // Seed bursary recipients
-    const bursaryCheck = await client.query("SELECT COUNT(*) FROM bursaries");
-    if (parseInt(bursaryCheck.rows[0].count, 10) === 0) {
-      const recipients = [
-        ['bur-001','Neriah Bean','Oakwood University','Applied Mathematics and Engineering','2025','Active','/images/portraits/neriah-bean.jpg',
-          'Selected for his strong academic record, leadership potential, and an essay analysing Bermuda\'s energy future and the public\'s role in it.',
-          'Developing foundational engineering and mathematical expertise to contribute to climate resilience and clean energy transformation.'],
-        ['bur-002','Benjamin Crofton','Virginia Tech','Mechanical Engineering','2025','Active','/images/portraits/benjamin-crofton.jpg',
-          'Awarded for his technical acumen and analytical essay on Bermuda\'s energy transition.',
-          'Acquiring hands-on mechanical engineering insights to support independent energy infrastructure and modern technical planning on the island.'],
-      ];
-      for (const [id, name, school, fieldOfStudy, academicYear, status, photoUrl, achievement, focus] of recipients) {
-        await client.query(
-          `INSERT INTO bursaries (id, name, school, field_of_study, academic_year, status, photo_url, achievement, focus) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) ON CONFLICT DO NOTHING`,
-          [id, name, school, fieldOfStudy, academicYear, status, photoUrl, achievement, focus]
-        );
-      }
-    }
-    // Seed leadership team
-    const leadershipCheck = await client.query("SELECT COUNT(*) FROM leadership");
-    if (parseInt(leadershipCheck.rows[0].count, 10) === 0) {
-      const team = [
-        ['lead-001','The Honourable Alexa Lightbourne','Minister of Home Affairs','/images/portraits/minister-lightbourne.jpg',"The Honourable Alexa Lightbourne is the Minister of Home Affairs, responsible for the Department of Energy and Bermuda's national energy transition.",1],
-        ['lead-002','Valerie Robinson James','Permanent Secretary, Ministry of Home Affairs','',"Valerie Robinson James is the Permanent Secretary for the Ministry of Home Affairs, responsible for the Department of Energy.",2],
-        ['lead-003','Adrian Dill','Director of the Department of Energy','/images/portraits/director-dill.jpg',"Adrian Dill is the Director of the Department of Energy, leading Bermuda's energy policy, renewable programmes, and regulatory oversight.",3],
-      ];
-      for (const [id, name, role, imageUrl, bio, displayOrder] of team) {
-        await client.query(
-          `INSERT INTO leadership (id, name, role, image_url, bio, display_order) VALUES ($1,$2,$3,$4,$5,$6) ON CONFLICT DO NOTHING`,
-          [id, name, role, imageUrl, bio, displayOrder]
-        );
-      }
-    }
-    // Remove the Permanent Secretary's photo (keep name/role/bio) per request.
-    // The seed above only runs on an empty table, so existing databases still hold
-    // a portrait (in production this is a CMS-uploaded /uploads/... image). Clear it
-    // unconditionally so no photo is shown. NOTE: this runs on every boot, so to
-    // re-enable her photo later this line must be removed.
-    await client.query(
-      "UPDATE leadership SET image_url = '' WHERE id = 'lead-002' AND image_url <> ''"
-    );
-    // Seed news articles
-    const newsCheck = await client.query("SELECT COUNT(*) FROM news");
-    if (parseInt(newsCheck.rows[0].count, 10) === 0) {
-      const articles = [
-        ['news-007','career-fair-expo-june-2026','Department of Energy at Bermuda Government Career Fair Expo 2026',
-          'The Department of Energy showcased Bermuda\'s energy transition at the Government Career Fair Expo on 18 June 2026.',
-          'The Department of Energy participated in the Bermuda Government Career Fair Expo held on 18 June 2026, bringing its digital engagement platform and Energy Simulator directly to students and career-seekers.\n\nAttendees had the opportunity to interact with the live Energy Simulator, exploring how household appliance choices and solar adoption affect monthly energy costs.\n\nDepartment representatives engaged in one-on-one conversations with students and young professionals about career pathways in energy, the 2026 Energy Bursary Programme, and Bermuda\'s clean energy transition goals.',
-          '/images/events/career-fair-expo-1.jpg','2026-06-18','Published','Events',true,'Department of Energy'],
-        ['news-001','bermuda-renewable-energy-milestone','Bermuda Reaches New Renewable Energy Milestone',
-          'Installed solar capacity across the island has surpassed 25 MW, marking significant progress toward Bermuda\'s 2030 energy targets.',
-          'The Department of Energy is pleased to announce that Bermuda has surpassed 25 megawatts of installed solar photovoltaic capacity.\n\nThis achievement reflects sustained investment in distributed generation, supportive regulatory frameworks, and growing public awareness of the benefits of renewable energy.',
-          '/images/solar.jpg','2026-05-15','Published','Renewable Energy',true,'Department of Energy'],
-        ['news-004','2026-energy-bursary-recipients','2026 Energy Bursary Recipients Announced',
-          'Two Bermudian students have been awarded the inaugural Energy Bursary for studies in engineering and applied mathematics.',
-          'The Department of Energy is pleased to announce the recipients of the inaugural 2026 Energy Bursary Programme.\n\nNeriah Bean and Benjamin Crofton have been selected for their academic excellence and commitment to contributing to Bermuda\'s clean energy future.',
-          '/images/education.jpg','2026-05-10','Published','Education',false,'Department of Energy'],
-      ];
-      for (const [id, slug, title, excerpt, content, image, publishDate, status, category, featured, author] of articles) {
-        await client.query(
-          `INSERT INTO news (id, slug, title, excerpt, content, image, publish_date, status, category, featured, author) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) ON CONFLICT DO NOTHING`,
-          [id, slug, title, excerpt, content, image, publishDate, status, category, featured, author]
-        );
-      }
-    }
-    // Seed NESP 2026 as a closed (past) consultation only if it does not already
-    // exist. Do NOT force status back to 'Closed' on every boot — that would undo
-    // a legitimate manual re-open by CMS staff.
-    await client.query(`
-      INSERT INTO consultations (id, title, description, start_date, end_date, status, external_url)
-      VALUES ('con-nesp-2026', 'National Energy Security Policy (NESP) 2026',
-        'Public consultation on Bermuda''s updated National Energy Security Policy, covering renewable energy targets, grid resilience, and energy affordability for 2026–2030.',
-        '2026-05-01', '2026-07-31', 'Closed', 'https://forum.gov.bm/en/')
-      ON CONFLICT (id) DO NOTHING
-    `);
-    // NOTE: previously this ran `DELETE FROM consultations WHERE title ILIKE '%fuel%'`
-    // on every startup, which silently and permanently destroyed any legitimate
-    // staff-created consultation whose title contained "fuel" (e.g. "Fuel Import
-    // Duty Review"). That one-off seed-cleanup line has been removed.
-    // Seed default admin user if not exists
-    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token VARCHAR(255);`);
-    await client.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS reset_token_expires TIMESTAMP;`);
-    // Seed the initial administrator only if no users exist at all. Credentials
-    // come from env (SEED_ADMIN_EMAIL / SEED_ADMIN_PASSWORD) so production is not
-    // stuck with a publicly-known default. If SEED_ADMIN_PASSWORD is unset we still
-    // seed the legacy account for first-run/demo, but log a loud warning to rotate it.
-    const anyUsers = await client.query("SELECT COUNT(*) FROM users");
-    if (parseInt(anyUsers.rows[0].count, 10) === 0) {
-      const seedEmail = process.env.SEED_ADMIN_EMAIL || 'energy@gov.bm';
-      const seedPassword = process.env.SEED_ADMIN_PASSWORD;
-      if (seedPassword) {
-        const hash = bcrypt.hashSync(seedPassword, 10);
-        await client.query(
-          `INSERT INTO users (id, username, email, password_hash, role, is_active) VALUES ('usr-admin','energy_admin',$1,$2,'Administrator',TRUE) ON CONFLICT DO NOTHING;`,
-          [seedEmail, hash]
-        );
-        console.log(`[Startup] Seeded administrator ${seedEmail} from SEED_ADMIN_PASSWORD.`);
-      } else {
-        // Legacy default hash = password "bermuda2026".
-        await client.query(
-          `INSERT INTO users (id, username, email, password_hash, role, is_active) VALUES ('usr-admin','energy_admin',$1,'$2b$10$go00jDF64O/N3vkCzB.0kOv/Y2050sltz5sY.XsRFPIP50KjTtylu','Administrator',TRUE) ON CONFLICT DO NOTHING;`,
-          [seedEmail]
-        );
-        console.warn('[SECURITY] Seeded default admin with the publicly-known password. Set SEED_ADMIN_PASSWORD and rotate this account immediately.');
-      }
-    }
-    console.log('[Startup] Database tables verified/created.');
+    // Schema + first-run seed live in server/schema.cjs so that this startup path
+    // and `npm run migrate` cannot drift apart.
+    await applySchemaAndSeed(client);
   } catch (err) {
     console.error('[Startup] Migration error:', err.message);
   } finally {
@@ -2232,7 +2424,7 @@ async function runMigrationsInline() {
   }
 }
 
-app.listen(PORT, async () => {
+async function start() {
   await runMigrationsInline();
   await fetchTableColumns();
   try {
@@ -2246,5 +2438,15 @@ app.listen(PORT, async () => {
   } catch (err) {
     console.error("Failed to run startup scheduler:", err);
   }
-  console.log(`Bermuda DoE CMS Server running at http://localhost:${PORT}`);
-});
+}
+
+// Only bind a port when run directly (`node server.cjs`). Importing this module —
+// which the test suite does — must not open a listener or start the scheduler.
+if (require.main === module) {
+  app.listen(PORT, async () => {
+    await start();
+    console.log(`Bermuda DoE CMS Server running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = { app, start, verifyFileSignature, sessionCookieOptions, newId };

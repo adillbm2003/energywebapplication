@@ -1,21 +1,32 @@
-# Elastic Beanstalk deploy — exclude dev/build artifacts
+# Elastic Beanstalk deploy — exclude dev/build artifacts.
+#
+# NOTE: patterns without a leading slash match at EVERY depth (gitignore syntax).
+# A bare `public/` previously also excluded `portal/public/`, which silently
+# dropped the source spreadsheets the fleet/solar importers read at runtime.
+# Anything the server needs at runtime must therefore live outside a `public/`
+# directory — see server/data/.
 node_modules/
 dist/
 .env
 .env.local
 .env.*.local
-.env.vercel.prod
 *.log
 .git/
 .github/
-portal/node_modules/
-portal/dist/
-src/
-public/
-index.html
-vite.config.js
+
+# Frontend sources — the React site is built separately and served from S3/CloudFront.
+# Root-anchored so nothing under server/ is caught by accident.
+/src/
+/public/
+/index.html
+/vite.config.js
+/scripts/
+/docs/
 tailwind.config.*
 postcss.config.*
 eslint.config.*
 vitest.config.*
-scripts/
+
+# Large reference documents not needed at runtime
+*.pdf
+*.docx
