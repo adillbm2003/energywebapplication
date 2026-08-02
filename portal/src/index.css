@@ -99,8 +99,30 @@
 }
 
 @layer utilities {
+  /* Page gutter.
+     The cap used to stop at max-w-7xl (1280px) at every size. That fills a
+     1366px laptop nicely but leaves half of a 27"/1440p monitor empty — 640px
+     of dead space each side at 2560px. It now steps up on genuinely large
+     screens. Prose stays readable because text blocks carry their own
+     max-w-2xl/3xl caps, so the extra width goes to the card and data grids.
+
+     These are written as plain media queries, in ascending order, rather than
+     Tailwind breakpoint variants: Tailwind sorts an arbitrary `min-[1920px]:`
+     variant *before* the named `2xl:` one, so above 1920px both matched and the
+     narrower 2xl rule won on source order — pinning wide screens back to
+     1440px. Explicit rules keep the cascade predictable. */
   .container-page {
     @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  @media (min-width: 1536px) {
+    .container-page { max-width: 90rem; }   /* 1440px */
+  }
+  @media (min-width: 1920px) {
+    .container-page { max-width: 100rem; }  /* 1600px */
+  }
+  @media (min-width: 2400px) {
+    .container-page { max-width: 110rem; }  /* 1760px — 27" 1440p and wider */
   }
 
   .section-padding {
