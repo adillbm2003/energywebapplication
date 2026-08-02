@@ -78,7 +78,11 @@ export const PAGE_IMAGES = {
   batteryRooms: base + 'images/battery-rooms.jpg',
   dptElectrification: base + 'images/dpt-electrification.jpg',
   evFleetBermuda: base + 'images/ev-fleet-bermuda.jpg',
-  bermudaEnergyDashboard: base + 'images/bermuda-energy-dashboard.png',
+  // The two dashboard tiles in Quick Access. They previously shared a single
+  // `bermudaEnergyDashboard` key, so replacing one silently replaced both.
+  // Separate keys let each be swapped on its own from the CMS.
+  renewableDashboard: base + 'images/bermuda-energy-dashboard.png',
+  transitionDashboard: base + 'images/bermuda-energy-dashboard.png',
   summerStudentPhoto: base + 'images/summer-student-photo.jpg',
   bmw3: base + 'images/bmw-3.jpg',
   portrait: base + 'images/portrait.jpg',
