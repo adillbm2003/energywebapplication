@@ -12,7 +12,7 @@ import LoadingSpinner from '../../components/ui/LoadingSpinner'
 
 const RELATED_LINKS = [
   { label: 'Space & Satellite', to: ROUTES.spaceSatellite },
-  { label: 'GIS Heat Map', to: ROUTES.gis },
+  { label: 'GIS Solar PV Map', to: ROUTES.gis },
   { label: 'Education Centre', to: ROUTES.education },
 ]
 

@@ -37,7 +37,7 @@ export const homeSpotlights = [
     tag: 'Featured Project',
   },
   {
-    title: 'GIS Renewable Heat Map',
+    title: 'GIS Solar PV Map',
     description: 'Explore solar installation locations across Bermuda on an interactive island map.',
     image: PAGE_IMAGES.gisHeatmap,
     to: ROUTES.gis,
@@ -60,7 +60,7 @@ export const homeSpotlights = [
 ]
 
 export const homeQuickAccess = [
-  { label: 'GIS Heat Map', to: ROUTES.gis, image: PAGE_IMAGES.gisHeatmap },
+  { label: 'GIS Solar PV Map', to: ROUTES.gis, image: PAGE_IMAGES.gisHeatmap },
   { label: 'Public Sector Fleet', to: ROUTES.projectDetail('prj-dpt-electrification'), image: PAGE_IMAGES.bus },
   { label: 'Balcony Solar Pilot', to: ROUTES.projectDetail('prj-balcony-solar'), image: PAGE_IMAGES.balconySolar },
   { label: 'EV Adoption', to: ROUTES.transitionDashboard, image: PAGE_IMAGES.ev },

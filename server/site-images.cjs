@@ -107,7 +107,7 @@ const GROUPS = {
   ],
 
   'GIS & Registry': [
-    ['gisHeatmap', 'GIS heat map preview', 'Preview image for the GIS heat map', 'heat-gis.png', '1200×800'],
+    ['gisHeatmap', 'GIS Solar PV Map preview', 'Preview tile for the GIS Solar PV Map, on the Dashboards and Home pages', 'heat-gis.png', '1200×800'],
   ],
 
   'Education & Bursary': [

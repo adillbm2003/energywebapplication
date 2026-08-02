@@ -15,7 +15,7 @@ import { formatNumber } from '../../utils/format'
 const defaultParishes = [...new Set(gisInstallations.map(i => i.parish))].sort()
 
 export default function GIS() {
-  useDocumentTitle('GIS Heat Map')
+  useDocumentTitle('GIS Solar PV Map')
 
   const [parish, setParish] = useState('all')
   const [type, setType] = useState('all')
@@ -42,11 +42,11 @@ export default function GIS() {
   return (
     <>
       <PageBanner
-        title="Bermuda Renewable Energy Heat Map"
+        title="Bermuda Solar PV Map"
         subtitle="Solar PV permit applications from Department of Planning records (2019–present)"
         breadcrumbs={[
           { label: 'Data & GIS', to: ROUTES.dashboard },
-          { label: 'GIS Heat Map', to: ROUTES.gis },
+          { label: 'GIS Solar PV Map', to: ROUTES.gis },
         ]}
         image={PAGE_IMAGES.gisHeatmap}
       />

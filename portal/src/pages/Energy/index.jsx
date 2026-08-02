@@ -46,7 +46,7 @@ const TOPICS = [
     image: PAGE_IMAGES.consultation,
   },
   {
-    title: 'GIS Heat Map',
+    title: 'GIS Solar PV Map',
     description: 'Interactive map of solar installations, renewable sites, and energy infrastructure island-wide.',
     to: ROUTES.gis,
     image: PAGE_IMAGES.grid,

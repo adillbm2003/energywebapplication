@@ -172,7 +172,7 @@ export default function Home() {
                 Data, Dashboards & GIS
               </h2>
               <p className="mt-2 text-body-small text-slate-300">
-                Track installed capacity, solar growth, EV adoption, and renewable penetration. Explore installations on our interactive Bermuda heat map.
+                Track installed capacity, solar growth, EV adoption, and renewable penetration. Explore installations on our interactive Bermuda solar PV map.
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 <Button to={ROUTES.renewableDashboard} variant="primary">Renewable Dashboard</Button>
@@ -180,7 +180,7 @@ export default function Home() {
                   Transition Dashboard
                 </Button>
                 <Button to={ROUTES.gis} variant="outline" className="border-white/60 text-white hover:bg-white/10">
-                  GIS Heat Map
+                  GIS Solar PV Map
                 </Button>
                 <Button to={ROUTES.registry} variant="outline" className="border-white/60 text-white hover:bg-white/10">
                   Energy Registry
