@@ -560,42 +560,87 @@ const FILE_SIGNATURES = {
   xls:  [[0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]],
 };
 
-// WebP and MP4 need a second check further into the header.
-function matchesContainer(head, ext) {
+// Extensions that share a signature resolve to one canonical type.
+const SIGNATURE_ALIASES = { jpeg: 'jpg' };
+
+/**
+ * Identify what a file actually is from its leading bytes.
+ *
+ * @returns {string|null} canonical extension, or null if no signature matched
+ */
+function detectFileType(head) {
   const ascii = (start, len) => head.slice(start, start + len).toString('ascii');
-  if (ext === 'webp') return ascii(0, 4) === 'RIFF' && ascii(8, 4) === 'WEBP';
-  if (ext === 'mp4')  return ascii(4, 4) === 'ftyp';
+
+  // Container formats need a second marker further into the header.
+  if (ascii(0, 4) === 'RIFF' && ascii(8, 4) === 'WEBP') return 'webp';
+  if (ascii(4, 4) === 'ftyp') return 'mp4';
+
+  for (const [type, signatures] of Object.entries(FILE_SIGNATURES)) {
+    if (SIGNATURE_ALIASES[type]) continue; // skip alias entries; canonical wins
+    const hit = signatures.some(sig =>
+      head.length >= sig.length && sig.every((byte, i) => head[i] === byte)
+    );
+    if (hit) return type;
+  }
   return null;
 }
 
+/** Extensions whose real type we can prove from magic bytes. */
+const SIGNED_EXTENSIONS = new Set([
+  ...Object.keys(FILE_SIGNATURES), 'webp', 'mp4',
+]);
+
 /**
- * Returns null when the file's leading bytes are consistent with `ext`,
- * otherwise a human-readable reason string.
+ * Validate an upload by what it actually contains rather than what it claims.
+ *
+ * The security requirement is that we never accept executable or scripted
+ * content dressed as a document. It is NOT that the extension is accurate:
+ * a PNG saved as .jpg is completely harmless and very common (phone exports,
+ * "save as" dialogs, renamed screenshots). Rejecting those was over-strict and
+ * blocked legitimate uploads with a security-sounding error.
+ *
+ * So: detect the true type, accept it when that type is permitted, and report
+ * the corrected extension so the caller can store the file under it.
+ *
+ * @returns {{ok: true, type: string|null, corrected: boolean} | {ok: false, error: string}}
  */
-function verifyFileSignature(filePath, ext) {
+function inspectUpload(filePath, claimedExt, allowedExts) {
   let head;
+  let fd;
   try {
-    const fd = fs.openSync(filePath, 'r');
-    head = Buffer.alloc(16);
-    const bytesRead = fs.readSync(fd, head, 0, 16, 0);
-    fs.closeSync(fd);
-    head = head.slice(0, bytesRead);
+    fd = fs.openSync(filePath, 'r');
+    const buf = Buffer.alloc(32);
+    const bytesRead = fs.readSync(fd, buf, 0, 32, 0);
+    head = buf.slice(0, bytesRead);
   } catch (err) {
-    return 'the uploaded file could not be read for verification';
+    return { ok: false, error: 'the uploaded file could not be read for verification' };
+  } finally {
+    if (fd !== undefined) { try { fs.closeSync(fd); } catch (_) {} }
   }
 
-  const container = matchesContainer(head, ext);
-  if (container !== null) {
-    return container ? null : `file contents do not match the .${ext} extension`;
+  const actual = detectFileType(head);
+
+  if (actual) {
+    if (!allowedExts.includes(actual)) {
+      return {
+        ok: false,
+        error: `the file is actually a .${actual} file, which is not an allowed type`,
+      };
+    }
+    const claimedCanonical = SIGNATURE_ALIASES[claimedExt] || claimedExt;
+    return { ok: true, type: actual, corrected: actual !== claimedCanonical };
   }
 
-  const signatures = FILE_SIGNATURES[ext];
-  if (!signatures) return null; // No known signature for this type.
-
-  const ok = signatures.some(sig =>
-    head.length >= sig.length && sig.every((byte, i) => head[i] === byte)
-  );
-  return ok ? null : `file contents do not match the .${ext} extension`;
+  // No signature matched. If the claimed extension is one we can prove, the
+  // contents are something we could not identify — reject. Otherwise (csv, txt,
+  // svg and similar text formats) fall back to the extension allow-list.
+  if (SIGNED_EXTENSIONS.has(claimedExt)) {
+    return {
+      ok: false,
+      error: `the file does not appear to be a real .${claimedExt} file`,
+    };
+  }
+  return { ok: true, type: null, corrected: false };
 }
 
 // Server-side data files (source spreadsheets for the fleet/solar importers).
@@ -2157,27 +2202,45 @@ app.post('/api/upload', authenticate, authorize('Editor', 'Approver', 'Administr
     const allowedExts = allowedExtsStr.toLowerCase().split(',').map(ext => ext.trim().replace(/^\./, ''));
     const maxMb = parseFloat(settings.maxUploadSize || '20');
     
-    const fileExt = path.extname(req.file.originalname).toLowerCase().replace(/^\./, '');
+    let fileExt = path.extname(req.file.originalname).toLowerCase().replace(/^\./, '');
     const fileSizeMb = req.file.size / (1024 * 1024);
-    
+
     if (!allowedExts.includes(fileExt)) {
       try { fs.unlinkSync(req.file.path); } catch (err) {}
       return res.status(400).json({ error: `File type .${fileExt} is not allowed. Allowed types: ${allowedExtsStr}` });
     }
-    
+
     if (fileSizeMb > maxMb) {
       try { fs.unlinkSync(req.file.path); } catch (err) {}
       return res.status(400).json({ error: `File size (${fileSizeMb.toFixed(2)} MB) exceeds configured max size of ${maxMb} MB.` });
     }
-    
-    // ── SECURITY VALIDATION: verify the real file signature ────────────────────
-    // This previously checked req.file.mimetype, which is just the browser-supplied
-    // Content-Type header and is fully attacker-controlled — so a .png could hold
-    // anything. Now the file's own leading bytes must match the extension.
-    const sigError = verifyFileSignature(req.file.path, fileExt);
-    if (sigError) {
+
+    // ── SECURITY VALIDATION: judge the file by its actual contents ─────────────
+    // This once checked req.file.mimetype, the browser-supplied Content-Type,
+    // which is entirely attacker-controlled. It now reads the file's own leading
+    // bytes — but it accepts any permitted image/document type rather than
+    // insisting the extension is correct, because a mislabelled-but-safe file
+    // (a PNG saved as .jpg) is common and harmless. Disguised scripts and
+    // executables are still rejected.
+    const inspection = inspectUpload(req.file.path, fileExt, allowedExts);
+    if (!inspection.ok) {
       try { fs.unlinkSync(req.file.path); } catch (err) {}
-      return res.status(400).json({ error: `Security check failed: ${sigError}` });
+      return res.status(400).json({ error: `Security check failed: ${inspection.error}` });
+    }
+
+    // Store the file under its true extension so it is later served with the
+    // correct Content-Type instead of one derived from a wrong name.
+    if (inspection.corrected && inspection.type) {
+      const correctedPath = req.file.path.replace(/\.[^.]+$/, `.${inspection.type}`);
+      try {
+        fs.renameSync(req.file.path, correctedPath);
+        console.log(`[Upload] "${req.file.originalname}" is really a .${inspection.type}; stored with the corrected extension.`);
+        req.file.path = correctedPath;
+        req.file.filename = path.basename(correctedPath);
+        fileExt = inspection.type;
+      } catch (renameErr) {
+        console.error('Could not correct file extension:', renameErr.message);
+      }
     }
 
     // ── VIRUS SCAN INTEGRATION POINT ─────────────────────────────────────────
@@ -2529,4 +2592,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { app, start, verifyFileSignature, sessionCookieOptions, newId };
+module.exports = { app, start, inspectUpload, detectFileType, sessionCookieOptions, newId };
