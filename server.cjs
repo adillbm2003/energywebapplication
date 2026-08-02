@@ -1546,6 +1546,86 @@ app.get('/api/newsletter-subscribers', authenticate, authorize('Approver', 'Admi
   }
 });
 
+// ── SITE IMAGES ──────────────────────────────────────────────────────────────
+// Every image slot on the public site is registered in `site_images` (seeded
+// from server/site-images.cjs). Staff upload replacements here and the public
+// site merges the overrides over its bundled defaults — no redeploy needed.
+
+// Public: only the overrides, keyed for a cheap merge on the frontend.
+app.get('/api/site-images', async (req, res, next) => {
+  try {
+    const result = await db.query(
+      `SELECT key, url FROM site_images WHERE url IS NOT NULL AND url <> ''`
+    );
+    const map = {};
+    for (const row of result.rows) map[row.key] = row.url;
+    res.set('Cache-Control', 'public, max-age=60');
+    res.json(map);
+  } catch (err) {
+    // Never break the public site over this — it degrades to bundled defaults.
+    console.error('site-images fetch error:', err.message);
+    res.json({});
+  }
+});
+
+// CMS: full registry with metadata, for the Site Images management screen.
+app.get('/api/site-images/manage', authenticate, async (req, res, next) => {
+  try {
+    const result = await db.query(
+      `SELECT key, group_name, label, description, default_url, recommended,
+              sort_order, url, updated_by, updated_at
+       FROM site_images ORDER BY sort_order ASC`
+    );
+    res.json(db.snakeToCamel(result.rows));
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Set (or clear) the override for one slot.
+app.put('/api/site-images/:key', authenticate, checkWritePermission('siteImages'), async (req, res, next) => {
+  try {
+    const { key } = req.params;
+    const url = typeof req.body.url === 'string' ? req.body.url.trim() : '';
+    const exists = await db.query('SELECT label FROM site_images WHERE key = $1', [key]);
+    if (exists.rows.length === 0) {
+      return res.status(404).json({ error: 'Unknown image slot' });
+    }
+    const result = await db.query(
+      `UPDATE site_images
+       SET url = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP
+       WHERE key = $3 RETURNING *`,
+      [url || null, req.user.username, key]
+    );
+    await logAction(
+      req.user.username,
+      url ? 'Updated site image' : 'Reset site image to default',
+      'siteImages', exists.rows[0].label || key
+    );
+    res.json({ success: true, image: db.snakeToCamel(result.rows[0]) });
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.delete('/api/site-images/:key', authenticate, checkWritePermission('siteImages'), async (req, res, next) => {
+  try {
+    const { key } = req.params;
+    const result = await db.query(
+      `UPDATE site_images SET url = NULL, updated_by = $1, updated_at = CURRENT_TIMESTAMP
+       WHERE key = $2 RETURNING label`,
+      [req.user.username, key]
+    );
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Unknown image slot' });
+    }
+    await logAction(req.user.username, 'Reset site image to default', 'siteImages', result.rows[0].label || key);
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // ── SYSTEM CONFIGURATION & DATA API ENDPOINTS ───────────────────────────────
 app.get('/api/db', authenticate, async (req, res, next) => {
   try {

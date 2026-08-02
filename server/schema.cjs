@@ -11,9 +11,54 @@
  */
 const bcrypt = require('bcryptjs');
 const { randomUUID } = require('crypto');
+const { SITE_IMAGE_SLOTS } = require('./site-images.cjs');
 
 function newId(prefix) {
   return `${prefix}-${randomUUID()}`;
+}
+
+/**
+ * Create the editable-image registry and reconcile it with site-images.cjs.
+ *
+ * The slot list (key/label/group/default) is code-owned, so it is refreshed on
+ * every boot. The uploaded `url` is staff-owned and is never overwritten here —
+ * only the descriptive columns are updated.
+ */
+async function syncSiteImageSlots(client) {
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS site_images (
+      key          VARCHAR(80) PRIMARY KEY,
+      group_name   VARCHAR(120),
+      label        TEXT,
+      description  TEXT,
+      default_url  TEXT,
+      recommended  VARCHAR(80),
+      sort_order   INT DEFAULT 0,
+      url          TEXT,
+      updated_by   VARCHAR(100),
+      updated_at   TIMESTAMP
+    );
+  `);
+  for (const s of SITE_IMAGE_SLOTS) {
+    await client.query(
+      `INSERT INTO site_images (key, group_name, label, description, default_url, recommended, sort_order)
+       VALUES ($1,$2,$3,$4,$5,$6,$7)
+       ON CONFLICT (key) DO UPDATE SET
+         group_name  = EXCLUDED.group_name,
+         label       = EXCLUDED.label,
+         description = EXCLUDED.description,
+         default_url = EXCLUDED.default_url,
+         recommended = EXCLUDED.recommended,
+         sort_order  = EXCLUDED.sort_order`,
+      [s.key, s.group, s.label, s.description, s.defaultUrl, s.recommended, s.sortOrder]
+    );
+  }
+  // Drop slots that no longer exist in code, but only if staff never set one.
+  const keys = SITE_IMAGE_SLOTS.map(s => s.key);
+  await client.query(
+    `DELETE FROM site_images WHERE url IS NULL AND NOT (key = ANY($1::text[]))`,
+    [keys]
+  );
 }
 
 /**
@@ -278,6 +323,8 @@ async function applySchemaAndSeed(client) {
         console.log(`[Startup] Seeded administrator ${seedEmail} from SEED_ADMIN_PASSWORD.`);
       }
     }
+    await syncSiteImageSlots(client);
+    console.log(`[Startup] Site image registry synced (${SITE_IMAGE_SLOTS.length} slots).`);
     console.log('[Startup] Database tables verified/created.');
 }
 

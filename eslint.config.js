@@ -28,6 +28,10 @@ export default defineConfig([
     },
   },
 
+  // NOTE: portal/ carries its own eslint.config.js and ESLint resolves the
+  // nearest config per file, so the deployed portal tree is governed there —
+  // not by any block in this file.
+
   // ── CMS admin UI (classic browser script, no bundler) ──────────────────────
   {
     files: ['app.js'],

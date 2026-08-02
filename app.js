@@ -36,6 +36,7 @@ const NAV = [
   { id:'innovation', label:'Innovation', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>' },
   { id:'bursary', label:'Bursary Recipients', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>' },
   { id:'leadership', label:'Leadership Team', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>' },
+  { id:'site-images', label:'Site Images', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' },
   { section:'ADMIN' },
   { id:'users', label:'Staff Accounts', adminOnly:true, icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>' },
   { id:'media', label:'Media Library', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' },
@@ -335,6 +336,7 @@ async function renderView(viewId) {
       case 'innovation':     await renderInnovation(); break
       case 'bursary':        await renderBursary(); break
       case 'leadership':     await renderLeadership(); break
+      case 'site-images':    await renderSiteImages(); break
       case 'users':          await renderUsers(); break
       case 'media':          await renderMedia(); break
       case 'logs':           await renderLogs(); break
@@ -2000,6 +2002,123 @@ async function saveLeadership(id) {
 
 async function deleteLeadership(id) {
   confirmDelete('Remove this team member?', async()=>{ await api('DELETE',`/api/leadership/${id}`); toast('Member removed'); await renderLeadership() })
+}
+
+// ─── SITE IMAGES ──────────────────────────────
+// Every image slot on the public website, grouped by the screen it appears on.
+// Uploading here replaces the image site-wide without a redeploy.
+async function renderSiteImages() {
+  const vc = document.getElementById('view-container')
+  const slots = await api('GET', '/api/site-images/manage')
+  STATE.db.siteImages = slots
+
+  const groups = {}
+  slots.forEach(s => { (groups[s.groupName] = groups[s.groupName] || []).push(s) })
+  const customised = slots.filter(s => s.url).length
+
+  vc.innerHTML = `
+    <div class="view-header">
+      <div>
+        <h2 class="view-title">Site Images</h2>
+        <p class="view-sub">${slots.length} image slots across the website — ${customised} customised, ${slots.length - customised} using the built-in default</p>
+      </div>
+      <div class="view-actions">
+        <div class="filter-search" style="width:260px">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" placeholder="Search image slots…" oninput="filterSiteImages(this.value)">
+        </div>
+      </div>
+    </div>
+
+    <div class="alert alert-info" style="margin-bottom:1rem">
+      Upload a replacement for any slot below and it appears on the public site within a minute.
+      Use <strong>Reset</strong> to go back to the built-in image. Accepted: JPG, PNG, WebP, SVG.
+    </div>
+
+    ${Object.entries(groups).map(([group, items]) => `
+      <div class="si-group" data-group="${esc(group)}" style="margin-bottom:2rem">
+        <div class="settings-section-title">${esc(group)} <span class="td-muted" style="font-weight:400">(${items.length})</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin-top:.75rem">
+          ${items.map(s => siteImageCard(s)).join('')}
+        </div>
+      </div>`).join('')}
+  `
+  applyRbac(STATE.role)
+}
+
+function siteImageCard(s) {
+  const current = s.url || s.defaultUrl
+  const isCustom = Boolean(s.url)
+  return `
+    <div class="si-card" data-search="${esc((s.label + ' ' + s.key + ' ' + (s.description||'')).toLowerCase())}"
+         style="border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;background:#fff">
+      <div style="position:relative;height:150px;background:#f1f5f9;display:flex;align-items:center;justify-content:center">
+        <img src="${esc(current)}" alt="${esc(s.label)}" loading="lazy"
+             style="max-height:100%;max-width:100%;object-fit:contain"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div style="display:none;align-items:center;justify-content:center;height:100%;width:100%;color:#94a3b8;font-size:12px">
+          Image not found
+        </div>
+        <span style="position:absolute;top:8px;right:8px;font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;
+                     background:${isCustom ? '#dcfce7' : '#e2e8f0'};color:${isCustom ? '#166534' : '#475569'}">
+          ${isCustom ? 'CUSTOM' : 'DEFAULT'}
+        </span>
+      </div>
+      <div style="padding:12px 14px">
+        <p style="margin:0 0 2px;font-weight:600;font-size:14px;color:#0f172a">${esc(s.label)}</p>
+        <p style="margin:0 0 6px;font-size:12px;color:#64748b;line-height:1.4">${esc(s.description || '')}</p>
+        <p style="margin:0 0 10px;font-size:11px;color:#94a3b8">
+          <code style="font-size:10px">${esc(s.key)}</code> · ${esc(s.recommended || '')}
+          ${s.updatedBy ? ` · updated by ${esc(s.updatedBy)}` : ''}
+        </p>
+        <div class="write-only" style="display:flex;gap:8px;align-items:center">
+          <label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0">
+            ${isCustom ? 'Replace' : 'Upload'}
+            <input type="file" accept="image/*" style="display:none"
+                   onchange="uploadSiteImage('${esc(s.key)}', this)">
+          </label>
+          ${isCustom ? `<button class="btn btn-sm" onclick="resetSiteImage('${esc(s.key)}')">Reset</button>` : ''}
+          <span class="si-status" id="si-status-${esc(s.key)}" style="font-size:11px;color:#64748b"></span>
+        </div>
+      </div>
+    </div>`
+}
+
+function filterSiteImages(q) {
+  const term = (q || '').trim().toLowerCase()
+  document.querySelectorAll('.si-card').forEach(el => {
+    el.style.display = !term || el.dataset.search.includes(term) ? '' : 'none'
+  })
+  // Hide a group heading entirely when nothing inside it matches.
+  document.querySelectorAll('.si-group').forEach(g => {
+    const anyVisible = [...g.querySelectorAll('.si-card')].some(c => c.style.display !== 'none')
+    g.style.display = anyVisible ? '' : 'none'
+  })
+}
+
+async function uploadSiteImage(key, input) {
+  const file = input.files[0]
+  if (!file) return
+  const status = document.getElementById(`si-status-${key}`)
+  if (status) { status.textContent = 'Uploading…'; status.style.color = '#64748b' }
+  try {
+    const up = await uploadFile(file)
+    await api('PUT', `/api/site-images/${encodeURIComponent(key)}`, { url: up.url })
+    toast('Image updated — live on the site shortly')
+    await renderSiteImages()
+  } catch (err) {
+    if (status) { status.textContent = err.message; status.style.color = '#dc2626' }
+    toast('Upload failed: ' + err.message, 'error')
+  }
+  input.value = ''
+}
+
+async function resetSiteImage(key) {
+  confirmDelete('Reset this image back to the built-in default?', async () => {
+    await api('DELETE', `/api/site-images/${encodeURIComponent(key)}`)
+    toast('Reset to default')
+    await renderSiteImages()
+  })
 }
 
 // ─── STAFF ACCOUNTS (Administrator only) ──────
