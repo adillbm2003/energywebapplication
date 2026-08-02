@@ -25,12 +25,18 @@ const MAP_STYLES = {
   },
 }
 
+// Utility scale starts at 500 kW. The legend previously drew the top band at
+// 100 kW while getEffectiveType() classified Utility above 500, so a 200 kW
+// commercial rooftop was shown in the Utility colour but labelled Commercial.
+// One threshold now drives the type, the colour and the key.
+const UTILITY_MIN_KW = 500
+
 function getEffectiveType(item) {
-  return item.capacity > 500 ? 'Utility' : item.type
+  return item.capacity >= UTILITY_MIN_KW ? 'Utility' : item.type
 }
 
 function getMarkerColor(capacity) {
-  if (capacity >= 100) return '#0B1F3A'
+  if (capacity >= UTILITY_MIN_KW) return '#0B1F3A'
   if (capacity >= 20) return '#0077B6'
   if (capacity >= 5) return '#33B0E0'
   return '#C9A227'
@@ -38,14 +44,14 @@ function getMarkerColor(capacity) {
 
 function getHeatRadiusMeters(capacity) {
   if (capacity >= 1000) return 900
-  if (capacity >= 100) return 450
+  if (capacity >= UTILITY_MIN_KW) return 450
   if (capacity >= 20) return 220
   if (capacity >= 5) return 120
   return 70
 }
 
 function getMarkerRadius(capacity) {
-  if (capacity >= 100) return 11
+  if (capacity >= UTILITY_MIN_KW) return 11
   if (capacity >= 20) return 9
   if (capacity >= 5) return 7
   return 6

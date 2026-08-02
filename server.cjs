@@ -1113,20 +1113,34 @@ app.get('/api/vehicles/fleet', async (req, res) => {
 });
 
 // ── SOLAR PANEL APPLICATIONS — served from PostgreSQL ────────────────────────
+//
+// A permit counts toward Bermuda's installed capacity only while it is live:
+// its status is Complete / Issued / Under Construction AND its expiry date has
+// not passed. Lapsed permits were previously included, which published a total
+// roughly 1.3 MW above the Department's own figure. `LIVE_PERMIT` is the single
+// definition used by every solar endpoint so the map, the registry and the
+// headline statistics can never disagree.
+const LIVE_PERMIT = `
+  status IN ('Complete','Issued','Under Construction')
+  AND (expiry_date IS NULL OR expiry_date >= CURRENT_DATE)
+`;
+
 app.get('/api/solar/stats', async (req, res) => {
   try {
-    const countRes = await db.query('SELECT COUNT(*) FROM solar_installations');
+    const countRes = await db.query(`SELECT COUNT(*) FROM solar_installations WHERE ${LIVE_PERMIT}`);
     const total = parseInt(countRes.rows[0].count, 10);
     if (total === 0) return res.json({ total: 0, activeInstalls: 0, totalKWExtracted: 0, byYear: [], byDistrict: [], byStatus: [], byWorkClass: [], fileLastModified: null });
 
-    const [yearRes, parishRes, statusRes, typeRes, capRes, activeRes, modRes] = await Promise.all([
-      db.query("SELECT EXTRACT(YEAR FROM install_date)::TEXT AS year, COUNT(*)::INT FROM solar_installations WHERE install_date IS NOT NULL GROUP BY year ORDER BY year"),
-      db.query("SELECT parish, COUNT(*)::INT FROM solar_installations GROUP BY parish ORDER BY count DESC"),
-      db.query("SELECT status, COUNT(*)::INT FROM solar_installations GROUP BY status ORDER BY count DESC"),
-      db.query("SELECT type, COUNT(*)::INT FROM solar_installations GROUP BY type ORDER BY count DESC"),
-      db.query("SELECT COALESCE(SUM(capacity),0) AS total_kw, COUNT(*) FILTER (WHERE capacity > 0) AS cap_count FROM solar_installations"),
-      db.query("SELECT COUNT(*)::INT FROM solar_installations WHERE status IN ('Complete','Issued','Under Construction')"),
+    const [yearRes, parishRes, statusRes, typeRes, capRes, activeRes, modRes, expiredRes] = await Promise.all([
+      db.query(`SELECT EXTRACT(YEAR FROM install_date)::TEXT AS year, COUNT(*)::INT FROM solar_installations WHERE install_date IS NOT NULL AND ${LIVE_PERMIT} GROUP BY year ORDER BY year`),
+      db.query(`SELECT parish, COUNT(*)::INT FROM solar_installations WHERE ${LIVE_PERMIT} GROUP BY parish ORDER BY count DESC`),
+      db.query(`SELECT status, COUNT(*)::INT FROM solar_installations WHERE ${LIVE_PERMIT} GROUP BY status ORDER BY count DESC`),
+      db.query(`SELECT type, COUNT(*)::INT FROM solar_installations WHERE ${LIVE_PERMIT} GROUP BY type ORDER BY count DESC`),
+      db.query(`SELECT COALESCE(SUM(capacity),0) AS total_kw, COUNT(*) FILTER (WHERE capacity > 0) AS cap_count FROM solar_installations WHERE ${LIVE_PERMIT}`),
+      db.query(`SELECT COUNT(*)::INT FROM solar_installations WHERE ${LIVE_PERMIT}`),
       db.query("SELECT MAX(updated_at) AS last_modified FROM solar_installations"),
+      // Reported so the difference from the raw permit file is explainable.
+      db.query(`SELECT COUNT(*)::INT AS n, COALESCE(SUM(capacity),0) AS kw FROM solar_installations WHERE NOT (${LIVE_PERMIT})`),
     ]);
 
     res.json({
@@ -1139,6 +1153,11 @@ app.get('/api/solar/stats', async (req, res) => {
       byStatus: statusRes.rows.map(r => ({ status: r.status || 'Unknown', count: r.count })),
       byWorkClass: typeRes.rows.map(r => ({ type: r.type || 'Unknown', count: r.count })),
       fileLastModified: modRes.rows[0]?.last_modified || null,
+      excluded: {
+        count: expiredRes.rows[0].n,
+        totalKW: Math.round(parseFloat(expiredRes.rows[0].kw) || 0),
+        reason: 'permit expired or not in an active status',
+      },
     });
   } catch (err) {
     console.error('Solar stats error:', err.message);
@@ -1150,11 +1169,13 @@ app.get('/api/solar/stats', async (req, res) => {
 app.get('/api/solar/installations', async (req, res) => {
   try {
     const result = await db.query(
-      `SELECT id, name, parish, type, capacity, status, install_date,
+      `SELECT id, name, parish, type, capacity, status, install_date, expiry_date,
               lat, lng, notes AS description,
               COALESCE(address, name, '') AS address,
               COALESCE(annual_output, 0) AS annual_output
-       FROM solar_installations ORDER BY id LIMIT 5000`
+       FROM solar_installations
+       WHERE ${LIVE_PERMIT}
+       ORDER BY id LIMIT 5000`
     );
     const installations = result.rows.map(row => ({
       id: row.id,
@@ -1337,6 +1358,7 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       // Ensure extra columns exist (DDL, idempotent, outside the data transaction)
       await db.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS annual_output NUMERIC DEFAULT 0`);
       await db.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS address TEXT`);
+      await db.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS expiry_date DATE`);
 
       // TRUNCATE + reload runs as one transaction. Previously the truncate was
       // committed immediately and rows were inserted one-by-one with per-row
@@ -1449,15 +1471,28 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         const permitNo = getCol(row,'Permit Number','Permit No','PermitNumber') || '';
         const id = permitNo ? String(permitNo) : `solar-${i}`;
 
-        // Parse install date
-        const dateVal = getCol(row,'Permit Issue Date','Permit Application Date','Issue Date','Date') || '';
-        let installDate = null;
-        if (typeof dateVal === 'number') {
-          const d = XLSX.SSF.parse_date_code(dateVal);
-          if (d && d.y) installDate = `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`;
-        } else if (typeof dateVal === 'string' && dateVal) {
-          const p = new Date(dateVal); if (!isNaN(p)) installDate = p.toISOString().split('T')[0];
-        }
+        // Excel dates arrive either as a serial number or as text.
+        const parseSheetDate = (value) => {
+          if (typeof value === 'number') {
+            const d = XLSX.SSF.parse_date_code(value);
+            return d && d.y ? `${d.y}-${String(d.m).padStart(2, '0')}-${String(d.d).padStart(2, '0')}` : null;
+          }
+          if (typeof value === 'string' && value.trim()) {
+            const p = new Date(value);
+            return isNaN(p) ? null : p.toISOString().split('T')[0];
+          }
+          return null;
+        };
+
+        const installDate = parseSheetDate(
+          getCol(row, 'Permit Issue Date', 'Permit Application Date', 'Issue Date', 'Date') || ''
+        );
+        // A permit whose expiry has passed is no longer a live installation and
+        // must not count toward installed capacity. This column was previously
+        // ignored, which is why the published total ran ~1.3 MW high.
+        const expiryDate = parseSheetDate(
+          getCol(row, 'Permit Expiration Date', 'Permit Expiry Date', 'Expiration Date', 'Expiry Date') || ''
+        );
 
         // A malformed row must not abort the whole import, but it is recorded and
         // reported rather than silently dropped. Each row runs in a SAVEPOINT so a
@@ -1465,14 +1500,15 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         await client.query('SAVEPOINT solar_row');
         try {
           await client.query(
-            `INSERT INTO solar_installations (id,name,parish,type,capacity,status,install_date,lat,lng,notes,address,annual_output)
-             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+            `INSERT INTO solar_installations (id,name,parish,type,capacity,status,install_date,expiry_date,lat,lng,notes,address,annual_output)
+             VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
              ON CONFLICT (id) DO UPDATE SET
                name=EXCLUDED.name,parish=EXCLUDED.parish,type=EXCLUDED.type,capacity=EXCLUDED.capacity,
-               status=EXCLUDED.status,install_date=EXCLUDED.install_date,lat=EXCLUDED.lat,lng=EXCLUDED.lng,
+               status=EXCLUDED.status,install_date=EXCLUDED.install_date,expiry_date=EXCLUDED.expiry_date,
+               lat=EXCLUDED.lat,lng=EXCLUDED.lng,
                notes=EXCLUDED.notes,address=EXCLUDED.address,annual_output=EXCLUDED.annual_output,
                updated_at=CURRENT_TIMESTAMP`,
-            [id, firstLine||`Permit ${i+1}`, parish, type, capacity||0, status||'Unknown', installDate, lat, lng, desc, address.slice(0,200), annualOutput]
+            [id, firstLine||`Permit ${i+1}`, parish, type, capacity||0, status||'Unknown', installDate, expiryDate, lat, lng, desc, address.slice(0,200), annualOutput]
           );
           await client.query('RELEASE SAVEPOINT solar_row');
           count++;

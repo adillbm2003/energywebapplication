@@ -1,6 +1,9 @@
-﻿const LEGEND_ITEMS = [
-  { label: 'Utility (100+ kW)', color: '#0B1F3A', size: 'lg' },
-  { label: 'Commercial (20–99 kW)', color: '#0077B6', size: 'md' },
+﻿// Bands must match getMarkerColor() in components/gis/HeatMap. Utility scale
+// starts at 500 kW, which is also the threshold the importer uses to classify a
+// permit as Utility — the key previously said 100 kW and disagreed with both.
+const LEGEND_ITEMS = [
+  { label: 'Utility (500+ kW)', color: '#0B1F3A', size: 'lg' },
+  { label: 'Commercial (20–499 kW)', color: '#0077B6', size: 'md' },
   { label: 'Small Commercial (5–19 kW)', color: '#33B0E0', size: 'sm' },
   { label: 'Residential (<5 kW)', color: '#C9A227', size: 'xs' },
 ]
