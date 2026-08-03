@@ -1,0 +1,4 @@
+# Pre-launch: energy.bm is not publicly available yet.
+# Replace with the production robots.txt when the site goes live.
+User-agent: *
+Disallow: /

@@ -53,3 +53,6 @@ Thumbs.db
 
 # Local verification screenshots
 screenshots/
+
+# Snapshot of the live index.html taken when the site is put behind the holding page
+portal/index.live-backup.html
