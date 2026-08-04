@@ -44,9 +44,17 @@ signature — services that cannot write fail to start, and command execution
 hangs rather than erroring. Unconfirmed, because the agent is the very thing
 that would report disk usage.
 
-Contributing factor worth checking: six application versions were deployed to
-this environment on 2 Aug. Each leaves a bundle plus `npm install` artifacts on
-the root volume, and old application versions are not pruned automatically.
+**This environment has failed this way before.** On 7 July 2026 a 65 MB source
+bundle (built with `git archive`, which ignores `.ebignore`) filled the
+`t3.small` root volume, wedged the instance and took production down — the same
+symptoms seen here. So disk exhaustion on this instance size is a known,
+recurring failure mode for this environment, not a novel theory.
+
+Bundle size is **not** the trigger this time: every bundle deployed on 2–3 Aug
+was ~0.6 MB and respected `.ebignore`. The plausible contributor is accumulation
+instead — six application versions were deployed on 2 Aug, each leaving a bundle
+plus `npm install` artifacts, and old application versions are never pruned
+automatically.
 
 ## Recovery — run one of these
 
@@ -54,7 +62,7 @@ The instance holds **no application state**. Content is in RDS, uploads are in
 S3. Replacing it loses nothing. Verified via `describe-environment-resources`:
 the database is **not** an EB-managed resource, so neither option touches it.
 
-### Option A — replace the instance (recommended, ~5 min)
+### Option A — replace the instance (~5 min) — USE THIS
 
 ```bash
 aws ec2 terminate-instances --instance-ids i-01feab20f1dd94d62 --region us-east-2
@@ -63,11 +71,18 @@ aws ec2 terminate-instances --instance-ids i-01feab20f1dd94d62 --region us-east-
 The Auto Scaling Group (`awseb-e-mn9dbnrwrv-stack-AWSEBAutoScalingGroup-jKuQA7Tu4A6h`)
 launches a clean replacement running the current application version.
 
-### Option B — rebuild the environment (~10–15 min)
+### ⛔ Do NOT run `rebuild-environment` on this AWS account
 
-```bash
-aws elasticbeanstalk rebuild-environment --environment-name energybm-prod --region us-east-2
-```
+It was tried during the 7 July 2026 incident and made things considerably worse:
+EB attempts to create an EC2 **Launch Configuration**, which this account can no
+longer create ("Launch Configuration creation operation is not available"). The
+rebuild **deletes the Elastic IP** and leaves the CloudFormation stack in
+`CREATE_FAILED`, which then rejects every subsequent `update-environment` call.
+Recovery required terminating and recreating the whole environment.
+
+The environment has since been moved to a **Launch Template**, but this has not
+been re-tested. Terminate the instance instead — the ASG replacement path is
+known-good.
 
 ### Verify recovery
 
