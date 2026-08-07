@@ -1,121 +1,101 @@
-# Incident — Elastic Beanstalk backend unresponsive (3 Aug 2026)
+# Incident — Elastic Beanstalk backend unresponsive (3–7 Aug 2026)
 
-**Status: OPEN.** Deferred overnight by decision. The public site is unaffected.
+**Root cause: the instance security group had every inbound and outbound rule
+removed via the AWS Console as root.** Not a disk failure — see the correction
+below.
 
 ## Impact
 
-| Service | State |
-|---|---|
-| Public site (`energy.bm`) | **Working** — serving the pre-launch holding page as intended, from S3/CloudFront |
-| CMS (`/cms-admin.html`, `/app.js`) | **DOWN** — HTTP 504 |
-| API (`/api/*`) | **DOWN** — HTTP 504 |
-| Uploads (`/uploads/*`) | **DOWN** — proxied via the backend |
-| Database (`energybm-db`) | Healthy, untouched, `available` |
+Public site unaffected throughout (it is served from S3/CloudFront and was
+showing the pre-launch holding page by design). The CMS, the API and
+`/uploads/*` were down for roughly four days.
 
-Staff cannot log into the CMS or edit content until this is resolved. Nothing
-is lost — no data was on the instance.
+## Root cause
 
-## Timeline (UTC)
+CloudTrail, security group `sg-0a054e1e18acfa9ed`
+(`awseb-e-mn9dbnrwrv-stack-AWSEBSecurityGroup-E4tkJtlY4oQq`):
 
-- **2 Aug 20:31** — last successful deploy (`cms-gis-rename-20260803`); environment
-  healthy for the following ~24 hours.
-- **3 Aug 20:26** — environment health goes to `No Data`; all instances stop
-  reporting. Start of the outage.
-- 3 Aug 20:44 — `restartAppServer` issued; **timed out after 14 minutes**,
-  "instance has not responded in the allowed command timeout time".
-- 3 Aug 21:50 — EC2 reboot issued and completed. Instance returned to `running`,
-  status checks passing — **but still would not execute commands**.
-- 3 Aug 21:53 — full redeploy issued; **aborted**, "Successful: 0, TimedOut: 1".
-- 3 Aug 22:0x — SSM checked as a way in: instance is **not SSM-registered**, so
-  there is no remote shell.
+| Time (UTC) | Event | Identity | Source |
+|---|---|---|---|
+| 3 Aug 20:04 | `RevokeSecurityGroupIngress` | **root** | `217.165.150.11`, AWS Console (Edge/Windows) |
+| 3 Aug 20:17 | `RevokeSecurityGroupEgress` | **root** | same |
+| 3 Aug 20:26 | Environment health → `No Data` | — | — |
 
-## Diagnosis
+Both rule sets were emptied, leaving `Ingress: []` and `Egress: []`.
 
-The instance (`i-01feab20f1dd94d62`, `t3.small`, launched 7 Jul) is alive at the
-hypervisor level — EC2 status checks pass and CloudWatch receives CPU metrics
-(idle, ~0.3%) — but nothing inside it responds. The EB health agent, the
-application and the command channel are all silent.
+An EC2 instance with no egress cannot reach anything outbound. For an Elastic
+Beanstalk instance that means it cannot:
 
-CPU being idle rather than pegged means the Node process is dead, not thrashing.
-A reboot failing to restore command execution rules out a transient hang.
+- download the platform bootstrap script from
+  `elasticbeanstalk-platform-assets-us-east-2.s3.amazonaws.com` (so a fresh
+  instance never installs or starts the application),
+- connect to RDS,
+- report health to the EB service, or
+- receive commands — the agent polls **outbound**, which is why
+  `restartAppServer` and deployments timed out rather than failing fast.
 
-**Most likely cause: the root volume is full.** That produces exactly this
-signature — services that cannot write fail to start, and command execution
-hangs rather than erroring. Unconfirmed, because the agent is the very thing
-that would report disk usage.
+Console output from the replacement instance shows it plainly:
 
-**This environment has failed this way before.** On 7 July 2026 a 65 MB source
-bundle (built with `git archive`, which ignores `.ebignore`) filled the
-`t3.small` root volume, wedged the instance and took production down — the same
-symptoms seen here. So disk exhaustion on this instance size is a known,
-recurring failure mode for this environment, not a novel theory.
-
-Bundle size is **not** the trigger this time: every bundle deployed on 2–3 Aug
-was ~0.6 MB and respected `.ebignore`. The plausible contributor is accumulation
-instead — six application versions were deployed on 2 Aug, each leaving a bundle
-plus `npm install` artifacts, and old application versions are never pruned
-automatically.
-
-## Recovery — run one of these
-
-The instance holds **no application state**. Content is in RDS, uploads are in
-S3. Replacing it loses nothing. Verified via `describe-environment-resources`:
-the database is **not** an EB-managed resource, so neither option touches it.
-
-### Option A — replace the instance (~5 min) — USE THIS
-
-```bash
-aws ec2 terminate-instances --instance-ids i-01feab20f1dd94d62 --region us-east-2
+```
+curl: (28) Failed to connect to elasticbeanstalk-platform-assets-us-east-2...
+       port 443 after 133144 ms: Could not connect to server
+SSM Agent unable to acquire credentials: dial tcp 3.146.12.87:443: i/o timeout
 ```
 
-The Auto Scaling Group (`awseb-e-mn9dbnrwrv-stack-AWSEBAutoScalingGroup-jKuQA7Tu4A6h`)
-launches a clean replacement running the current application version.
+The timing coincides with work to take the public site offline ahead of launch.
+The most likely explanation is that someone took the application down by hand at
+the security-group level while the holding page was being deployed.
 
-### ⛔ Do NOT run `rebuild-environment` on this AWS account
+## Correction to the original diagnosis
 
-It was tried during the 7 July 2026 incident and made things considerably worse:
-EB attempts to create an EC2 **Launch Configuration**, which this account can no
-longer create ("Launch Configuration creation operation is not available"). The
-rebuild **deletes the Elastic IP** and leaves the CloudFormation stack in
-`CREATE_FAILED`, which then rejects every subsequent `update-environment` call.
-Recovery required terminating and recreating the whole environment.
+The first version of this document concluded the root volume had filled up,
+citing the 7 July incident as precedent. **That was wrong**, and it was stated
+with more confidence than the evidence supported.
 
-The environment has since been moved to a **Launch Template**, but this has not
-been re-tested. Terminate the instance instead — the ASG replacement path is
-known-good.
+What was actually observed — instance `running`, EC2 status checks passing, CPU
+idle, agent silent, commands timing out — is equally consistent with a disk
+problem and with a network problem, and networking was never checked. The disk
+theory also failed to explain why a **brand-new** instance behaved identically;
+that should have prompted a rethink much sooner.
 
-### Verify recovery
+Consequence: instance `i-01feab20f1dd94d62` was terminated on 7 Aug on the
+assumption it was corrupt. It was healthy. The termination was harmless — no
+state lives on these instances — but it was unnecessary, and the outage would
+have been resolved on 3 Aug by inspecting the security group.
+
+**Lesson: when an instance is up but unreachable *and* cannot reach out,
+check security groups, routes and NACLs before concluding the host is broken.**
+
+## Resolution
+
+Restored on 7 Aug with tighter ingress than the original:
 
 ```bash
-aws elasticbeanstalk describe-environments --environment-names energybm-prod \
-  --region us-east-2 --query "Environments[0].{Health:Health,Status:Status}"
+# egress — AWS default, required for bootstrap, RDS, CloudWatch
+aws ec2 authorize-security-group-egress --group-id sg-0a054e1e18acfa9ed \
+  --region us-east-2 \
+  --ip-permissions 'IpProtocol=-1,IpRanges=[{CidrIp=0.0.0.0/0}]'
 
-curl -s https://energy.bm/api/settings -o /dev/null -w "api  %{http_code}\n"
-curl -s https://energy.bm/cms-admin.html -o /dev/null -w "cms  %{http_code}\n"
-curl -s http://energybm-prod.us-east-2.elasticbeanstalk.com/health
+# ingress — port 80 from CloudFront edge locations only, not 0.0.0.0/0
+aws ec2 authorize-security-group-ingress --group-id sg-0a054e1e18acfa9ed \
+  --region us-east-2 \
+  --ip-permissions 'IpProtocol=tcp,FromPort=80,ToPort=80,PrefixListIds=[{PrefixListId=pl-b6a144df}]'
 ```
 
-`/health` should report `{"status":"OK","checks":{"database":"OK","storage":"S3"}}`.
+`pl-b6a144df` is the AWS-managed `com.amazonaws.global.cloudfront.origin-facing`
+prefix list. The instance is no longer reachable directly on
+`3.147.198.231` — traffic must arrive through CloudFront, so the holding page
+cannot be bypassed by hitting the origin IP.
 
-## Follow-up once service is restored
+## Follow-up
 
-1. **Confirm the cause** — `df -h` on the new instance, and check how much the
-   old application versions occupy.
-2. **Prune old application versions.** There are now many; EB keeps their
-   bundles. Set a lifecycle policy:
-   ```bash
-   aws elasticbeanstalk update-application-resource-lifecycle \
-     --application-name energybm --region us-east-2 \
-     --resource-lifecycle-config 'ServiceRole=<eb-service-role-arn>,VersionLifecycleConfig={MaxCountRule={Enabled=true,MaxCount=10,DeleteSourceFromS3=true}}'
-   ```
-3. **Add disk alarming.** Enhanced health reports `RootFilesystemUtil`; alarm at
-   85% so this is caught before it takes the service down.
-4. **Consider a larger root volume** if 8 GB is the current size — it is tight
-   for a Node app with frequent deploys.
-
-## Note on the holding page
-
-Taking the public site offline (S3 + CloudFront only) is **unrelated** to this
-outage and did not cause it — the timeline shows the environment already in
-`No Data` beforehand, and neither S3 nor CloudFront can affect an EC2 instance.
-See `docs/TAKE-SITE-OFFLINE.md` for restoring the public site at launch.
+1. **Stop using the root account for day-to-day changes.** Both revokes were
+   made as root. Root should be locked away with MFA and used only for the
+   handful of tasks that require it; routine work belongs to an IAM user.
+2. **Add a CloudWatch alarm** on `EnvironmentHealth` for the EB environment so a
+   silent environment raises an alert rather than being discovered days later.
+3. **Consider AWS Config** with a rule that flags a security group losing all
+   egress — this failure mode is otherwise invisible until something breaks.
+4. The RDS security group (`energybm-rds-sg`) still allows `0.0.0.0/0` on 5432.
+   That is a long-standing issue, unrelated to this incident, and worth closing:
+   restrict it to the EB instance security group.
