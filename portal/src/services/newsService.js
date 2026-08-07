@@ -25,8 +25,15 @@ export const newsService = {
           : [],
       image: pickNewsImage(n),
       publishDate: n.publishDate,
+      // NOTE: the slug is derived from the title rather than read from the
+      // stored `slug` column. Most stored slugs carry a generated timestamp
+      // suffix (…-1782231456340), so honouring them would turn every existing
+      // article URL into an unreadable one. Set titles with the URL in mind.
       slug: slugify(n.title) || n.id,
       category: n.category || 'Renewable Energy',
+      // Was omitted from this projection, so the article page always rendered
+      // "by" with nothing after it even when an author was set in the CMS.
+      author: n.author || '',
       featured: n.featured !== false
     })), ['publishDate']);
   },

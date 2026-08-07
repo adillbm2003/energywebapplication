@@ -3,63 +3,79 @@ import { BRANDING } from '../../../constants/branding'
 import { ROUTES } from '../../../constants/routes'
 import { cn } from '../../../utils/cn'
 
+/**
+ * Department of Energy lockup.
+ *
+ * BRANDING.logo is the official horizontal lockup — crest plus the words
+ * "Department of Energy" in white, on a transparent background, roughly 4.2:1.
+ *
+ * It is rendered directly on the dark navy header and footer at its natural
+ * aspect ratio. Two things follow from the wordmark being part of the artwork:
+ * it must not sit on a white panel (white text on white), and the department
+ * name must not also be rendered as text beside it, or the site reads
+ * "Department of Energy Department of Energy". The previous version did both,
+ * because the asset then was a square crest with no wordmark.
+ *
+ * `compact` keeps the crest on its own for narrow, square contexts where the
+ * full lockup would be illegible.
+ */
 export default function Logo({
-  variant = 'full',
+  variant = 'header',
   className = '',
   linkTo = ROUTES.home,
-  showText = true,
+  showTagline = true,
 }) {
   const isCompact = variant === 'compact'
   const isFooter = variant === 'footer'
-  const isHeader = variant === 'header'
+
+  if (isCompact) {
+    return wrap(
+      <img
+        src={BRANDING.crest}
+        alt={BRANDING.logoAlt}
+        className={cn('h-10 w-10 shrink-0 object-contain', className)}
+        width={40}
+        height={40}
+      />,
+    )
+  }
 
   const content = (
-    <div className={cn('flex items-center gap-2 lg:gap-3', className)}>
-      <div
+    <div className={cn('flex flex-col justify-center gap-1', className)}>
+      <img
+        src={BRANDING.logo}
+        alt={BRANDING.logoAlt}
         className={cn(
-          'flex shrink-0 items-center justify-center overflow-hidden bg-white',
-          isCompact
-            ? 'h-10 w-10 rounded-md p-0.5'
-            : isHeader
-            ? 'h-14 w-14 rounded-lg p-0.5 lg:h-16 lg:w-16'
-            : isFooter
-              ? 'h-16 w-16 rounded-lg p-1'
-              : 'h-14 w-14 rounded-lg p-1 sm:h-16 sm:w-16',
+          'w-auto shrink-0 object-contain object-left',
+          isFooter ? 'h-12' : 'h-10 sm:h-12 lg:h-14',
         )}
-      >
-        <img
-          src={BRANDING.logo}
-          alt={BRANDING.logoAlt}
-          className="h-full w-full object-contain"
-          width={isCompact ? 40 : 56}
-          height={isCompact ? 40 : 56}
-        />
-      </div>
-      {showText && !isCompact && (
-        <div className={cn(isFooter ? 'text-left' : isHeader ? 'hidden min-w-0 sm:block' : 'hidden min-w-0 xl:block')}>
-          <span
-            className={cn(
-              'block truncate font-bold leading-tight',
-              isFooter ? 'text-sm text-white' : 'text-sm text-white',
-            )}
-          >
-            {BRANDING.departmentName}
-          </span>
-          <span className={cn('block truncate text-xs', isFooter ? 'text-slate-400' : 'text-slate-400')}>
-            {BRANDING.governmentName} · {BRANDING.domain}
-          </span>
-        </div>
+        width={912}
+        height={216}
+      />
+      {/* Only the domain. The lockup artwork already reads "GOVERNMENT OF
+          BERMUDA / Department of Energy", so repeating the government name here
+          printed it twice in the same block (three times in the header, which
+          also carries it in the utility bar above). */}
+      {showTagline && (
+        <span className="hidden truncate text-xs text-slate-400 sm:block">
+          {BRANDING.domain}
+        </span>
       )}
     </div>
   )
 
-  if (linkTo) {
+  return wrap(content)
+
+  function wrap(node) {
+    if (!linkTo) return node
     return (
-      <Link to={linkTo} className="transition-opacity hover:opacity-90" aria-label={`${BRANDING.departmentName} home`}>
-        {content}
+      <Link
+        to={linkTo}
+        className="transition-opacity hover:opacity-90"
+        aria-label={`${BRANDING.departmentName} home`}
+      >
+        {node}
       </Link>
     )
   }
-
-  return content
 }

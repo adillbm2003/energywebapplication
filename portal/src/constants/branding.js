@@ -3,8 +3,14 @@ import govLogo from '../assets/images/brand/bermuda-crest-colour.png'
 const base = import.meta.env.BASE_URL || '/';
 
 export const BRANDING = {
-  logo: govLogo,
-  logoPublic: base + 'bermuda-crest-colour.png',
+  // The official Department of Energy lockup: crest plus wordmark, white text on
+  // a transparent background (912x216, ~4.2:1). Used in the header and footer,
+  // which are both dark navy. Because the wordmark is part of the image, the
+  // Logo component must not render the department name again alongside it.
+  logo: base + 'dept-of-energy-white.png',
+  logoPublic: base + 'dept-of-energy-white.png',
+  // Crest on its own, for square contexts where the wide lockup will not fit.
+  crest: govLogo,
   logoAlt: 'Government of Bermuda — Department of Energy',
   departmentName: 'Department of Energy',
   governmentName: 'Government of Bermuda',

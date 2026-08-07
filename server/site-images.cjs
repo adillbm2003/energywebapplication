@@ -19,7 +19,7 @@ const B = '/images/';
 // Shorthand: [key, label, description, defaultFile, recommended]
 const GROUPS = {
   'Global / Branding': [
-    ['logoPublic', 'Government crest', 'Header and footer crest across every page', 'bermuda-crest-colour.png', '200×200 PNG, transparent'],
+    ['logoPublic', 'Department of Energy lockup', 'The logo in the header and footer of every page', 'dept-of-energy-white.png', 'Wide lockup ~912×216, transparent PNG, white text (sits on a dark background)'],
     ['portrait', 'Generic portrait placeholder', 'Not currently displayed — spare headshot placeholder', 'portrait.jpg', '400×400 square'],
   ],
 

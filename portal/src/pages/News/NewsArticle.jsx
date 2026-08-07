@@ -38,7 +38,11 @@ export default function NewsArticle() {
             <time className="text-sm text-slate-500" dateTime={article.publishDate}>
               {formatDate(article.publishDate)}
             </time>
-            <span className="text-sm text-slate-500">by {article.author}</span>
+            {/* Older articles carry no author; without this guard the byline
+                rendered as a bare "by" with nothing after it. */}
+            {article.author && (
+              <span className="text-sm text-slate-500">by {article.author}</span>
+            )}
           </div>
 
           <div className="mb-8 flex justify-center rounded-xl overflow-hidden bg-slate-50">
