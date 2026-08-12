@@ -4,6 +4,14 @@ import { ROUTES } from '../../../constants/routes'
 import { cn } from '../../../utils/cn'
 
 /**
+ * Where the wordmark starts inside the lockup artwork, as a fraction of the
+ * image width: the crest runs to x=139 of 912, then a clear gutter, then
+ * "GOVERNMENT OF BERMUDA" from x=198. Measured off the asset — re-measure if
+ * the artwork is ever replaced.
+ */
+const WORDMARK_INSET = 198 / 912
+
+/**
  * Department of Energy lockup.
  *
  * BRANDING.logo is the official horizontal lockup — crest plus the words
@@ -40,8 +48,11 @@ export default function Logo({
     )
   }
 
+  // w-fit so the block shrink-wraps the lockup. The tagline's indent below is a
+  // percentage, which resolves against this box — without w-fit the footer would
+  // size it to the whole grid column and throw the indent far to the right.
   const content = (
-    <div className={cn('flex flex-col justify-center gap-1', className)}>
+    <div className={cn('flex w-fit flex-col justify-center gap-1', className)}>
       <img
         src={BRANDING.logo}
         alt={BRANDING.logoAlt}
@@ -52,12 +63,27 @@ export default function Logo({
         width={912}
         height={216}
       />
-      {/* Only the domain. The lockup artwork already reads "GOVERNMENT OF
+      {/* The domain, hung off the wordmark rather than the image box. The crest
+          fills the left fifth of the artwork, so the words inside the image
+          start well right of the image's own left edge; aligning this to that
+          edge parked it under the crest, out of line with the wordmark above.
+          The indent is a fraction of the image width, so it holds at every logo
+          height rather than needing a value per breakpoint.
+
+          Only the domain is printed. The artwork already reads "GOVERNMENT OF
           BERMUDA / Department of Energy", so repeating the government name here
-          printed it twice in the same block (three times in the header, which
-          also carries it in the utility bar above). */}
+          set it twice in one block (three times in the header, which also
+          carries it in the utility bar above). */}
       {showTagline && (
-        <span className="hidden truncate text-xs text-slate-400 sm:block">
+        <span
+          className="hidden truncate text-xs text-slate-400 sm:block"
+          style={
+            // Header only. In the footer the lockup heads a left-aligned column
+            // — description, phone — so indenting the domain would leave it the
+            // one item out of line with the column it belongs to.
+            isFooter ? undefined : { paddingLeft: `${(WORDMARK_INSET * 100).toFixed(2)}%` }
+          }
+        >
           {BRANDING.domain}
         </span>
       )}
