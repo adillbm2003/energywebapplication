@@ -246,13 +246,17 @@ export default function Navbar() {
       {/* Government top bar */}
       <div className="border-b border-white/8 bg-navy-950/60">
         <div className="container-page flex items-center justify-between py-1.5 text-xs text-slate-300/80">
-          <Link to="/" className="flex items-center gap-2 font-medium tracking-wide hover:text-white transition-colors">
+          {/* -my-1 py-1 on both links grows the touch target from the 16px line
+              box to 24px (WCAG 2.5.8 AA) while the negative margin cancels the
+              padding in layout, so the utility bar keeps its height. The phone
+              link especially: it is a tel: link people tap on a phone. */}
+          <Link to="/" className="-my-1 flex items-center gap-2 py-1 font-medium tracking-wide hover:text-white transition-colors">
             <span className="hidden sm:inline">{BRANDING.governmentName}</span>
             <span className="sm:hidden">Gov. of Bermuda</span>
           </Link>
           <a
             href={`tel:${phone.replace(/\s/g, '')}`}
-            className="hover:text-white transition-colors"
+            className="-my-1 py-1 hover:text-white transition-colors"
           >
             {phone}
           </a>

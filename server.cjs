@@ -1114,15 +1114,36 @@ app.get('/api/vehicles/fleet', async (req, res) => {
 
 // ── SOLAR PANEL APPLICATIONS — served from PostgreSQL ────────────────────────
 //
-// A permit counts toward Bermuda's installed capacity only while it is live:
-// its status is Complete / Issued / Under Construction AND its expiry date has
-// not passed. Lapsed permits were previously included, which published a total
-// roughly 1.3 MW above the Department's own figure. `LIVE_PERMIT` is the single
+// A permit is excluded from Bermuda's published totals only when the permit
+// itself did not survive: the plan approval expired, or the application was
+// rejected/withdrawn. Everything else counts. `LIVE_PERMIT` is the single
 // definition used by every solar endpoint so the map, the registry and the
 // headline statistics can never disagree.
+//
+// The status list is a denylist rather than an allowlist so that a new status
+// appearing in a Planning export is counted by default and shows up in the
+// figures, instead of silently vanishing from the published total.
+//
+// NOTE — this previously also dropped permits whose expiry_date had passed,
+// which the Department has since confirmed is wrong: a completed installation
+// keeps generating after its construction permit lapses, so date-expiring it
+// erased 121 real installations from the map. Removing that clause is what
+// takes the site count from 658 to the Department's figure of 782. It also
+// raises published capacity from 15,400 kW to 16,805 kW, because those 121
+// installations bring their capacity back with them.
+const EXCLUDED_PERMIT_STATUSES = [
+  'Plan Approval Expired',
+  'Rejected',
+  'Withdrawn',
+  'Cancelled',
+  'Denied',
+];
+
+// Null-safe: a row with no status at all is counted, not silently dropped.
+// (`status NOT IN (...)` alone evaluates to NULL — and so filters out — when
+// status is NULL.)
 const LIVE_PERMIT = `
-  status IN ('Complete','Issued','Under Construction')
-  AND (expiry_date IS NULL OR expiry_date >= CURRENT_DATE)
+  (status IS NULL OR status NOT IN (${EXCLUDED_PERMIT_STATUSES.map((s) => `'${s}'`).join(',')}))
 `;
 
 app.get('/api/solar/stats', async (req, res) => {
