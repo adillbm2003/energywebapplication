@@ -1,4 +1,4 @@
-﻿import { Fragment, useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import { MapContainer, TileLayer, Circle, CircleMarker, Tooltip, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import { AnimatePresence, motion } from 'framer-motion'
@@ -96,46 +96,63 @@ function FitBounds({ sites }) {
   return null
 }
 
+// The halo and the dot are drawn in two separate passes, not interleaved per
+// site, because Leaflet paints paths in insertion order within one pane. Drawn
+// site-by-site, a later site's halo landed on top of every dot already drawn —
+// and a halo is sized in metres from capacity, so the 6 MW airport array covered
+// a large part of the island. Dots underneath it could not be hovered or
+// clicked, which read as "many installations have no details".
+//
+// `interactive: false` is the other half: a Leaflet path captures pointer events
+// by default, so even a correctly stacked halo would still swallow hovers meant
+// for the dot beneath it. The halo is decoration and should never be a target.
 function MapLayers({ sites, activeId, onSelect }) {
   return (
     <>
       {sites.map((site) => {
         const color = getMarkerColor(site.capacity)
         const isActive = activeId === site.id
-
         return (
-          <Fragment key={site.id}>
-            <Circle
-              center={[site.lat, site.lng]}
-              radius={getHeatRadiusMeters(site.capacity)}
-              pathOptions={{
-                color,
-                fillColor: color,
-                fillOpacity: isActive ? 0.35 : 0.18,
-                weight: isActive ? 2 : 1,
-                opacity: 0.5,
-              }}
-            />
-            <CircleMarker
-              center={[site.lat, site.lng]}
-              radius={getMarkerRadius(site.capacity)}
-              pathOptions={{
-                color: '#ffffff',
-                fillColor: color,
-                fillOpacity: 1,
-                weight: isActive ? 3 : 2,
-              }}
-              eventHandlers={{
-                click: () => onSelect(isActive ? null : site),
-              }}
-            >
-              <Tooltip direction="top" offset={[0, -4]} opacity={1}>
-                <span className="text-xs font-semibold">{site.name}</span>
-                <br />
-                <span className="text-xs text-slate-600">{formatNumber(site.capacity, { maximumFractionDigits: 1 })} kW</span>
-              </Tooltip>
-            </CircleMarker>
-          </Fragment>
+          <Circle
+            key={`halo-${site.id}`}
+            center={[site.lat, site.lng]}
+            radius={getHeatRadiusMeters(site.capacity)}
+            interactive={false}
+            pathOptions={{
+              color,
+              fillColor: color,
+              fillOpacity: isActive ? 0.35 : 0.18,
+              weight: isActive ? 2 : 1,
+              opacity: 0.5,
+            }}
+          />
+        )
+      })}
+
+      {sites.map((site) => {
+        const color = getMarkerColor(site.capacity)
+        const isActive = activeId === site.id
+        return (
+          <CircleMarker
+            key={`dot-${site.id}`}
+            center={[site.lat, site.lng]}
+            radius={getMarkerRadius(site.capacity)}
+            pathOptions={{
+              color: '#ffffff',
+              fillColor: color,
+              fillOpacity: 1,
+              weight: isActive ? 3 : 2,
+            }}
+            eventHandlers={{
+              click: () => onSelect(isActive ? null : site),
+            }}
+          >
+            <Tooltip direction="top" offset={[0, -4]} opacity={1}>
+              <span className="text-xs font-semibold">{site.name}</span>
+              <br />
+              <span className="text-xs text-slate-600">{formatNumber(site.capacity, { maximumFractionDigits: 1 })} kW</span>
+            </Tooltip>
+          </CircleMarker>
         )
       })}
     </>

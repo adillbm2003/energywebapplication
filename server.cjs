@@ -1376,6 +1376,21 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       const PARISH_MAP = { 'Town of St. George':"St. George's", 'St. George':"St. George's", 'City of Hamilton':'Hamilton', 'Smiths':"Smith's" };
       const ACTIVE = new Set(['Complete','Issued','Under Construction']);
 
+      // Every spelling of the capacity column seen in a Planning export, newest
+      // first. The Department renamed "AC Capacity" to "System Capacity" in the
+      // 14.08.2026 extract; because the name was not matched, every row fell
+      // through to scraping a kW figure out of the permit description, and the
+      // description in this export reads "System Capacity - 5.325" with no unit,
+      // so the regex matched nothing and the whole registry imported at 0 kW.
+      // The upload reported success. Keep this list append-only: a column name
+      // that disappears from one export still exists in older workbooks.
+      const CAPACITY_COLUMNS = [
+        'System Capacity', 'System Capacity (kW)',
+        'Extracted AC Capacity (kW)', 'Extracted AC Capacity',
+        'AC Capacity (kW)', 'AC Capacity',
+        'Capacity (kW)', 'Capacity', 'capacity',
+      ];
+
       // Ensure extra columns exist (DDL, idempotent, outside the data transaction)
       await db.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS annual_output NUMERIC DEFAULT 0`);
       await db.query(`ALTER TABLE solar_installations ADD COLUMN IF NOT EXISTS address TEXT`);
@@ -1432,7 +1447,7 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         const status = String(getCol(row,'Permit Status') || '').trim();
         const permitNoRaw = String(getCol(row,'Permit Number','Permit No','PermitNumber') || '').trim();
         const addressRaw = String(getCol(row,'Adresss','Address','Permit Address','address') || '').trim();
-        const capacityRaw = String(getCol(row,'Extracted AC Capacity (kW)','Extracted AC Capacity','AC Capacity (kW)','AC Capacity','Capacity (kW)','Capacity','capacity') || '').trim();
+        const capacityRaw = String(getCol(row, ...CAPACITY_COLUMNS) || '').trim();
 
         // A record with neither a location nor an active permit status cannot be
         // placed on the map and is not a live installation — skip it, but record
@@ -1463,7 +1478,7 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         else { const c = PARISH_COORDS[parish] || PARISH_COORDS['Bermuda']; lat = c[0]+Math.sin(i*7.3)*0.003; lng = c[1]+Math.cos(i*5.1)*0.003; }
         if (parish === 'Bermuda') parish = nearestParish(lat, lng);
 
-        const rawCap = getCol(row,'Extracted AC Capacity (kW)','Extracted AC Capacity','AC Capacity (kW)','AC Capacity','Capacity (kW)','Capacity','capacity');
+        const rawCap = getCol(row, ...CAPACITY_COLUMNS);
         let capacity = parseFloat(String(rawCap).trim());
         if (!Number.isFinite(capacity) || capacity <= 0) {
           const desc2 = String(getCol(row,'Permit Description') || '');

@@ -29,8 +29,6 @@ function SolarStats() {
 
   const DISTRICT_COLORS = ['#0f766e','#0891b2','#16a34a','#7c3aed','#f97316','#2563eb','#dc2626','#d97706','#6b7280','#0ea5e9','#84cc16']
   const maxDistrict = solar.byDistrict[0]?.count || 1
-  const currentYear = new Date().getFullYear()
-  const thisYear = solar.byYear.find(y => y.year === String(currentYear))
 
   return (
     <section className="section-padding bg-gradient-to-br from-amber-50 to-white border-b border-amber-100">
@@ -50,13 +48,15 @@ function SolarStats() {
           </a>
         </div>
 
-        {/* KPI row */}
-        <div className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* KPI row — "Total Permit Applications" and "Permits in <year>" were
+            removed at the Department's request: an application is not an
+            installation, and publishing both alongside the live count invited
+            the two to be read as the same thing. Two tiles, so the row is
+            two-up rather than leaving half an empty four-column grid. */}
+        <div className="mb-6 grid gap-4 sm:grid-cols-2">
           {[
-            { icon: '📋', label: 'Total Permit Applications', value: solar.total.toLocaleString(), sub: `Since ${solar.byYear[0]?.year}` },
             { icon: '✅', label: 'Active Installations', value: solar.activeInstalls.toLocaleString(), sub: 'Complete + Issued + Under Construction' },
             { icon: '⚡', label: 'Est. Total Capacity', value: `${(solar.totalKWExtracted / 1000).toFixed(1)} MW`, sub: `Extracted from ${solar.kWDataPoints} permit descriptions` },
-            { icon: '📅', label: `Permits in ${currentYear}`, value: (thisYear?.count || 0).toString(), sub: 'Year-to-date applications' },
           ].map(k => (
             <div key={k.label} className="rounded-xl border border-amber-200 bg-white p-5 card-shadow">
               <span className="text-2xl">{k.icon}</span>
@@ -67,26 +67,9 @@ function SolarStats() {
           ))}
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
-          {/* Applications by year */}
-          <div className="rounded-xl border border-slate-200 bg-white card-shadow p-5">
-            <h3 className="mb-4 text-sm font-bold text-navy-900 uppercase tracking-wide">Applications Per Year</h3>
-            <div className="space-y-2">
-              {solar.byYear.map(({ year, count }) => (
-                <div key={year}>
-                  <div className="mb-0.5 flex justify-between text-xs">
-                    <span className="font-medium text-slate-700">{year}</span>
-                    <span className="font-bold text-navy-900">{count}</span>
-                  </div>
-                  <div className="h-3 w-full overflow-hidden rounded-full bg-slate-100">
-                    <div className="h-full rounded-full bg-amber-400 transition-all duration-500"
-                      style={{ width: `${(count / Math.max(...solar.byYear.map(y=>y.count))) * 100}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
+        {/* "Applications Per Year" removed at the Department's request, with the
+            two KPI tiles above. Two cards remain, so the grid is two-up. */}
+        <div className="grid gap-6 lg:grid-cols-2">
           {/* By district */}
           <div className="rounded-xl border border-slate-200 bg-white card-shadow p-5">
             <h3 className="mb-4 text-sm font-bold text-navy-900 uppercase tracking-wide">By Parish / District</h3>
