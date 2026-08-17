@@ -31,11 +31,27 @@ const MAP_STYLES = {
 // One threshold now drives the type, the colour and the key.
 const UTILITY_MIN_KW = 500
 
+// A permit whose capacity was never recorded is `null`, not 0. The Planning
+// export stores a large minority of capacities as text, which Excel omits from
+// its totals; the Department publishes that Excel figure, so those permits carry
+// no capacity here. They are still real installations and still appear on the
+// map — they just cannot be sized or banded by a number nobody recorded, so they
+// get their own neutral treatment rather than being lumped in with the smallest
+// systems. `null >= 5` is false in JS, so an unguarded comparison would have
+// silently coloured all 173 as sub-5 kW residential.
+const UNRECORDED_COLOR = '#94A3B8'
+
+function hasCapacity(capacity) {
+  return typeof capacity === 'number' && Number.isFinite(capacity) && capacity > 0
+}
+
 function getEffectiveType(item) {
+  if (!hasCapacity(item.capacity)) return item.type
   return item.capacity >= UTILITY_MIN_KW ? 'Utility' : item.type
 }
 
 function getMarkerColor(capacity) {
+  if (!hasCapacity(capacity)) return UNRECORDED_COLOR
   if (capacity >= UTILITY_MIN_KW) return '#0B1F3A'
   if (capacity >= 20) return '#0077B6'
   if (capacity >= 5) return '#33B0E0'
@@ -43,6 +59,7 @@ function getMarkerColor(capacity) {
 }
 
 function getHeatRadiusMeters(capacity) {
+  if (!hasCapacity(capacity)) return 70
   if (capacity >= 1000) return 900
   if (capacity >= UTILITY_MIN_KW) return 450
   if (capacity >= 20) return 220
@@ -51,6 +68,7 @@ function getHeatRadiusMeters(capacity) {
 }
 
 function getMarkerRadius(capacity) {
+  if (!hasCapacity(capacity)) return 6
   if (capacity >= UTILITY_MIN_KW) return 11
   if (capacity >= 20) return 9
   if (capacity >= 5) return 7
@@ -150,7 +168,11 @@ function MapLayers({ sites, activeId, onSelect }) {
             <Tooltip direction="top" offset={[0, -4]} opacity={1}>
               <span className="text-xs font-semibold">{site.name}</span>
               <br />
-              <span className="text-xs text-slate-600">{formatNumber(site.capacity, { maximumFractionDigits: 1 })} kW</span>
+              <span className="text-xs text-slate-600">
+                {hasCapacity(site.capacity)
+                  ? `${formatNumber(site.capacity, { maximumFractionDigits: 1 })} kW`
+                  : 'Capacity not recorded'}
+              </span>
             </Tooltip>
           </CircleMarker>
         )
@@ -172,7 +194,9 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
   }, [installations, selectedParish, selectedType])
 
   const stats = useMemo(() => {
-    const totalCapacity = filtered.reduce((sum, i) => sum + i.capacity, 0)
+    // `|| 0` because an unrecorded capacity is null; the total is the sum of the
+    // figures actually recorded, which is the basis the Department publishes.
+    const totalCapacity = filtered.reduce((sum, i) => sum + (i.capacity || 0), 0)
     const parishes = new Set(filtered.map((i) => i.parish)).size
     return { count: filtered.length, totalCapacity, parishes }
   }, [filtered])
@@ -250,8 +274,10 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
                 <p className="mt-1 text-body-small text-slate-600">
                   {active.parish} · {getEffectiveType(active)}
                 </p>
-                <p className="mt-1 text-body-small font-semibold text-teal-700">
-                  {formatNumber(active.capacity, { maximumFractionDigits: 1 })} kW installed capacity
+                <p className={`mt-1 text-body-small font-semibold ${hasCapacity(active.capacity) ? 'text-teal-700' : 'text-slate-500'}`}>
+                  {hasCapacity(active.capacity)
+                    ? `${formatNumber(active.capacity, { maximumFractionDigits: 1 })} kW installed capacity`
+                    : 'Installed capacity not recorded'}
                 </p>
                 <p className="mt-1 text-caption text-slate-500">
                   {active.lat.toFixed(4)}°N, {Math.abs(active.lng).toFixed(4)}°W

@@ -1202,7 +1202,10 @@ app.get('/api/solar/installations', async (req, res) => {
       id: row.id,
       name: row.name || '',
       parish: row.parish || '',
-      capacity: parseFloat(row.capacity) || 0,
+      // null, not 0, when the permit carries no capacity figure. `|| 0` here
+      // would undo the import's distinction between "0 kW" and "not recorded"
+      // and put 173 real installations in the smallest band on the map.
+      capacity: row.capacity == null ? null : (parseFloat(row.capacity) || null),
       type: row.type || 'Residential',
       status: row.status || 'Unknown',
       description: row.description || '',
@@ -1478,16 +1481,34 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         else { const c = PARISH_COORDS[parish] || PARISH_COORDS['Bermuda']; lat = c[0]+Math.sin(i*7.3)*0.003; lng = c[1]+Math.cos(i*5.1)*0.003; }
         if (parish === 'Bermuda') parish = nearestParish(lat, lng);
 
+        // Capacity counts only when the cell is a real number. In the Planning
+        // export a large minority of these cells are stored as text — usually a
+        // number wrapped in stray spaces, e.g. " 11.68  ". Excel's SUM and its
+        // pivot tables skip text cells silently, which is why the Department's
+        // own workbook reports 15,025.02 kW while the same 782 rows parse to
+        // 16,805.44. The Department has confirmed 15,025.02 as the figure to
+        // publish, so the import mirrors what Excel counts.
+        //
+        // A text cell therefore means "capacity not recorded" (NULL), not zero:
+        // these are real installations, and publishing 0 kW against 19 Dundonald
+        // Street West or 6 College Rise would be a worse error than omitting the
+        // figure. NULL keeps them on the map and in the 782 count while leaving
+        // them out of SUM, so the headline total still equals the sum of the
+        // capacities actually shown. The description fallback is deliberately not
+        // applied here — it would reintroduce the very values Excel excludes.
         const rawCap = getCol(row, ...CAPACITY_COLUMNS);
-        let capacity = parseFloat(String(rawCap).trim());
-        if (!Number.isFinite(capacity) || capacity <= 0) {
+        let capacity = typeof rawCap === 'number' && Number.isFinite(rawCap) ? rawCap : null;
+        if (capacity === null && (rawCap === '' || rawCap === null || rawCap === undefined)) {
+          // Genuinely blank cell: fall back to the permit description, which some
+          // extracts use instead of a capacity column. Match kW but NOT kWh, so
+          // annual output is never mistaken for capacity.
           const desc2 = String(getCol(row,'Permit Description') || '');
-          // Match kW but NOT kWh (avoid treating annual output as capacity)
           const m2 = desc2.match(/(\d+\.?\d*)\s*kw(?!h)/i);
-          capacity = m2 ? parseFloat(m2[1]) : 0;
+          if (m2) capacity = parseFloat(m2[1]);
         }
         // Only convert if clearly in watts (>10000W = >10kW), never for MW-scale systems
-        if (capacity > 10000) capacity = capacity / 1000;
+        if (capacity !== null && capacity > 10000) capacity = capacity / 1000;
+        if (capacity !== null && !(capacity > 0)) capacity = null;
 
         let annualOutput = parseFloat(String(getCol(row,'Annual Output (kWh)','Annual Output','Annual Output kWh') || 0)) || 0;
         if (!annualOutput) {
@@ -1544,7 +1565,11 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
                lat=EXCLUDED.lat,lng=EXCLUDED.lng,
                notes=EXCLUDED.notes,address=EXCLUDED.address,annual_output=EXCLUDED.annual_output,
                updated_at=CURRENT_TIMESTAMP`,
-            [id, firstLine||`Permit ${i+1}`, parish, type, capacity||0, status||'Unknown', installDate, expiryDate, lat, lng, desc, address.slice(0,200), annualOutput]
+            // capacity is passed through as-is: null means "not recorded" and must
+            // stay null. `capacity||0` would have turned every unrecorded figure
+            // into a published 0 kW and dragged those sites into the smallest
+            // capacity band on the map.
+            [id, firstLine||`Permit ${i+1}`, parish, type, capacity, status||'Unknown', installDate, expiryDate, lat, lng, desc, address.slice(0,200), annualOutput]
           );
           await client.query('RELEASE SAVEPOINT solar_row');
           count++;

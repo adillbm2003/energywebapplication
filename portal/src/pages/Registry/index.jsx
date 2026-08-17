@@ -236,7 +236,14 @@ export default function Registry() {
                         <td className="px-4 py-3 font-medium text-navy-900">{entry.name}</td>
                         <td className="px-4 py-3 text-slate-600">{entry.parish}</td>
                         <td className="px-4 py-3"><Badge variant="gold">{entry.type}</Badge></td>
-                        <td className="px-4 py-3 text-slate-600">{formatNumber(entry.capacity)} kW</td>
+                        {/* An unrecorded capacity is null, and must not print as
+                            "0 kW" — these are real installations whose figure the
+                            Planning export stores as text and Excel omits. */}
+                        <td className="px-4 py-3 text-slate-600">
+                          {entry.capacity == null || entry.capacity === ''
+                            ? <span className="text-slate-400">Not recorded</span>
+                            : `${formatNumber(entry.capacity)} kW`}
+                        </td>
                         <td className="px-4 py-3">
                           <Badge status={entry.status === 'Active' ? 'In Force' : 'In Development'}>{entry.status}</Badge>
                         </td>

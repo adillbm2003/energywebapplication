@@ -34,7 +34,9 @@ export default function GIS() {
     const list = installations ?? []
     return {
       sites: list.length,
-      capacity: list.reduce((sum, i) => sum + i.capacity, 0),
+      // Unrecorded capacities are null, so the headline total is the sum of the
+      // figures actually recorded — the same basis as the Department's own sheet.
+      capacity: list.reduce((sum, i) => sum + (i.capacity || 0), 0),
       parishes: new Set(list.map((i) => i.parish)).size,
     }
   }, [installations])
