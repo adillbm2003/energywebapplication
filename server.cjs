@@ -1565,11 +1565,16 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
                lat=EXCLUDED.lat,lng=EXCLUDED.lng,
                notes=EXCLUDED.notes,address=EXCLUDED.address,annual_output=EXCLUDED.annual_output,
                updated_at=CURRENT_TIMESTAMP`,
+            // A permit with no address is named for its parish, not `Permit ${i+1}`.
+            // That old fallback named an installation after a spreadsheet row, so the
+            // public map showed "Permit 355" and the label moved if the sheet was ever
+            // re-sorted. Five permits in the current export have no address; they are
+            // real installations and stay in the registry and the totals.
             // capacity is passed through as-is: null means "not recorded" and must
             // stay null. `capacity||0` would have turned every unrecorded figure
             // into a published 0 kW and dragged those sites into the smallest
             // capacity band on the map.
-            [id, firstLine||`Permit ${i+1}`, parish, type, capacity, status||'Unknown', installDate, expiryDate, lat, lng, desc, address.slice(0,200), annualOutput]
+            [id, firstLine || `${parish} — address not recorded`, parish, type, capacity, status||'Unknown', installDate, expiryDate, lat, lng, desc, address.slice(0,200), annualOutput]
           );
           await client.query('RELEASE SAVEPOINT solar_row');
           count++;

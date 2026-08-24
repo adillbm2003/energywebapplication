@@ -233,7 +233,15 @@ export default function Registry() {
                     {items.map((entry) => (
                       <tr key={entry.id} className="hover:bg-slate-50 transition-colors">
                         <td className="px-4 py-3 font-mono text-xs text-slate-500">{entry.id}</td>
-                        <td className="px-4 py-3 font-medium text-navy-900">{entry.name}</td>
+                        {/* A permit with no address in the export is labelled by its parish
+                            rather than "Permit <row number>", which named it after a
+                            spreadsheet row and shifted whenever the sheet was re-sorted.
+                            The record itself stays -- these are live installations. */}
+                        <td className="px-4 py-3 font-medium text-navy-900">
+                          {String(entry.name || '').match(/^Permit\s+\d+$/i)
+                            ? <span className="text-slate-500">{entry.parish ? `${entry.parish} — address not recorded` : 'Address not recorded'}</span>
+                            : entry.name}
+                        </td>
                         <td className="px-4 py-3 text-slate-600">{entry.parish}</td>
                         <td className="px-4 py-3"><Badge variant="gold">{entry.type}</Badge></td>
                         {/* An unrecorded capacity is null, and must not print as

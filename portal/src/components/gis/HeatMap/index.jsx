@@ -73,6 +73,27 @@ function streetOnly(name) {
   return stripped || String(name)
 }
 
+// Some permits reach the export with no address at all. The importer used to
+// name those "Permit <row number>", which is meaningless to a reader and moves
+// if the sheet is ever re-sorted. They are real installations -- B0276-23 is a
+// live 12.54 kW system -- so they stay on the map and in the totals, but are
+// labelled by the one thing actually known about their location: the parish.
+//
+// Keyed off the missing address rather than the "Permit N" string, so a real
+// road that happens to start with "Permit" is never caught by accident. The
+// endpoint COALESCEs address to name, so an address equal to the name means the
+// address column was empty.
+function displayName(site) {
+  const addr = String(site.address || '').trim()
+  const name = String(site.name || '').trim()
+  if (!addr || addr === name) {
+    if (/^Permit\s+\d+$/i.test(name) || !name) {
+      return site.parish ? `${site.parish} — address not recorded` : 'Address not recorded'
+    }
+  }
+  return streetOnly(name)
+}
+
 function hasCapacity(capacity) {
   return typeof capacity === 'number' && Number.isFinite(capacity) && capacity > 0
 }
@@ -198,7 +219,7 @@ function MapLayers({ sites, activeId, onSelect }) {
             }}
           >
             <Tooltip direction="top" offset={[0, -4]} opacity={1}>
-              <span className="text-xs font-semibold">{streetOnly(site.name)}</span>
+              <span className="text-xs font-semibold">{displayName(site)}</span>
               <br />
               <span className="text-xs text-slate-600">
                 {hasCapacity(site.capacity)
@@ -307,7 +328,7 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
                     style={{ backgroundColor: getMarkerColor(active.capacity) }}
                     aria-hidden="true"
                   />
-                  <h3 className="text-h4 text-navy-900">{active.name}</h3>
+                  <h3 className="text-h4 text-navy-900">{displayName(active)}</h3>
                 </div>
                 <p className="mt-1 text-body-small text-slate-600">
                   {active.parish} · {getEffectiveType(active)}
