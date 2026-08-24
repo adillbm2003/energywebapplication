@@ -11,17 +11,35 @@ import 'leaflet/dist/leaflet.css'
 const BERMUDA_CENTER = [32.2948, -64.781]
 const DEFAULT_ZOOM = 12
 
+// Basemaps are decoration: they change what the island looks like, never where
+// a marker sits. A marker's position comes from the latitude/longitude in the
+// Planning export, so a permit recorded at the wrong coordinate is wrong on
+// every basemap. Switching provider was raised as a fix for misplaced pins and
+// is not one.
+//
+// CARTO Voyager replaces the raw OpenStreetMap layer: same OSM data, but a
+// cleaner label hierarchy and, via {r}, retina tiles that stay sharp on the
+// high-DPI screens where the old layer looked soft. Free, and properly licensed
+// with the attribution below -- unlike pointing Leaflet at Google's tile URLs,
+// which their terms forbid.
+//
+// maxZoom matters here: Leaflet stops zooming at the layer's limit, and at 18
+// it was impossible to zoom in far enough to separate neighbouring rooftops.
 const MAP_STYLES = {
   streets: {
     label: 'Street map',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+    subdomains: 'abcd',
+    maxZoom: 20,
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>',
+      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>',
   },
   satellite: {
     label: 'Satellite',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    attribution: 'Tiles &copy; Esri',
+    subdomains: 'abc',
+    maxZoom: 19,
+    attribution: 'Tiles &copy; Esri, Maxar, Earthstar Geographics',
   },
 }
 
@@ -40,6 +58,20 @@ const UTILITY_MIN_KW = 500
 // systems. `null >= 5` is false in JS, so an unguarded comparison would have
 // silently coloured all 173 as sub-5 kW residential.
 const UNRECORDED_COLOR = '#94A3B8'
+
+// Road name only, for the map hover: "82 North Shore Road" reads as "North Shore
+// Road". Street level is also the honest precision here -- the coordinates in
+// the Planning export are geocoded to a street or area, not to the building, so
+// printing a house number claims a precision the position does not have. The
+// registry table still carries the full address for identification.
+function streetOnly(name) {
+  if (!name) return ''
+  const stripped = String(name)
+    .replace(/^\s*\d+[A-Za-z]?\s+/, '')
+    .replace(/\s+Unit:?\s*\S+$/i, '')
+    .trim()
+  return stripped || String(name)
+}
 
 function hasCapacity(capacity) {
   return typeof capacity === 'number' && Number.isFinite(capacity) && capacity > 0
@@ -166,7 +198,7 @@ function MapLayers({ sites, activeId, onSelect }) {
             }}
           >
             <Tooltip direction="top" offset={[0, -4]} opacity={1}>
-              <span className="text-xs font-semibold">{site.name}</span>
+              <span className="text-xs font-semibold">{streetOnly(site.name)}</span>
               <br />
               <span className="text-xs text-slate-600">
                 {hasCapacity(site.capacity)
@@ -242,7 +274,13 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
           scrollWheelZoom
           zoomControl
         >
-          <TileLayer attribution={tiles.attribution} url={tiles.url} />
+          <TileLayer
+            key={mapStyle}
+            attribution={tiles.attribution}
+            url={tiles.url}
+            subdomains={tiles.subdomains}
+            maxZoom={tiles.maxZoom}
+          />
           <ExternalAttributionLinks />
           <FitBounds sites={filtered} />
           <MapLayers sites={filtered} activeId={active?.id} onSelect={setActive} />
