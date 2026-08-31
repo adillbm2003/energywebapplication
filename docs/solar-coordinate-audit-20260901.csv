@@ -1,0 +1,788 @@
+row,no,addr,district,action,conf,via,oldLat,oldLng,newLat,newLng,movedKm
+2,PDP-0037-19,42 Smiths Island,St. George,REVIEW,parish-anchor,street not in OSM,32.370337,-64.662784,32.3632247,-64.6778274,1.62
+3,BR-0060-19,36 Wellington Street,Town of St. George,OSM,exact,wellington street,32.3795954,-64.6798981,32.379602,-64.6799249,0
+4,BC-0026-19,11 Woodlands Road,Pembroke,kept,client-original,,32.2995297,-64.7891029,32.2995297,-64.7891029,0
+5,PDP-0075-19,22 Rose Hill Road,Southampton,kept,client-original,,32.2611314,-64.8705102,32.2611314,-64.8705102,0
+6,PDP-0071-19,12 Cedar Hurst Place,Southampton,kept,client-original,,32.2592094,-64.8649653,32.2592094,-64.8649653,0
+7,PDP-0102-19,165 South Road,Paget,RECOVERED,client-point,client coordinate sitting on south road,32.2896781,-64.7642965,32.282015,-64.77564,1.37
+8,BR-0082-19,10 North Ridge Crescent Unit: B,Devonshire,kept,client-original,,32.3118319,-64.7551732,32.3118319,-64.7551732,0
+9,PDP-0134-19,4 Pokiok Road,Smiths,OSM,street,pokiok road,32.3087506,-64.7345598,32.3092928,-64.7335728,0.11
+10,PDP-0146-19,23 Green Acres Road,Devonshire,kept,client-original,,32.30428,-64.746756,32.30428,-64.746756,0
+11,PDP-0059-19,31 Tuckers Town Road,St. George,kept,client-original,,32.333312,-64.688369,32.333312,-64.688369,0
+12,PDP-0163-19,2 Fort George Drive,Town of St. George,kept,client-original,,32.3796724,-64.6823431,32.3796724,-64.6823431,0
+13,PDP-0188-20,4 Sound View Road,Sandys,RECOVERED,client-point,client coordinate sitting on sound view road,32.2981931,-64.862352,32.2953411,-64.8629142,0.32
+14,BC-0102-19,19 Richmond Road,Pembroke,RECOVERED,client-point,client coordinate sitting on richmond road,32.2956001,-64.7900269,32.2942516,-64.7880402,0.24
+15,PDP-0194-20,2 Pokiok Close,Smiths,kept,client-original,,32.3089606,-64.7343679,32.3089606,-64.7343679,0
+16,PDP-0197-20,2 Sound View Road,Sandys,RECOVERED,client-point,client coordinate sitting on sound view road,32.2983597,-64.8623751,32.294539,-64.869691,0.81
+17,PDP-0212-20,1 Overock Hill,Pembroke,kept,client-original,,32.2934927,-64.8035325,32.2934927,-64.8035325,0
+18,PDP-0221-20,50 Ord Road,Paget,kept,client-original,,32.277945,-64.781967,32.277945,-64.781967,0
+19,PDP-0218-20,6 Frolic Lane,Southampton,OSM,street,frolic lane,32.2584617,-64.8211233,32.2580681,-64.8209506,0.05
+20,PDP-0232-20,162 Middle Road,Devonshire,RECOVERED,client-point,client coordinate sitting on middle road,32.3118689,-64.7485771,32.30203,-64.757146,1.36
+21,PDP-0199-20,22 Industrial Park Road,Southampton,kept,client-original,,32.2524794,-64.8650018,32.2524794,-64.8650018,0
+22,PDP-0258-20,9 Cavendish Road,Pembroke,kept,client-original,,32.2941,-64.7761183,32.2941,-64.7761183,0
+23,PDP-0256-20,40 Tanglewood Road,Paget,kept,client-original,,32.278633,-64.78815,32.278633,-64.78815,0
+24,PDP-0261-20,7 Flowercote Lane,Smiths,kept,client-original,,32.318055,-64.726019,32.318055,-64.726019,0
+25,PDP-0255-20,6 Flowercote Lane,Smiths,kept,client-original,,32.318542,-64.726049,32.318542,-64.726049,0
+26,PDP-0061-19,3 Clingstone Lane,Hamilton,kept,client-original,,32.3397028,-64.7090333,32.3397028,-64.7090333,0
+27,BR-0182-20,9 Abri Lane,Pembroke,kept,client-original,,32.3029102,-64.8075487,32.3029102,-64.8075487,0
+28,PDP-0272-20,8 Lemarc Estate,Warwick,kept,client-original,,32.2611639,-64.8135823,32.2611639,-64.8135823,0
+29,PDP-0273-20,3 Perots Island,Southampton,REVIEW,parish-anchor,street not in OSM,32.260736,-64.830029,32.2544361,-64.8439449,1.49
+30,PDP-0274-20,47 Harrington Sound Road,Smiths,kept,client-original,,32.3224614,-64.7214824,32.3224614,-64.7214824,0
+31,BR-0208-20,6 Southcote Road,Paget,RECOVERED,client-point,client coordinate sitting on southcote road,32.2776505,-64.781677,32.277112,-64.781423,0.06
+32,PDP-0267-20,97 Middle Road,Southampton,kept,client-original,,32.2535982,-64.8536045,32.2535982,-64.8536045,0
+33,PDP-0265-20,4 Tranquillity Lane,St. George,kept,client-original,,32.3696418,-64.6673787,32.3696418,-64.6673787,0
+34,PDP-0289-20,25 Camden North Road,Paget,kept,client-original,,32.295916,-64.761832,32.295916,-64.761832,0
+35,BR-0198-20,14 Belmont Road,Warwick,kept,client-original,,32.274053,-64.8034768,32.274053,-64.8034768,0
+36,BR-0218-20,4 Bellevue Drive,Paget,OSM,street,bellevue drive,32.286077,-64.770124,32.2857855,-64.7690394,0.11
+37,PDP-0148-19,9 East Point Lane,Hamilton,OSM,near-number,east point lane,32.3255161,-64.7412199,32.3249511,-64.7410545,0.06
+38,BR-0207-20,9 Spice Hill Road,Warwick,kept,client-original,,32.2604984,-64.8180176,32.2604984,-64.8180176,0
+39,PDP-0309-20,41 South Road,Southampton,RECOVERED,client-point,client coordinate sitting on south road,32.250338,-64.848699,32.248964,-64.839529,0.88
+40,PDP-0303-20,48 South Road,Southampton,kept,client-original,,32.249024,-64.841185,32.249024,-64.841185,0
+41,BR-0260-20,10 Harbour Road,Warwick,kept,client-original,,32.269838,-64.816052,32.269838,-64.816052,0
+42,BR-0233-20,10 Upland Lane,Warwick,OSM,near-number,upland lane,32.269325,-64.790744,32.2688561,-64.7904782,0.06
+43,PDP-0349-20,25 Pitts Bay Road,Pembroke,kept,client-original,,32.2965483,-64.7962481,32.2965483,-64.7962481,0
+44,PDP-0311-20,2 Tanglewood Road,Paget,kept,client-original,,32.277494,-64.789474,32.277494,-64.789474,0
+45,PDP-0362-20,6 Inglewood Lane,Paget,kept,client-original,,32.286448,-64.767161,32.286448,-64.767161,0
+46,BR-0283-20,10 North Court Avenue,Pembroke,OSM,street,north court avenue,32.3044057,-64.7991857,32.3042559,-64.7988335,0.04
+47,BR-0244-20,18 Cambridge Road,Sandys,kept,client-original,,32.3059986,-64.8689317,32.3059986,-64.8689317,0
+48,PDP-0365-20,11 Rosemont Avenue,Pembroke,kept,client-original,,32.2959526,-64.7928811,32.2959526,-64.7928811,0
+49,PDP-0381-20,41 Tuckers Town Road,St. George,kept,client-original,,32.3336302,-64.6860786,32.3336302,-64.6860786,0
+50,PDP-0389-20,7 Stokes Point Road,St. George,kept,client-original,,32.3733523,-64.6912591,32.3733523,-64.6912591,0
+51,BC-0162-20,46 Front Street,City of Hamilton,kept,client-original,,32.2922369,-64.7852386,32.2922369,-64.7852386,0
+52,PDP-0395-20,12 Fort George Hill,Town of St. George,kept,client-original,,32.3798619,-64.6830048,32.3798619,-64.6830048,0
+53,PDP-0397-20,36 Hinson Island,Paget,REVIEW,parish-anchor,street not in OSM,32.282623,-64.800339,32.2849567,-64.7753406,2.37
+54,PDP-0409-20,9 Cavello Heights,Sandys,kept,client-original,,32.2970438,-64.8635236,32.2970438,-64.8635236,0
+55,PDP-0405-20,41 Hinson Island,Paget,REVIEW,parish-anchor,street not in OSM,32.282095,-64.801389,32.2849567,-64.7753406,2.47
+56,PDP-0424-20,90 White Sands Road,Paget,kept,client-original,,32.2788802,-64.7703172,32.2788802,-64.7703172,0
+57,PDP-0421-20,36 Middle Road,Paget,kept,client-original,,32.280149,-64.783894,32.280149,-64.783894,0
+58,PDP-0431-20,2 Coral Hill Lane,Warwick,kept,client-original,,32.271906,-64.789187,32.271906,-64.789187,0
+59,PDP-0430-20,57 St. David's Road,St. George,kept,client-original,,32.3657366,-64.6634534,32.3657366,-64.6634534,0
+60,PDP-0446-20,15 Turk's Head Lane,Devonshire,kept,client-original,,32.2978371,-64.75516,32.2978371,-64.75516,0
+61,PDP-0443-20,1 Salt Spray Lane,St. George,OSM,exact,salt spray lane,32.3815884,-64.6669631,32.3815816,-64.6669837,0
+62,PDP-0427-20,6 Glebe Hill,Hamilton,kept,client-original,,32.3328226,-64.7026464,32.3328226,-64.7026464,0
+63,PDP-0453-20,10 Agar's Hill,Pembroke,kept,client-original,,32.2941588,-64.8053915,32.2941588,-64.8053915,0
+64,BR-0322-20,3 Woodbourne Crescent,Pembroke,kept,client-original,,32.2936196,-64.790057,32.2936196,-64.790057,0
+65,PDP-0452-20,18 Church Road,Southampton,kept,client-original,,32.2510247,-64.8460776,32.2510247,-64.8460776,0
+66,PDP-0264-20,6 Riviera Road,Southampton,kept,client-original,,32.2576203,-64.8273125,32.2576203,-64.8273125,0
+67,PDP-0502-20,15 Berry Hill Road,Paget,kept,client-original,,32.2939551,-64.7682289,32.2939551,-64.7682289,0
+68,PDP-0507-20,1 Speakers Drive,St. George,RECOVERED,client-point,client coordinate sitting on speakers drive,32.378457,-64.685103,32.3778111,-64.6851087,0.07
+69,PDP-0477-20,40 Tribe Road No 2 Unit: A,Warwick,kept,client-original,,32.2719551,-64.7948178,32.2719551,-64.7948178,0
+70,BR-0359-20,6 Old Slip Lane,Pembroke,kept,client-original,,32.2911702,-64.795966,32.2911702,-64.795966,0
+71,BC-0067-19,1 The Lane,Paget,RECOVERED,client-point,client coordinate sitting on the lane,32.2899416,-64.772349,32.290426,-64.772063,0.06
+72,BC-0217-20,18 Point Finger Road,Paget,RECOVERED,client-point,client coordinate sitting on point finger road,32.2922687,-64.7678844,32.291779,-64.767231,0.08
+73,BC-0179-20,26 Bermudiana Road,City of Hamilton,OSM,exact,bermudiana road,32.2925451,-64.7875355,32.292488,-64.7874752,0.01
+74,PDP-0558-20,53 South Road,Warwick,kept,client-original,,32.249392,-64.844169,32.249392,-64.844169,0
+75,PDP-0511-20,6 Upland Close,Devonshire,kept,client-original,,32.3060828,-64.7520697,32.3060828,-64.7520697,0
+76,PDP-0517-20,9 Point Shares Road,Pembroke,RECOVERED,client-point,client coordinate sitting on point shares road,32.2941285,-64.7997008,32.2953502,-64.8027044,0.31
+77,PDP-0594-20,32 Harrington Hundreds Road,Smiths,RECOVERED,client-point,client coordinate sitting on harrington hundreds road,32.3158961,-64.7248843,32.318016,-64.724186,0.24
+78,PDP-0516-20,8 Woodstock Hill,Paget,kept,client-original,,32.286299,-64.764576,32.286299,-64.764576,0
+79,B0008-21,30 Tanglewood Road,Paget,RECOVERED,client-point,client coordinate sitting on tanglewood road,32.27758,-64.787245,32.276417,-64.788316,0.16
+80,PDP-0615-20,5 Highwood Lane,Paget,kept,client-original,,32.2878187,-64.7792227,32.2878187,-64.7792227,0
+81,BC-0250-20,27 King Street,City of Hamilton,kept,client-original,,32.2962748,-64.7784935,32.2962748,-64.7784935,0
+82,PDP-0601-20,88 White Sands Road,Paget,kept,client-original,,32.2786638,-64.7705188,32.2786638,-64.7705188,0
+83,PDP-0613-20,4 Marley Beach Lane,Warwick,kept,client-original,,32.264246,-64.797304,32.264246,-64.797304,0
+84,BR-0420-20,8 West Side Road,Sandys,kept,client-original,,32.3006358,-64.8772515,32.3006358,-64.8772515,0
+85,PDP-0614-20,5 Marley Beach Drive,Warwick,kept,client-original,,32.264147,-64.797643,32.264147,-64.797643,0
+86,B0017-21,63 Texas Road,St. George,kept,client-original,,32.366174,-64.655897,32.366174,-64.655897,0
+87,B0019-21,80 Middle Road,Smiths,kept,client-original,,32.3200049,-64.7348835,32.3200049,-64.7348835,0
+88,B0018-21,9 Flowercote Lane,Smiths,kept,client-original,,32.317914,-64.726296,32.317914,-64.726296,0
+89,B0011-21,10 Brown Estates Road,Hamilton,RECOVERED,client-point,client coordinate sitting on brown estates road,32.2942679,-64.7853167,32.336619,-64.731023,6.95
+90,B0020-21,5 Piper's Peak,Warwick,kept,client-original,,32.2625823,-64.8081918,32.2625823,-64.8081918,0
+91,B0015-21,27 Devon Point Lane,Devonshire,kept,client-original,,32.3004091,-64.7432977,32.3004091,-64.7432977,0
+92,B0010-21,38 Middle Road,Paget,RECOVERED,client-point,client coordinate sitting on middle road,32.2803718,-64.7836317,32.280183,-64.784913,0.12
+93,BR0013-21,22 Fairvale Lane,Warwick,REVIEW,parish-anchor,street not in OSM,32.273048,-64.794697,32.2678602,-64.8053367,1.16
+94,BR0015-21,17 Sound View Road,Sandys,kept,client-original,,32.2953411,-64.8629142,32.2953411,-64.8629142,0
+95,B0097-21,1 Eustace Close,Southampton,OSM,street,eustace close,32.2596779,-64.8661032,32.2594416,-64.8661233,0.03
+96,BR-0412-20,24 Skyline Road,Smiths,kept,client-original,,32.3195565,-64.7205489,32.3195565,-64.7205489,0
+97,BC0035-21,40 North Shore Road,Hamilton,kept,client-original,,32.3235107,-64.7369515,32.3235107,-64.7369515,0
+98,B0176-21,2 Sanz Close,Pembroke,OSM,street,sanz close,32.2941,-64.7963,32.2969152,-64.7944164,0.36
+99,B0139-21,22 Tee Street,Devonshire,kept,client-original,,32.296095,-64.75857,32.296095,-64.75857,0
+100,BR0068-21,21 Harbour Road,Warwick,kept,client-original,,32.270992,-64.813991,32.270992,-64.813991,0
+101,B0150-21,26 Middle Road Unit: A,Paget,kept,client-original,,32.280183,-64.784913,32.280183,-64.784913,0
+102,B0156-21,6 Ocean Lane,Pembroke,kept,client-original,,32.304537,-64.786334,32.304537,-64.786334,0
+103,B0107-21,22 Happy Valley Road,Pembroke,kept,client-original,,32.296584,-64.774937,32.296584,-64.774937,0
+104,B0105-21,25 Scott's Hill Road,Sandys,RECOVERED,client-point,client coordinate sitting on scotts hill road,32.297394,-64.866133,32.298507,-64.863986,0.24
+105,B0104-21,18 Sleepy Hollow Drive,Hamilton,kept,client-original,,32.341042,-64.730017,32.341042,-64.730017,0
+106,B0106-21,29 Hermitage Road,Devonshire,kept,client-original,,32.309202,-64.745456,32.309202,-64.745456,0
+107,B0103-21,4 Rebecca Road Unit: A,Southampton,RECOVERED,client-point,client coordinate sitting on rebecca road,32.25866,-64.827887,32.258812,-64.831001,0.29
+108,B0102-21,10 Manor Hill,Warwick,OSM,near-number,manor hill,32.277717,-64.794515,32.2777809,-64.7942622,0.02
+109,B0169-21,18 Jones Lane,Warwick,kept,client-original,,32.278937,-64.795471,32.278937,-64.795471,0
+110,B0184-21,1 Tamarisk Hill,Smiths,kept,client-original,,32.318357,-64.745544,32.318357,-64.745544,0
+111,B0181-21,41 Mission Crescent,Paget,kept,client-original,,32.278053,-64.771588,32.278053,-64.771588,0
+112,B0112-21,5 Cedarberry Drive,Hamilton,kept,client-original,,32.340728,-64.709274,32.340728,-64.709274,0
+113,B0171-21,15 Skroggins Hill,Southampton,kept,client-original,,32.261611,-64.866607,32.261611,-64.866607,0
+114,BC0046-21,117 Middle Road,Warwick,kept,client-original,,32.275921,-64.794246,32.275921,-64.794246,0
+115,B0175-21,5 Elm Lane,Sandys,kept,client-original,,32.272517,-64.874107,32.272517,-64.874107,0
+116,BC0013-21,12 Bakery Lane,Pembroke,OSM,near-number,bakery lane,32.30356201,-64.7938792025,32.2992856,-64.7958167,0.51
+117,BR0104-21,16 Burgess Point Road,Warwick,kept,client-original,,32.267279,-64.827915,32.267279,-64.827915,0
+118,BR0094-21,8 Holly Lane,Smiths,OSM,street,holly lane,32.319887,-64.739033,32.320226,-64.7395011,0.06
+119,B0255-21,14 Windy Bank,Smiths,kept,client-original,,32.314782,-64.743554,32.314782,-64.743554,0
+120,B0256-21,2 Astwood Road,Paget,RECOVERED,client-point,client coordinate sitting on astwood road,32.291189,-64.766623,32.289628,-64.766077,0.18
+121,B0318-21,51 St. David's Road Unit: A,St. George,kept,client-original,,32.365483,-64.664436,32.365483,-64.664436,0
+122,B0283-21,4 Salt Kettle Road,Paget,OSM,street-anchored,salt kettle road,32.282192,-64.790646,32.2834138,-64.7930616,0.26
+123,BR0183-21,13 Inglewood Lane,Paget,kept,client-original,,32.284923,-64.765395,32.284923,-64.765395,0
+124,BC0074-21,25 Pomander Road,Paget,kept,client-original,,32.291161,-64.77411,32.291161,-64.77411,0
+125,BR0184-21,19 Stowe Hill,Paget,RECOVERED,client-point,client coordinate sitting on stowe hill,32.289049,-64.773041,32.288709,-64.77274,0.05
+126,BR0182-21,54 St. Anne's Road,Southampton,kept,client-original,,32.252556,-64.838157,32.252556,-64.838157,0
+127,BR0235-21,22 Crossfield Drive,Sandys,kept,client-original,,32.301287,-64.875793,32.301287,-64.875793,0
+128,BR0202-21,16 Fairways Road,Warwick,kept,client-original,,32.262642,-64.830564,32.262642,-64.830564,0
+129,BC0140-21,10 WindReach Lane,Warwick,kept,client-original,,32.262617,-64.810158,32.262617,-64.810158,0
+130,BR0222-21,26 Castile Road,Warwick,REVIEW,parish-anchor,street not in OSM,32.265839,-64.829075,32.2678602,-64.8053367,2.25
+131,BC0138-21,56 Church Street,City of Hamilton,kept,client-original,,32.2939975,-64.7824583,32.2939975,-64.7824583,0
+132,BR0287-21,3 Wingood Way,Sandys,kept,client-original,,32.280111,-64.873297,32.280111,-64.873297,0
+133,BC0154-21,6 College Rise,Paget,kept,client-original,,32.278732,-64.776298,32.278732,-64.776298,0
+134,BR0275-21,9 Lagoon Drive,Paget,kept,client-original,,32.291273,-64.760036,32.291273,-64.760036,0
+135,B0591-21,6 Flat Rock Close,Pembroke,OSM,street,flat rock close,32.307083,-64.811466,32.3065822,-64.8113916,0.06
+136,BR0264-21,12 Pitts Bay Road,Pembroke,kept,client-original,,32.298089,-64.797264,32.298089,-64.797264,0
+137,BC0188-21,19 Dundonald Street West,City of Hamilton,kept,client-original,,32.296082,-64.785134,32.296082,-64.785134,0
+138,BR0330-21,38 South Road,Devonshire,OSM,street,south road,32.299717,-64.747314,32.29916,-64.7501123,0.27
+139,BR0009-22,23 Middle Road,Paget,OSM,near-number,middle road,32.280364,-64.789032,32.2796943,-64.78902,0.07
+140,BR0003-22,3 Windy Ridge Road,Warwick,kept,client-original,,32.278724,-64.797621,32.278724,-64.797621,0
+141,BR0038-22,11 Vaughan's Bay Drive,St. George,kept,client-original,,32.3695125,-64.6557974,32.3695125,-64.6557974,0
+142,BR0026-22,3 Seabright Avenue,Paget,RECOVERED,client-point,client coordinate sitting on seabright avenue,32.291840433333334,-64.7637586333333,32.2884612,-64.7620789,0.41
+143,BR0035-22,10 Brown Estates Road,Hamilton,kept,client-original,,32.336619,-64.731023,32.336619,-64.731023,0
+144,BR0041-22,1 Scarrington Hill,Paget,RECOVERED,client-point,client coordinate sitting on scarrington hill,32.292061,-64.78513,32.279714,-64.786672,1.38
+145,BR0039-22,43 Harbour Road,Paget,kept,client-original,,32.284171,-64.78565,32.284171,-64.78565,0
+146,BR0353-21,1 Newport Gardens,Southampton,OSM,street,newport gardens,32.252626811111114,-64.845693,32.2535266,-64.8485129,0.28
+147,B0052-22,4 Barnes Valley,Paget,kept,client-original,,32.281647,-64.778566,32.281647,-64.778566,0
+148,BR0060-22,12 Pitts Bay Road,Pembroke,kept,client-original,,32.298089,-64.797264,32.298089,-64.797264,0
+149,BR0013-22,36 Horseshoe Road,Southampton,kept,client-original,,32.258547,-64.819854,32.258547,-64.819854,0
+150,B0499-21,7 Granaway Heights Road,Southampton,kept,client-original,,32.252166,-64.861302,32.252166,-64.861302,0
+151,B0500-21,1 Glenwood Park Lane,Warwick,kept,client-original,,32.267712,-64.796189,32.267712,-64.796189,0
+152,B0173-22,31 Melville Road,Devonshire,RECOVERED,client-point,client coordinate sitting on melville road,32.303719,-64.754045,32.302289,-64.753397,0.17
+153,BC0155-21,56 St. John's Road,Pembroke,OSM,street-anchored,street johns road,32.300855,-64.794857,32.3010628,-64.7938283,0.1
+154,BR0088-22,12 Leacraft Hill Road,Southampton,kept,client-original,,32.260429,-64.871768,32.260429,-64.871768,0
+155,B0215-22,6 Aunt Jinny's Lane,St. George,REVIEW,parish-anchor,street not in OSM,32.368196,-64.673791,32.3632247,-64.6778274,0.67
+156,B0210-22,2 Turtle Place,Southampton,kept,client-original,,32.254371,-64.822919,32.254371,-64.822919,0
+157,B0213-22,9 Middle Road,Warwick,kept,client-original,,32.263627,-64.818196,32.263627,-64.818196,0
+158,B0211-22,22 Harrington Sound Road,Hamilton,kept,client-original,,32.333198,-64.707918,32.333198,-64.707918,0
+159,BR0068-22,10 Cedarberry Drive,Hamilton,kept,client-original,,32.34007,-64.709838,32.34007,-64.709838,0
+160,B0621-21,7 Rushy Lane,Sandys,kept,client-original,,32.298058,-64.874695,32.298058,-64.874695,0
+161,BC0020-22,27 Serpentine Road,Pembroke,kept,client-original,,32.297937,-64.792059,32.297937,-64.792059,0
+162,B0224-22,13 Belmont Road,Warwick,kept,client-original,,32.274768,-64.801626,32.274768,-64.801626,0
+163,B0234-22,2 Ord Valley Lane Unit: A,Warwick,kept,client-original,,32.270334,-64.794207,32.270334,-64.794207,0
+164,BR0083-22,2 Trunk Island,Hamilton,REVIEW,parish-anchor,street not in OSM,32.333328,-64.727405,32.3412801,-64.7255713,0.9
+165,BR0108-22,116 Harbour Road,Paget,kept,client-original,,32.289109,-64.778142,32.289109,-64.778142,0
+166,B0243-22,34 Harbour Road Unit: A,Paget,kept,client-original,,32.282209,-64.789155,32.282209,-64.789155,0
+167,B0212-22,23 Point Shares Road,Pembroke,OSM,exact,point shares road,32.2920063,-64.8039222,32.2920166,-64.8039268,0
+168,B0199-22,3 Mill Shares Road,Pembroke,kept,client-original,,32.296575,-64.801409,32.296575,-64.801409,0
+169,B0264-22,6 Hinson Island,Paget,REVIEW,parish-anchor,street not in OSM,32.281492,-64.80354,32.2849567,-64.7753406,2.68
+170,B0253-22,5 Fairyland Road,Pembroke,REVIEW,parish-anchor,street not in OSM,32.296397,-64.799038,32.3008022,-64.7915912,0.86
+171,B0251-22,19 Railway Trail,Paget,kept,client-original,,32.282435,-64.77464,32.282435,-64.77464,0
+172,B0265-22,3 Bluck Point Road,Pembroke,kept,client-original,,32.301988,-64.810955,32.301988,-64.810955,0
+173,B0256-22,13 Melville Crescent,Devonshire,kept,client-original,,32.300598,-64.751133,32.300598,-64.751133,0
+174,B0275-22,1 St. Patrick's Close,Smiths,RECOVERED,client-point,client coordinate sitting on street patricks close,32.250949,-64.843562,32.306682,-64.740254,11.54
+175,B0232-22,32 Dundonald Street,City of Hamilton,OSM,near-number,dundonald street,32.29584,-64.781915,32.2963798,-64.7815961,0.07
+176,B0214-22,4 Peters Road,Hamilton,kept,client-original,,32.334625,-64.734321,32.334625,-64.734321,0
+177,B0239-22,19 Melville Crescent,Devonshire,kept,client-original,,32.300322,-64.75007,32.300322,-64.75007,0
+178,B0273-22,12 Scarrington Hill,Paget,kept,client-original,,32.27894,-64.78625,32.27894,-64.78625,0
+179,B0283-22,12 The Lane,Paget,kept,client-original,,32.290739,-64.771277,32.290739,-64.771277,0
+180,B0278-22,77 Sleepy Hollow Drive,Hamilton,kept,client-original,,32.340336,-64.728756,32.340336,-64.728756,0
+181,BC0041-22,38 Frog Lane,Devonshire,RECOVERED,client-point,client coordinate sitting on frog lane,32.300171,-64.769805,32.301044,-64.768792,0.14
+182,BC0119-21,36 Pompano Beach Road,Southampton,OSM,exact,pompano beach road,32.26146178,-64.87336758,32.262134,-64.8787311,0.51
+183,B0277-22,18 Cottage Hill Road West,Hamilton,RECOVERED,client-point,client coordinate sitting on cottage hill road west,32.341404,-64.729135,32.341832,-64.729369,0.05
+184,B0279-22,16 Harbour Road,Paget,kept,client-original,,32.280533,-64.792226,32.280533,-64.792226,0
+185,B0286-22,4 Westering Lane,Warwick,kept,client-original,,32.27397,-64.79437,32.27397,-64.79437,0
+186,B0280-22,61 Spice Hill Road,Warwick,kept,client-original,,32.261623,-64.809328,32.261623,-64.809328,0
+187,B0291-22,31 Tamarind Vale,Warwick,kept,client-original,,32.26958,-64.813951,32.26958,-64.813951,0
+188,B0202-22,13 Harrington Sound Road,Hamilton,kept,client-original,,32.330494,-64.711837,32.330494,-64.711837,0
+189,B0310-22,3 Bluebird Lane,Sandys,RECOVERED,client-point,client coordinate sitting on bluebird lane,32.279869,-64.874234,32.279571,-64.874619,0.05
+190,B0309-22,4 Bluebird Lane,Sandys,kept,client-original,,32.279246,-64.874482,32.279246,-64.874482,0
+191,B0314-22,3 Skyline Road,Smiths,kept,client-original,,32.317997,-64.720393,32.317997,-64.720393,0
+192,B0308-22,24 Glenwood Park Crescent,Warwick,kept,client-original,,32.268609,-64.795506,32.268609,-64.795506,0
+193,B0252-22,7 Speakers Drive,Devonshire,REVIEW,parish-anchor,street not in OSM,0,0,32.3039374,-64.7591087,8056.13
+194,BC0042-22,65 Pitts Bay Road,Pembroke,RECOVERED,client-point,client coordinate sitting on pitts bay road,32.2923572,-64.791171,32.29234,-64.794984,0.36
+195,B0332-22,18 Scaur Hill Drive,Sandys,kept,client-original,,32.282344,-64.875523,32.282344,-64.875523,0
+196,B0325-22,9 Kilderry Drive,Smiths,OSM,street,kilderry drive,32.312129,-64.745703,32.3113752,-64.7458923,0.09
+197,B0351-22,10 Hastings Road,Pembroke,kept,client-original,,32.2925679,-64.8016998,32.2925679,-64.8016998,0
+198,BC0069-22,9 Elliott Street,City of Hamilton,RECOVERED,client-point,client coordinate sitting on elliott street,32.29732,-64.78297,32.29686,-64.780142,0.27
+199,B0329-22,2 Frascati Lane,Smiths,kept,client-original,,32.320955,-64.739526,32.320955,-64.739526,0
+200,B0350-22,39 South Road,Southampton,kept,client-original,,32.249934,-64.849128,32.249934,-64.849128,0
+201,B0347-22,50 Morgan Road,Warwick,kept,client-original,,32.276955,-64.795857,32.276955,-64.795857,0
+202,B0349-22,80 Middle Road,Devonshire,kept,client-original,,32.320005,-64.734883,32.320005,-64.734883,0
+203,B0346-22,12 Commonland Point Road,Hamilton,kept,client-original,,32.330607,-64.73755,32.330607,-64.73755,0
+204,B0345-22,13 Sayle Road,Smiths,kept,client-original,,32.309584,-64.739209,32.309584,-64.739209,0
+205,B0342-22,15 Beulah Lane,Sandys,kept,client-original,,32.299217,-64.867237,32.299217,-64.867237,0
+206,BC0084-22,7 North Shore Road,Devonshire,OSM,exact,north shore road,32.30699757586207,-64.7738048172413,32.3074017,-64.7748124,0.1
+207,B0359-22,5 Crestwood Drive,Pembroke,kept,client-original,,32.303564,-64.815352,32.303564,-64.815352,0
+208,B0227-22,122 North Shore Road,Hamilton,kept,client-original,,32.340229,-64.736786,32.340229,-64.736786,0
+209,B0365-22,20 Jennings Road,Smiths,kept,client-original,,32.320607,-64.741398,32.320607,-64.741398,0
+210,B0373-22,2 Fairmont Drive,Southampton,OSM,street,fairmont drive,32.252663,-64.824422,32.2532001,-64.8243495,0.06
+211,B0367-22,124 Middle Road,Southampton,kept,client-original,,32.255716,-64.83705,32.255716,-64.83705,0
+212,B0371-22,18 Gilbert Hill,Smiths,kept,client-original,,32.310405,-64.739284,32.310405,-64.739284,0
+213,B0372-22,37 South Road,Southampton,RECOVERED,client-point,client coordinate sitting on south road,32.250189,-64.849057,32.248954,-64.844145,0.48
+214,B0363-22,15 Kilderry Lane,Smiths,kept,client-original,,32.312085,-64.746432,32.312085,-64.746432,0
+215,B0313-22,117 Middle Road,Southampton,kept,client-original,,32.253657,-64.847854,32.253657,-64.847854,0
+216,B0392-22,11 Bayfield Road,Warwick,kept,client-original,,32.264681,-64.818537,32.264681,-64.818537,0
+217,B0370-22,25 Gibbs Hill Road,Southampton,kept,client-original,,32.25372,-64.837044,32.25372,-64.837044,0
+218,B0403-22,54 Knapton Estates Road,Smiths,kept,client-original,,32.319661,-64.716842,32.319661,-64.716842,0
+219,B0398-22,8 Westwood Lane,Paget,kept,client-original,,32.287388,-64.780262,32.287388,-64.780262,0
+220,B0405-22,8 Appleby Lane,Paget,kept,client-original,,32.289,-64.771278,32.289,-64.771278,0
+221,B0395-22,11 Benevides Lane,Southampton,kept,client-original,,32.256261,-64.862166,32.256261,-64.862166,0
+222,B0410-22,12 Rose Hill Road,Southampton,kept,client-original,,32.261708,-64.870568,32.261708,-64.870568,0
+223,B0195-22,19 South Road,Southampton,kept,client-original,,32.250391,-64.85057,32.250391,-64.85057,0
+224,B0382-22,20 Woodbourne Avenue,Pembroke,OSM,exact,woodbourne avenue,32.2927587,-64.7895377,32.2927844,-64.7895495,0
+225,B0423-22,8 South Avenue,Southampton,kept,client-original,,32.255599,-64.822864,32.255599,-64.822864,0
+226,B0411-22,4 Sears Hill Road,Smiths,kept,client-original,,32.313466,-64.733358,32.313466,-64.733358,0
+227,B0426-22,17 Store Hill,Smiths,OSM,street,store hill,32.3175347,-64.7463399666666,32.3163615,-64.7462481,0.13
+228,B0413-22,79 Middle Road,Warwick,RECOVERED,client-point,client coordinate sitting on middle road,32.270226,-64.804049,32.266766,-64.8088,0.59
+229,B0343-22,19 Stardust Drive,Hamilton,kept,client-original,,32.337594,-64.729783,32.337594,-64.729783,0
+230,B0434-22,1 Two Way Mews,Pembroke,kept,client-original,,32.298826,-64.778847,32.298826,-64.778847,0
+231,BR0184-22,10 Harrington Sound Road,Smiths,RECOVERED,client-point,client coordinate sitting on harrington sound road,32.321583,-64.732999,32.324886,-64.715552,1.68
+232,B0440-22,99 Harrington Sound Road,Smiths,RECOVERED,client-point,client coordinate sitting on harrington sound road,32.325188,-64.715632,32.324435,-64.715038,0.1
+233,B0412-22,12 Belmont Road,Warwick,kept,client-original,,32.274263,-64.803115,32.274263,-64.803115,0
+234,B0394-22,8 Lone Palm Drive,Pembroke,kept,client-original,,32.295165,-64.80576,32.295165,-64.80576,0
+235,B0428-22,9 Port Royal Gardens,Southampton,kept,client-original,,32.253296,-64.844369,32.253296,-64.844369,0
+236,B0421-22,15 Mizzentop,Warwick,kept,client-original,,32.273301,-64.807095,32.273301,-64.807095,0
+237,B0414-22,5 Jennings Road,Smiths,kept,client-original,,32.322108,-64.740832,32.322108,-64.740832,0
+238,B0435-22,5 Sunset Pass,Pembroke,kept,client-original,,32.304898,-64.801096,32.304898,-64.801096,0
+239,B0445-22,35 Tuckers Town Road,St. George,kept,client-original,,32.333606,-64.6874645,32.333606,-64.6874645,0
+240,B0437-22,2 Millhouse Bay Lane,Hamilton,kept,client-original,,32.34144,-64.708892,32.34144,-64.708892,0
+241,B0225-22,15 Point Pleasant Road,City of Hamilton,kept,client-original,,32.2912,-64.787432,32.2912,-64.787432,0
+242,B0436-22,33 Knapton Hill,Smiths,kept,client-original,,32.317326,-64.720308,32.317326,-64.720308,0
+243,BR0190-22,44 West Side Road,Sandys,kept,client-original,,32.296346,-64.87516,32.296346,-64.87516,0
+244,B0447-22,49 Paynters Hill,Hamilton,REVIEW,parish-anchor,street not in OSM,32.3375,-64.70222,32.3412801,-64.7255713,2.24
+245,B0446-22,24 Narrows Lane,St. George,kept,client-original,,32.369447,-64.664483,32.369447,-64.664483,0
+246,B0462-22,28 Southcourt Avenue,Paget,kept,client-original,,32.287374,-64.764142,32.287374,-64.764142,0
+247,B0466-22,10 Rockywold Road,Sandys,kept,client-original,,32.268524,-64.879506,32.268524,-64.879506,0
+248,B0459-22,15 Gilbert Hill,Smiths,kept,client-original,,32.310215,-64.73868,32.310215,-64.73868,0
+249,B0500-22,27 Cherry Hill Park,Paget,kept,client-original,,32.277398,-64.78452,32.277398,-64.78452,0
+250,B0494-22,38 Clarendon Road,Bermuda,kept,client-original,,32.320337,-64.738059,32.320337,-64.738059,0
+251,B0481-22,6 Bay View Drive,Southampton,kept,client-original,,32.253871,-64.849624,32.253871,-64.849624,0
+252,B0496-22,8 Inghams Drive,Pembroke,kept,client-original,,32.304897,-64.800542,32.304897,-64.800542,0
+253,B0485-22,8 Scarrington Hill,Paget,kept,client-original,,32.279714,-64.786672,32.279714,-64.786672,0
+254,BR0213-22,7 Mill Shares Road,Pembroke,kept,client-original,,32.296819,-64.80178,32.296819,-64.80178,0
+255,BREV0403-22,8 Holly Lane,Smiths,OSM,street,holly lane,32.319887,-64.739033,32.320226,-64.7395011,0.06
+256,BC0052-22,37 Richmond Road,Devonshire,kept,client-original,,32.2942516,-64.7880402,32.2942516,-64.7880402,0
+257,BR0229-22,10 Bluebird Lane,Sandys,OSM,street,bluebird lane,32.279783,-64.873973,32.2794681,-64.8749615,0.1
+258,B0514-22,4 St. Anne's Close,Southampton,kept,client-original,,32.249996,-64.843622,32.249996,-64.843622,0
+259,B0519-22,2 Second Avenue,Pembroke,OSM,street,second avenue,32.295074,-64.775279,32.2955659,-64.7735148,0.17
+260,B0524-22,6 Watch Hill Lane,Warwick,kept,client-original,,32.265783,-64.814065,32.265783,-64.814065,0
+261,BR0238-22,7 Fairways Road,Warwick,kept,client-original,,32.264251,-64.826365,32.264251,-64.826365,0
+262,B0490-22,23 Rebecca Road,Southampton,kept,client-original,,32.258812,-64.831001,32.258812,-64.831001,0
+263,BREV0426-22,31 Tamarind Vale,Warwick,kept,client-original,,32.26958,-64.813951,32.26958,-64.813951,0
+264,B0492-22,82 South Road Unit: A,Warwick,kept,client-original,,32.2689,-64.788678,32.2689,-64.788678,0
+265,B0513-22,1 Two Way Mews,Pembroke,kept,client-original,,32.298826,-64.778847,32.298826,-64.778847,0
+266,B0512-22,2 Old Slip Lane,Pembroke,kept,client-original,,32.292373,-64.795747,32.292373,-64.795747,0
+267,B0486-22,28 Knapton Hill,Smiths,RECOVERED,client-point,client coordinate sitting on knapton hill,32.31643,-64.720511,32.315555,-64.721756,0.15
+268,B0534-22,12 Somers Hill Road,Hamilton,kept,client-original,,32.328064,-64.739177,32.328064,-64.739177,0
+269,B0489-22,12 Southcote Road,Paget,kept,client-original,,32.277112,-64.781423,32.277112,-64.781423,0
+270,B0531-22,15 Beaming Hill,Southampton,kept,client-original,,32.250896,-64.83238,32.250896,-64.83238,0
+271,B0027-22,37 Somerset Road,Sandys,kept,client-original,,32.299632,-64.870749,32.299632,-64.870749,0
+272,B0506-22,16 Tamarind Vale,Warwick,kept,client-original,,32.269127,-64.812874,32.269127,-64.812874,0
+273,B0545-22,5 Oceanside Road,Southampton,kept,client-original,,32.251013,-64.865177,32.251013,-64.865177,0
+274,B0026-22,66 Middle Road,Warwick,kept,client-original,,32.266766,-64.8088,32.266766,-64.8088,0
+275,B0567-22,1 Undina Watch,Southampton,OSM,street,undina watch,32.25180835555556,-64.8333210666666,32.2537229,-64.8351824,0.28
+276,B0549-22,9 Middle Road,Warwick,kept,client-original,,32.263627,-64.818196,32.263627,-64.818196,0
+277,B0488-22,25 Peace Haven Drive,Sandys,kept,client-original,,32.275104,-64.873684,32.275104,-64.873684,0
+278,B0396-22,62 Ord Road,Paget,kept,client-original,,32.279288,-64.781306,32.279288,-64.781306,0
+279,B0491-22,16 Riddell's Bay Road,Warwick,RECOVERED,client-point,client coordinate sitting on riddells bay road,32.264353,-64.819995,32.263842,-64.821897,0.19
+280,BC0129-22,65 The Glebe Road,Pembroke,kept,client-original,,32.305787,-64.776371,32.305787,-64.776371,0
+281,B0557-22,6 Idle Acres Road,Smiths,kept,client-original,,32.314736,-64.72709,32.314736,-64.72709,0
+282,B0482-22,14 Riddell's Bay Road,Warwick,kept,client-original,,32.263703,-64.820292,32.263703,-64.820292,0
+283,B0366-22,19 Harrington Hundreds Road,Smiths,kept,client-original,,32.318016,-64.724186,32.318016,-64.724186,0
+284,B0364-22,15 Rocky Ridge Road,Smiths,kept,client-original,,32.326712,-64.715055,32.326712,-64.715055,0
+285,B0581-22,44 West Side Road,Sandys,kept,client-original,,32.296346,-64.87516,32.296346,-64.87516,0
+286,BR0237-22,1 Governors Alley,Town of St. George,kept,client-original,,32.382913,-64.6770893,32.382913,-64.6770893,0
+287,BC0108-22,26 Palmetto Road,Devonshire,kept,client-original,,32.308132,-64.763581,32.308132,-64.763581,0
+288,BC0118-22,34 College Road,Paget,kept,client-original,,32.277493,-64.774458,32.277493,-64.774458,0
+289,B0016-23,8 Lolly's Lane,Smiths,kept,client-original,,32.320695,-64.728839,32.320695,-64.728839,0
+290,BC0002-23,2 Ferry Road,St. George,kept,client-original,,32.374781,-64.696942,32.374781,-64.696942,0
+291,B0013-23,16 Fairways Road,Warwick,kept,client-original,,32.262642,-64.830564,32.262642,-64.830564,0
+292,BREV0002-23,62 Ord Road,Paget,kept,client-original,,32.279288,-64.781306,32.279288,-64.781306,0
+293,B0006-23,6 Point Shares Road,Pembroke,kept,client-original,,32.2953502,-64.8027044,32.2953502,-64.8027044,0
+294,B0033-23,54 Mill Shares Road,Pembroke,kept,client-original,,32.29799,-64.806348,32.29799,-64.806348,0
+295,B0004-23,2 South Road,Bermuda,kept,client-original,,32.331277,-64.6996152,32.331277,-64.6996152,0
+296,B0002-23,4 Hilton Drive,Paget,kept,client-original,,32.276478,-64.782386,32.276478,-64.782386,0
+297,B0011-23,80 North Shore Road Unit: A,Pembroke,RECOVERED,client-point,client coordinate sitting on north shore road,32.304914,-64.789226,32.3056539905629,-64.78817544197068,0.13
+298,B0014-23,20 Burgess Point Road,Warwick,kept,client-original,,32.267103,-64.828649,32.267103,-64.828649,0
+299,B0059-23,13 Lolly's Lane,Smiths,kept,client-original,,32.320614,-64.728385,32.320614,-64.728385,0
+300,B0058-23,80 Harbour Road,Warwick,RECOVERED,client-point,client coordinate sitting on harbour road,32.277411,-64.799762,32.280388,-64.796549,0.45
+301,B0208-22,10 Devon Point Lane,Devonshire,kept,client-original,,32.300133,-64.743776,32.300133,-64.743776,0
+302,B0012-23,22 Narrows Lane,St. George,kept,client-original,,32.369247,-64.66457,32.369247,-64.66457,0
+303,B0068-23,,Southampton,REVIEW,parish-anchor,street not in OSM,0,0,32.2544361,-64.8439449,8062.12
+304,B0064-23,8 Agar's Hill,Pembroke,kept,client-original,,32.2944,-64.805,32.2944,-64.805,0
+305,B0030-23,22 Mission Crescent,Paget,kept,client-original,,32.277893,-64.772558,32.277893,-64.772558,0
+306,B0066-23,15 Pinetree Lane Unit: A,Sandys,OSM,street,pinetree lane,32.3008855,-64.864057,32.3015127,-64.8639537,0.07
+307,B0069-23,34 Mill Shares Road,Pembroke,RECOVERED,client-point,client coordinate sitting on mill shares road,32.298994,-64.804708,32.298722,-64.805815,0.11
+308,BR0027-23,61 Harbour Road,Paget,kept,client-original,,32.286387,-64.782047,32.286387,-64.782047,0
+309,BC0130-22,24 Rosemont Avenue,Pembroke,kept,client-original,,32.294916,-64.793056,32.294916,-64.793056,0
+310,B0080-23,2 Bloomfield Drive,Warwick,REVIEW,parish-anchor,street not in OSM,32.263842,-64.821897,32.2678602,-64.8053367,1.62
+311,B0478-22,15 Point Shares Road,Pembroke,OSM,exact,point shares road,32.2942895,-64.8035103,32.2942916,-64.803488,0
+312,B0045-23,8 Tousvent Lane,Warwick,OSM,exact,tousvent lane,32.275466,-64.792692,32.275437,-64.7926468,0.01
+313,B0499-22,3 Windy Bank,Smiths,kept,client-original,,32.314349,-64.742889,32.314349,-64.742889,0
+314,B0089-23,5 Cann Drive,Sandys,OSM,street,cann drive,32.293971,-64.87229,32.2941084,-64.8725165,0.03
+315,B0083-23,11 Manse Road,Paget,kept,client-original,,32.281129,-64.789129,32.281129,-64.789129,0
+316,B0046-23,52 Ord Road,Paget,kept,client-original,,32.278589,-64.781118,32.278589,-64.781118,0
+317,B0105-23,102 Cobbs Hill Road,Warwick,kept,client-original,,32.270143,-64.787835,32.270143,-64.787835,0
+318,B0113-23,17 Clarendon Road,Hamilton,kept,client-original,,32.320857,-64.73705,32.320857,-64.73705,0
+319,B0098-23,38 Astwood Road,Paget,kept,client-original,,32.289628,-64.766077,32.289628,-64.766077,0
+320,B0127-23,4 Keybay Lane,Pembroke,kept,client-original,,32.2959159,-64.8040488,32.2959159,-64.8040488,0
+321,BR0185-21,34 Pitts Bay Road,Pembroke,RECOVERED,client-point,client coordinate sitting on pitts bay road,32.294439,-64.798828,32.294184,-64.795714,0.29
+322,B0138-23,16 Oleander Lane,Devonshire,kept,client-original,,32.307037,-64.750682,32.307037,-64.750682,0
+323,B0129-23,13 Fairways Road,Warwick,kept,client-original,,32.262776,-64.829281,32.262776,-64.829281,0
+324,B0097-23,22 Scott's Hill Road,Sandys,kept,client-original,,32.298507,-64.863986,32.298507,-64.863986,0
+325,B0133-23,16 Trimingham Hill,Paget,kept,client-original,,32.289313,-64.769554,32.289313,-64.769554,0
+326,B0475-22,24 Burgess Point Road,Warwick,kept,client-original,,32.267049,-64.829325,32.267049,-64.829325,0
+327,B0147-23,29 St. David's Road,St. George,kept,client-original,,32.367946,-64.6717864,32.367946,-64.6717864,0
+328,B0107-23,191 South Road,Paget,RECOVERED,client-point,client coordinate sitting on south road,32.293578,-64.758978,32.280726,-64.776702,2.2
+329,BC0034-23,18 Church Street,City of Hamilton,RECOVERED,client-point,client coordinate sitting on church street,32.29394,-64.785606,32.293985,-64.78753,0.18
+330,B0182-23,14 St. Anne's Road,Southampton,kept,client-original,,32.251412,-64.842699,32.251412,-64.842699,0
+331,B0128-23,10 Hexham Drive,Hamilton,kept,client-original,,32.328017,-64.705022,32.328017,-64.705022,0
+332,B0175-23,10 WindReach Lane,Warwick,kept,client-original,,32.262617,-64.810158,32.262617,-64.810158,0
+333,B0183-23,14 Cottage Hill Road West,Hamilton,kept,client-original,,32.341832,-64.729369,32.341832,-64.729369,0
+334,B0196-23,166 Somerset Road,Sandys,RECOVERED,client-point,client coordinate sitting on somerset road,32.2806,-64.875154,32.28278,-64.873352,0.3
+335,BR0085-23,5 Lighthouse Hill,St. George,kept,client-original,,32.3664948,-64.6550339,32.3664948,-64.6550339,0
+336,B0193-23,11 Purvis Estate Road,Warwick,kept,client-original,,32.269216,-64.80509,32.269216,-64.80509,0
+337,B0108-23,10 Paget Close,Paget,kept,client-original,,32.290828,-64.773388,32.290828,-64.773388,0
+338,B0219-23,27 Melville Road,Devonshire,kept,client-original,,32.302979,-64.753965,32.302979,-64.753965,0
+339,B0199-23,3 Sonesta Drive,Southampton,OSM,street,sonesta drive,32.249952,-64.833779,32.2495852,-64.8351136,0.13
+340,BC0050-23,14 Wesley Street,City of Hamilton,kept,client-original,,32.294522,-64.786809,32.294522,-64.786809,0
+341,BC0126-22,38 Schools Drive,Devonshire,kept,client-original,,32.303848,-64.768674,32.303848,-64.768674,0
+342,B0226-23,24 Seabright Avenue,Paget,kept,client-original,,32.287813,-64.7619,32.287813,-64.7619,0
+343,B0234-23,100 Harbour Road,Paget,kept,client-original,,32.287261,-64.780805,32.287261,-64.780805,0
+344,B0236-23,15 Ocean Sands Road,Warwick,OSM,street,ocean sands road,32.259797,-64.811346,32.2593908,-64.8108396,0.07
+345,B0244-23,5 Seabright Lane,Paget,kept,client-original,,32.288749,-64.760913,32.288749,-64.760913,0
+346,B0233-23,18 Farmer's Lane,Warwick,kept,client-original,,32.265717,-64.815889,32.265717,-64.815889,0
+347,B0239-23,13 Witchery Lane,Warwick,RECOVERED,client-point,client coordinate sitting on witchery lane,32.2690077,-64.7880542,32.269771,-64.798931,1.03
+348,B0241-23,19 Jennings Road,Smiths,kept,client-original,,32.318315,-64.738728,32.318315,-64.738728,0
+349,B0237-23,31 Harrington Sound Road,Bermuda,kept,client-original,,32.336144,-64.705058,32.336144,-64.705058,0
+350,B0256-23,18 Farmer's Lane,Warwick,kept,client-original,,32.265717,-64.815889,32.265717,-64.815889,0
+351,BR0092-23,11 Somerset Road,Sandys,RECOVERED,client-point,client coordinate sitting on somerset road,32.301725,-64.868145,32.28898,-64.8743,1.53
+352,B0247-23,3 Kilderry Close,Smiths,kept,client-original,,32.311464,-64.745214,32.311464,-64.745214,0
+353,B0172-23,9 Happy Talk Drive,Paget,OSM,street,happy talk drive,32.291840433333334,-64.7637586333333,32.2925521,-64.7578132,0.57
+354,B0253-23,1 Garthowen Road,Devonshire,kept,client-original,,32.300223,-64.757002,32.300223,-64.757002,0
+355,BR0114-23,10 Sunset Pass,Pembroke,kept,client-original,,32.303824,-64.800999,32.303824,-64.800999,0
+356,B0259-23,2 Hidden Cove Lane,Hamilton,kept,client-original,,32.343812,-64.709815,32.343812,-64.709815,0
+357,BR0108-23,19 Stowe Hill,Paget,OSM,street,stowe hill,32.289049,-64.773041,32.2879876,-64.7724496,0.13
+358,B0224-23,11 Beaming Hill,Southampton,kept,client-original,,32.251342,-64.832234,32.251342,-64.832234,0
+359,B0276-23,,Devonshire,REVIEW,parish-anchor,street not in OSM,0,0,32.3039374,-64.7591087,8056.13
+360,B0120-23,43 Malabar Road,Sandys,kept,client-original,,32.3059488,-64.8559664,32.3059488,-64.8559664,0
+361,B0275-23,6 Mill Reach Lane,Pembroke,kept,client-original,,32.299117,-64.799605,32.299117,-64.799605,0
+362,BR0112-23,34 East Shore Road,Sandys,kept,client-original,,32.300961,-64.862536,32.300961,-64.862536,0
+363,B0300-23,10 Halfway Lane,Smiths,kept,client-original,,32.314631,-64.722148,32.314631,-64.722148,0
+364,B0289-23,11 Seabright Lane,Paget,RECOVERED,client-point,client coordinate sitting on seabright lane,32.291840433333334,-64.7637586333333,32.288622,-64.7612006,0.43
+365,BR0128-23,4 Southcote Road,Paget,kept,client-original,,32.277841,-64.781579,32.277841,-64.781579,0
+366,B0283-23,30 South Road,Hamilton,kept,client-original,,32.327784,-64.700041,32.327784,-64.700041,0
+367,BC0072-23,94 Middle Road,Devonshire,OSM,exact,middle road,32.303726,-64.755791,32.3036953,-64.7558272,0
+368,B0328-23,27 Harrington Sound Road,Hamilton,kept,client-original,,32.334999,-64.706698,32.334999,-64.706698,0
+369,BR0132-23,28 Rose Hill Road,Southampton,OSM,street,rose hill road,32.261322,-64.869343,32.2615491,-64.8701001,0.08
+370,B0327-23,4 Aldie Drive,Smiths,kept,client-original,,32.314128,-64.745546,32.314128,-64.745546,0
+371,B0310-23,97 Harrington Sound Road,Smiths,kept,client-original,,32.324886,-64.715552,32.324886,-64.715552,0
+372,B0223-23,5 Melville Crescent,Devonshire,kept,client-original,,32.299747,-64.751496,32.299747,-64.751496,0
+373,B0073-23,76 Harbour Road,Warwick,RECOVERED,client-point,client coordinate sitting on harbour road,32.276969,-64.800649,32.279847,-64.79798,0.41
+374,BC0131-22,14 Ferry Road,St. George,RECOVERED,client-point,client coordinate sitting on ferry road,32.368817,-64.70175,32.3665563,-64.7085898,0.69
+375,B0155-23,26 Castile Road,Warwick,REVIEW,parish-anchor,street not in OSM,32.265839,-64.829075,32.2678602,-64.8053367,2.25
+376,B0181-23,144 Somerset Road,Sandys,kept,client-original,,32.286008,-64.875115,32.286008,-64.875115,0
+377,B0277-23,7 Inghams Drive,Pembroke,kept,client-original,,32.304996,-64.800128,32.304996,-64.800128,0
+378,B0329-23,3 Tuckers Town Road,St. George,kept,client-original,,32.3342409,-64.6933298,32.3342409,-64.6933298,0
+379,B0346-23,2 George's Bay Road,Sandys,OSM,near-number,georges bay road,32.268599,-64.872374,32.2689034,-64.8730081,0.07
+380,B0349-23,35 Knapton Estates Road,Smiths,kept,client-original,,32.318505,-64.717106,32.318505,-64.717106,0
+381,B0228-23,6 Flowercote Lane,Smiths,OSM,street,flowercote lane,32.3131214,-64.72813665,32.3183113,-64.7261038,0.61
+382,B0342-23,10 Frascati Lane,Bermuda,kept,client-original,,32.321635,-64.73887,32.321635,-64.73887,0
+383,B0348-23,9 Store Hill,Smiths,OSM,street,store hill,32.3175347,-64.7463399666666,32.3163615,-64.7462481,0.13
+384,B0353-23,6 Bean Dale,Pembroke,OSM,street,bean dale,32.30365765,-64.8067879,32.3052488,-64.8074867,0.19
+385,B0273-23,2 Deepwood Drive,Pembroke,OSM,street,deepwood drive,32.296348,-64.801174,32.2961873,-64.801126,0.02
+386,B0295-23,8 Frascati Lane,Bermuda,kept,client-original,,32.32154,-64.739194,32.32154,-64.739194,0
+387,B0364-23,12 Knapton Estates Road,Smiths,kept,client-original,,32.315525,-64.719527,32.315525,-64.719527,0
+388,B0370-23,136 Somerset Road,Sandys,OSM,near-number,somerset road,32.288659,-64.874039,32.2846631,-64.8752028,0.46
+389,B0378-23,18 Grape Bay Drive,Paget,kept,client-original,,32.283915,-64.771408,32.283915,-64.771408,0
+390,B0377-23,3 Green Bay Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on green bay lane,32.302134,-64.81198,32.302835,-64.812383,0.09
+391,B0373-23,14 Cross Bay Road,Southampton,kept,client-original,,32.250044,-64.829252,32.250044,-64.829252,0
+392,B0358-23,8 Bridge View Lane,Sandys,OSM,street,bridge view lane,32.32067298709678,-64.8407611225806,32.3037912,-64.8603385,2.63
+393,B0278-23,15 Cavendish Road,Pembroke,OSM,near-number,cavendish road,32.294307,-64.774715,32.2941853,-64.7736257,0.1
+394,B0380-23,17 Point Finger Road,Paget,kept,client-original,,32.290884,-64.76554,32.290884,-64.76554,0
+395,B0381-23,29 Berry Hill Road,Paget,OSM,street,berry hill road,32.294235,-64.765527,32.2940416,-64.7640316,0.14
+396,B0290-23,11 Kelland Circle,Warwick,OSM,street,kelland circle,32.273333,-64.806729,32.2704937,-64.7926894,1.36
+397,B0020-23,3 Tween Walls,Sandys,kept,client-original,,32.304535,-64.867865,32.304535,-64.867865,0
+398,B0314-23,7 Salt House Lane,Smiths,OSM,street,salt house lane,32.319315,-64.723982,32.3193636,-64.7234988,0.05
+399,B0394-23,9 Farmstead Lane Unit: A,Sandys,kept,client-original,,32.2726262,-64.8766786,32.2726262,-64.8766786,0
+400,B0321-23,6 Mill Reach Lane,Pembroke,kept,client-original,,32.299117,-64.799605,32.299117,-64.799605,0
+401,B0344-23,1 Bluebird Lane,Sandys,kept,client-original,,32.279571,-64.874619,32.279571,-64.874619,0
+402,B0357-23,4 Glebe Hill,Hamilton,kept,client-original,,32.333267,-64.70207,32.333267,-64.70207,0
+403,BR0169-23,1 Marshall Island,Warwick,REVIEW,parish-anchor,street not in OSM,32.269346975,-64.807804025,32.2678602,-64.8053367,0.29
+404,B0306-23,48 Happy Valley Road,Pembroke,kept,client-original,,32.297571,-64.772474,32.297571,-64.772474,0
+405,B0350-23,4 Third Avenue,Warwick,kept,client-original,,32.259293,-64.813778,32.259293,-64.813778,0
+406,B0405-23,13 Devondale Drive,Devonshire,kept,client-original,,32.295862,-64.751285,32.295862,-64.751285,0
+407,B0406-23,131 Middle Road,Southampton,kept,client-original,,32.254156,-64.845994,32.254156,-64.845994,0
+408,B0308-23,10 Chapel Lane,Paget,kept,client-original,,32.281384,-64.783375,32.281384,-64.783375,0
+409,B0230-23,76 North Shore Road,Hamilton,kept,client-original,,32.333792,-64.737172,32.333792,-64.737172,0
+410,B0307-23,18 Ord Road,Warwick,RECOVERED,client-point,client coordinate sitting on ord road,32.269771,-64.798931,32.271113,-64.799826,0.17
+411,B0343-23,3 Rocky Ridge Road,Smiths,kept,client-original,,32.325582,-64.714805,32.325582,-64.714805,0
+412,B0225-23,10 Hidden Cove Lane,Hamilton,kept,client-original,,32.344422,-64.70948,32.344422,-64.70948,0
+413,B0311-23,13 Grape Bay Drive,Paget,OSM,street,grape bay drive,32.285071,-64.771347,32.2836747,-64.7709035,0.16
+414,B0322-23,6 Mill Reach Lane,Pembroke,kept,client-original,,32.299117,-64.799605,32.299117,-64.799605,0
+415,B0374-23,5 Desilva Drive,Warwick,OSM,street,desilva drive,32.269334,-64.792456,32.2692295,-64.7922798,0.02
+416,B0345-23,4 Bellevue Lane,Paget,kept,client-original,,32.284535,-64.767473,32.284535,-64.767473,0
+417,BR0009-23,1 Green View Lane,Smiths,kept,client-original,,32.306914,-64.737264,32.306914,-64.737264,0
+418,B0437-23,11 Jennings Bay Road,Southampton,kept,client-original,,32.258053,-64.864192,32.258053,-64.864192,0
+419,B0347-23,29 Harrington Hundreds Road,Smiths,kept,client-original,,32.317249,-64.72373,32.317249,-64.72373,0
+420,B0354-23,68 North Shore Road,Pembroke,OSM,near-number,north shore road,32.304807,-64.791546,32.3050604,-64.7911956,0.04
+421,B0356-23,4 Rose Glen,Warwick,kept,client-original,,32.273458,-64.805023,32.273458,-64.805023,0
+422,B0355-23,91 Harrington Sound Road,Smiths,kept,client-original,,32.324435,-64.715038,32.324435,-64.715038,0
+423,B0431-23,8 Holly Lane,Smiths,OSM,street,holly lane,32.319887,-64.739033,32.320226,-64.7395011,0.06
+424,BR0161-23,15 Middle Road,Paget,OSM,near-number,middle road,32.280359,-64.791405,32.2796943,-64.78902,0.24
+425,B0429-23,8 Tablerock Avenue,Pembroke,RECOVERED,client-point,client coordinate sitting on tablerock avenue,32.30409,-64.798245,32.303055,-64.797524,0.13
+426,B0427-23,13 Shaw Wood Road,Pembroke,kept,client-original,,32.30306,-64.810748,32.30306,-64.810748,0
+427,B0428-23,11 Agar's Island,Pembroke,REVIEW,parish-anchor,street not in OSM,32.29370414931507,-64.8038436136986,32.3008022,-64.7915912,1.4
+428,B0447-23,4 Windcrest Drive,Paget,kept,client-original,,32.289752,-64.768415,32.289752,-64.768415,0
+429,B0446-23,13 Elliott Street West,City of Hamilton,OSM,exact,elliott street west,32.2971141,-64.7849691,32.2971204,-64.7849699,0
+430,B0456-23,25 St. Mark's Road,Smiths,OSM,street,street marks road,32.313969,-64.734886,32.3126921,-64.7366104,0.22
+431,B0454-23,6 Skyline Road,Smiths,kept,client-original,,32.318858,-64.719943,32.318858,-64.719943,0
+432,B0459-23,8 Summit View Drive,Hamilton,kept,client-original,,32.346062,-64.725114,32.346062,-64.725114,0
+433,B0460-23,6 Rosemont Avenue,Pembroke,RECOVERED,client-point,client coordinate sitting on rosemont avenue,32.296967,-64.79383,32.291726,-64.791811,0.61
+434,B0464-23,5 Pampas Lane,Smiths,OSM,street,pampas lane,32.305303,-64.737992,32.3042233,-64.738753,0.14
+435,B0462-23,5 Acacia Lane,Sandys,kept,client-original,,32.303209,-64.869886,32.303209,-64.869886,0
+436,BC0097-23,117 Middle Road,Warwick,kept,client-original,,32.275921,-64.794246,32.275921,-64.794246,0
+437,B0471-23,18 St. Anne's Road,Southampton,kept,client-original,,32.251447,-64.841925,32.251447,-64.841925,0
+438,BR0162-23,66 Sound View Road,Sandys,kept,client-original,,32.294539,-64.869691,32.294539,-64.869691,0
+439,B0470-23,39 Orchard Grove,Pembroke,kept,client-original,,32.304322,-64.775162,32.304322,-64.775162,0
+440,BC0135-23,1 Middle Road,Sandys,OSM,exact,middle road,32.2782539,-64.876743,32.2782539,-64.876743,0
+441,B0492-23,7A South Road,Hamilton,kept,client-original,,32.32589,-64.705543,32.32589,-64.705543,0
+442,B0496-23,53 St. David's Road,St. George,kept,client-original,,32.3653612,-64.6640368,32.3653612,-64.6640368,0
+443,B0312-23,7 Plaice's Point Road,Pembroke,OSM,street,plaices point road,32.304396,-64.815577,32.3043467,-64.8160778,0.05
+444,B0472-23,7 Whitney Avenue West,Pembroke,kept,client-original,,32.304553,-64.788941,32.304553,-64.788941,0
+445,B0490-23,19 Beacon Hill Road,Sandys,OSM,near-number,beacon hill road,32.301666,-64.866106,32.300753,-64.867409,0.16
+446,B0469-23,14 Southlyn Lane,Paget,kept,client-original,,32.280503,-64.778193,32.280503,-64.778193,0
+447,B0499-23,1 Seabright Lane,Paget,kept,client-original,,32.288662,-64.761375,32.288662,-64.761375,0
+448,B0484-23,21 Rocky Bay Lane,Devonshire,RECOVERED,client-point,client coordinate sitting on rocky bay lane,32.304179,-64.752882,32.3002368,-64.74604,0.78
+449,B0486-23,21 Shore Hills Lane,St. George,kept,client-original,,32.371458,-64.695616,32.371458,-64.695616,0
+450,B0507-23,3 Scenic Heights Pass,Southampton,kept,client-original,,32.258806,-64.823321,32.258806,-64.823321,0
+451,BR0215-23,4 Tribe Road No 1,Paget,kept,client-original,,32.289669,-64.762245,32.289669,-64.762245,0
+452,B0500-23,33 Melville Road,Devonshire,OSM,street,melville road,32.303834,-64.753626,32.3022975,-64.7524478,0.2
+453,B0511-23,15 Grasmere Road,Pembroke,kept,client-original,,32.30067,-64.808714,32.30067,-64.808714,0
+454,BR0232-23,6 Manderley Mews,Warwick,RECOVERED,client-point,client coordinate sitting on manderley mews,32.321056,-64.727167,32.264353,-64.819995,10.78
+455,B0481-23,41 Pitts Bay Road,Pembroke,OSM,street-anchored,pitts bay road,32.263911,-64.819931,32.2918389,-64.7948361,3.9
+456,B0509-23,37 South Road,Smiths,RECOVERED,client-point,client coordinate sitting on south road,32.294184,-64.795714,32.3131214,-64.72813665,6.7
+457,B0495-23,17 Rocky Ridge Road,Smiths,RECOVERED,client-point,client coordinate sitting on rocky ridge road,32.30992,-64.735451,32.325474,-64.715429,2.56
+458,B0506-23,27 Harvest Lane Unit: A,Hamilton,RECOVERED,client-point,client coordinate sitting on harvest lane,32.267315,-64.872368,32.3354143,-64.7322707,15.21
+459,B0002-24,13 Foothills Road,Devonshire,RECOVERED,client-point,client coordinate sitting on foothills road,32.3354143,-64.7322707,32.312807,-64.752368,3.15
+460,B0503-23,10 Westwood Lane,Paget,RECOVERED,client-point,client coordinate sitting on westwood lane,32.312807,-64.752368,32.286988,-64.780185,3.89
+461,B0505-23,127 Middle Road,Southampton,RECOVERED,client-point,client coordinate sitting on middle road,32.286988,-64.780185,32.254039,-64.84694,7.27
+462,B0018-24,12 Paget Close,Paget,RECOVERED,client-point,client coordinate sitting on paget close,32.254039,-64.84694,32.290606,-64.773248,8.04
+463,B0003-24,2 Tamarisk Hill,Smiths,RECOVERED,client-point,client coordinate sitting on tamarisk hill,32.290606,-64.773248,32.317988,-64.745986,3.98
+464,B0009-24,17 Mcgall's Bay Road,Smiths,OSM,street,mcgalls bay road,32.317988,-64.745986,32.3108347,-64.7305954,1.65
+465,BR0001-24,5 Edgehill Drive,Paget,RECOVERED,client-point,client coordinate sitting on edgehill drive,32.308879,-64.730553,32.279516,-64.788076,6.32
+466,BR0005-24,38 Middle Road,Devonshire,OSM,street-anchored,middle road,32.279516,-64.788076,32.295416,-64.76825,2.57
+467,B0022-24,8 Jackson Drive,Devonshire,RECOVERED,client-point,client coordinate sitting on jackson drive,32.29586,-64.766568,32.306043,-64.752237,1.76
+468,B0014-24,7 Knapton Crescent,Smiths,RECOVERED,client-point,client coordinate sitting on knapton crescent,32.306043,-64.752237,32.316798,-64.719565,3.3
+469,B0025-24,95 South Road,Paget,RECOVERED,client-point,client coordinate sitting on south road,32.316798,-64.719565,32.2699725,-64.7868268,8.2
+470,B0023-24,24 Skyline Road,Smiths,RECOVERED,client-point,client coordinate sitting on skyline road,32.280726,-64.776702,32.319556,-64.720549,6.83
+471,B0026-24,21 South Road,Smiths,RECOVERED,client-point,client coordinate sitting on south road,32.319556,-64.720549,32.3131214,-64.72813665,1.01
+472,B0035-24,22 Narrows Lane,St. George,RECOVERED,client-point,client coordinate sitting on narrows lane,32.306682,-64.740254,32.369247,-64.66457,9.96
+473,B0037-24,19 South Road,Southampton,RECOVERED,client-point,client coordinate sitting on south road,32.369247,-64.66457,32.248954,-64.844145,21.55
+474,B0038-24,53 St. Anne's Road,Southampton,RECOVERED,client-point,client coordinate sitting on street annes road,32.250391,-64.85057,32.252656,-64.836254,1.37
+475,B0042-24,12 Harrington Hundreds Road Unit: A,Smiths,RECOVERED,client-point,client coordinate sitting on harrington hundreds road,32.252656,-64.836254,32.3193995,-64.7255581,12.8
+476,B0048-24,4 Knapton Crescent,Smiths,RECOVERED,client-point,client coordinate sitting on knapton crescent,32.320632,-64.72602,32.31643,-64.720511,0.7
+477,BR0206-23,15 Harbour Road,Paget,RECOVERED,client-point,client coordinate sitting on harbour road,32.315434,-64.719929,32.284045,-64.783545,6.93
+478,B0068-24,13 Hillview Road,Warwick,RECOVERED,client-point,client coordinate sitting on hillview road,32.282617,-64.78968,32.269209,-64.810727,2.48
+479,B0039-24,12 Lighthouse Hill,St. George,RECOVERED,client-point,client coordinate sitting on lighthouse hill,32.269209,-64.810727,32.3661611,-64.653535,18.31
+480,B0062-24,3 Kilderry Close,Smiths,RECOVERED,client-point,client coordinate sitting on kilderry close,32.3661611,-64.653535,32.311464,-64.745214,10.55
+481,BR0037-24,34 Keith Hall Road,Warwick,RECOVERED,client-point,client coordinate sitting on keith hall road,32.311464,-64.745214,32.277845,-64.798117,6.23
+482,BR0035-24,28 Keith Hall Road,Warwick,kept,client-original,,32.2756,-64.797609,32.2756,-64.797609,0
+483,B0071-24,8 Riviera Road,Southampton,RECOVERED,client-point,client coordinate sitting on riviera road,32.276122,-64.798414,32.257463,-64.827027,3.4
+484,B0046-24,6 Mission Crescent,Paget,RECOVERED,client-point,client coordinate sitting on mission crescent,32.257463,-64.827027,32.279867,-64.773622,5.61
+485,B0085-24,41 St. Mary's Road,Warwick,RECOVERED,client-point,client coordinate sitting on street marys road,32.279867,-64.773622,32.27150525,-64.805102125,3.11
+486,B0485-23,15 Southampton Road,Southampton,RECOVERED,client-point,client coordinate sitting on southampton road,32.271808,-64.805808,32.251302,-64.863728,5.91
+487,BR0054-24,30 Gilbert Hill,Smiths,RECOVERED,client-point,client coordinate sitting on gilbert hill,32.251302,-64.863728,32.310041,-64.739027,13.44
+488,BR0229-23,1 Jones Lane,Warwick,RECOVERED,client-point,client coordinate sitting on jones lane,32.310245,-64.738139,32.280109,-64.795768,6.38
+489,B0090-24,12 Speakers Drive,St. George,RECOVERED,client-point,client coordinate sitting on speakers drive,32.280109,-64.795768,32.3778111,-64.6851087,15.06
+490,B0081-24,119 Harbour View Drive,Southampton,RECOVERED,client-point,client coordinate sitting on harbour view drive,32.3778111,-64.6851087,32.251219,-64.826426,19.37
+491,B0087-24,5 Woodstock Hill,Paget,RECOVERED,client-point,client coordinate sitting on woodstock hill,32.251219,-64.826426,32.287189,-64.764582,7.07
+492,B0086-24,5 Mcgalls Hill Court,Smiths,RECOVERED,client-point,client coordinate sitting on mcgalls hill court,32.287189,-64.764582,32.309941,-64.736715,3.65
+493,B0088-24,6 Hibiscus Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on hibiscus lane,32.309941,-64.736715,32.294973,-64.774144,3.9
+494,BR0059-24,4 Burgess Point Road,Warwick,RECOVERED,client-point,client coordinate sitting on burgess point road,32.294973,-64.774144,32.2675509,-64.8258986,5.75
+495,B0093-24,5 Bayfield Road,Warwick,RECOVERED,client-point,client coordinate sitting on bayfield road,32.2675509,-64.8258986,32.2647901,-64.8186259,0.75
+496,BR0004-24,121 Harrington Sound Road,Bermuda,RECOVERED,client-point,client coordinate sitting on harrington sound road,32.264409,-64.817993,32.328542,-64.714037,12.11
+497,B0105-24,1 Between The Walls,Pembroke,RECOVERED,client-point,client coordinate sitting on between the walls,32.328542,-64.714037,32.292103,-64.79373,8.52
+498,B0102-24,15 Tablerock Avenue,Pembroke,OSM,street,tablerock avenue,32.292103,-64.79373,32.3040707,-64.7980735,1.39
+499,B0091-24,9 Burnt Hill Lane,Warwick,RECOVERED,client-point,client coordinate sitting on burnt hill lane,32.303055,-64.797524,32.266334,-64.816241,4.45
+500,B0104-24,20 Grasmere Road,Pembroke,RECOVERED,client-point,client coordinate sitting on grasmere road,32.266334,-64.816241,32.300356,-64.807231,3.88
+501,B0129-24,26 Jennings Bay Road,Southampton,RECOVERED,client-point,client coordinate sitting on jennings bay road,32.300798,-64.807608,32.258021,-64.86375,7.11
+502,B0126-24,5 Rocky Ridge Road,Smiths,RECOVERED,client-point,client coordinate sitting on rocky ridge road,32.258021,-64.86375,32.325188,-64.715632,15.82
+503,B0114-24,59 Spice Hill Road,Warwick,RECOVERED,client-point,client coordinate sitting on spice hill road,32.325474,-64.715429,32.26177,-64.810261,11.4
+504,B0127-24,9 Berry Hill Road,Paget,OSM,street,berry hill road,32.26177,-64.810261,32.2940416,-64.7640316,5.64
+505,B0487-23,49 Bloomfield Drive,Warwick,REVIEW,parish-anchor,street not in OSM,32.293934,-64.769054,32.2678602,-64.8053367,4.48
+506,B0120-24,54 Serpentine Road,Pembroke,RECOVERED,client-point,client coordinate sitting on serpentine road,32.266444,-64.821083,32.2959924,-64.7891301,4.46
+507,B0112-24,88 Sound View Road,Sandys,RECOVERED,client-point,client coordinate sitting on sound view road,32.2959924,-64.7891301,32.292965,-64.873206,7.92
+508,B0092-24,9 Cedarberry Drive,Hamilton,OSM,street,cedarberry drive,32.292965,-64.873206,32.3408198,-64.7092143,16.33
+509,B0135-24,7 Hastings Road,Pembroke,RECOVERED,client-point,client coordinate sitting on hastings road,32.34006,-64.709144,32.2929406,-64.8014382,10.14
+510,B0143-24,34 South Road,Southampton,RECOVERED,client-point,client coordinate sitting on south road,32.2929406,-64.8014382,32.250391,-64.85057,6.62
+511,B0136-24,2 Twin Lane Place,Pembroke,RECOVERED,client-point,client coordinate sitting on twin lane place,32.248954,-64.844145,32.302755,-64.791491,7.77
+512,B0154-24,13A Middle Road,Warwick,RECOVERED,client-point,client coordinate sitting on middle road,32.302755,-64.791491,32.263759,-64.817458,4.98
+513,B0132-24,13 Belmont Road,Warwick,RECOVERED,client-point,client coordinate sitting on belmont road,32.263759,-64.817458,32.274768,-64.801626,1.93
+514,B0152-24,1 Church Road,Southampton,OSM,near-number,church road,32.274768,-64.801626,32.2535042,-64.846445,4.84
+515,B0184-24,10 Arlington Drive,Smiths,RECOVERED,client-point,client coordinate sitting on arlington drive,32.293985,-64.78753,32.314425,-64.742002,4.85
+516,B0182-24,52 Jennings Road,Smiths,OSM,street-anchored,jennings road,32.314425,-64.742002,32.3183028,-64.7387109,0.53
+517,B0179-24,6 Pokiok Road,Smiths,OSM,street,pokiok road,32.318284,-64.740346,32.3092928,-64.7335728,1.19
+518,B0181-24,9 Happy Talk Drive,Paget,OSM,street,happy talk drive,32.308346,-64.733483,32.2925521,-64.7578132,2.89
+519,B0191-24,8 Emily's Bay Lane,St. George,OSM,street,emilys bay lane,32.291840433333334,-64.7637586333333,32.3690754,-64.6721298,12.18
+520,B0206-24,25 Between The Walls,Pembroke,RECOVERED,client-point,client coordinate sitting on between the walls,32.369063,-64.67289,32.295816,-64.794069,14.01
+521,B0197-24,12A Southcote Road,Paget,OSM,street,southcote road,32.295816,-64.794069,32.2767911,-64.7806402,2.47
+522,B0217-24,9 Keith Hall Road,Warwick,RECOVERED,client-point,client coordinate sitting on keith hall road,32.276929,-64.781585,32.276808,-64.798074,1.55
+523,B0200-24,10 Mizzentop,Warwick,RECOVERED,client-point,client coordinate sitting on mizzentop,32.277845,-64.798117,32.273333,-64.806729,0.95
+524,B0198-24,7A Wreck Road,Sandys,RECOVERED,client-point,client coordinate sitting on wreck road,32.27150525,-64.805102125,32.275318,-64.878373,6.91
+525,BC0040-24,56 South Road,Southampton,OSM,exact,south road,32.275318,-64.878373,32.2485197,-64.8392014,4.74
+526,B0508-23,12 Williams Estate,Smiths,REVIEW,parish-anchor,street not in OSM,32.248964,-64.839529,32.3154757,-64.7304162,12.66
+527,B0243-24,15 Coopers Hill,Southampton,REVIEW,parish-anchor,street not in OSM,32.306196,-64.735474,32.2544361,-64.8439449,11.72
+528,B0236-24,11 Herons Nest Drive,Southampton,OSM,street,herons nest drive,32.252302,-64.844932,32.2605307,-64.8250678,2.08
+529,B0237-24,4 Clouds Avenue,Warwick,OSM,street,clouds avenue,32.260025,-64.825498,32.2577787,-64.8131251,1.19
+530,B0242-24,12 Tanglewood Road,Paget,OSM,street-anchored,tanglewood road,32.25761,-64.813044,32.2793449,-64.7890794,3.31
+531,B0239-24,7 Tulo Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on tulo lane,32.276417,-64.788316,32.303706,-64.805129,3.43
+532,B0252-24,12 Devondale Drive,Devonshire,RECOVERED,client-point,client coordinate sitting on devondale drive,32.303706,-64.805129,32.296993,-64.75129,5.12
+533,B0260-24,28 Castile Road,Warwick,REVIEW,parish-anchor,street not in OSM,32.296333,-64.75155,32.2678602,-64.8053367,5.97
+534,B0216-24,8 Harvey Road,Paget,RECOVERED,client-point,client coordinate sitting on harvey road,32.265302,-64.82917,32.27254,-64.786562,4.09
+535,B0277-24,11 Garthowen Road,Devonshire,RECOVERED,client-point,client coordinate sitting on garthowen road,32.272609,-64.787361,32.299257,-64.755618,4.21
+536,B0265-24,1 Zuill's Park Drive,Smiths,OSM,street,zuills park drive,32.299257,-64.755618,32.3143931,-64.7304415,2.91
+537,B0284-24,28 North Shore Road,Smiths,OSM,street-anchored,north shore road,32.3131214,-64.72813665,32.3158395,-64.7500276,2.08
+538,B0275-24,43 Old Road,Hamilton,RECOVERED,client-point,client coordinate sitting on old road,32.318911,-64.744669,32.336613,-64.739729,2.02
+539,B0272-24,8 Harbour Road,Warwick,RECOVERED,client-point,client coordinate sitting on harbour road,32.336613,-64.739729,32.269312,-64.816535,10.41
+540,BR0157-24,5 Shinbone Alley,Town of St. George,RECOVERED,client-point,client coordinate sitting on shinbone alley,32.269312,-64.816535,32.382931,-64.67565,18.33
+541,BC0086-24,76 Pitts Bay Road,Pembroke,OSM,exact,pitts bay road,32.382931,-64.67565,32.2905525,-64.7923192,15.03
+542,B0294-24,8 Southlyn Lane,Paget,RECOVERED,client-point,client coordinate sitting on southlyn lane,32.290548,-64.792314,32.280962,-64.777781,1.73
+543,B0287-24,32 Pearman's Hill West,Warwick,RECOVERED,client-point,client coordinate sitting on pearmans hill west,32.280962,-64.777781,32.264557,-64.808841,3.45
+544,B0266-24,4 Aldie Drive,Smiths,RECOVERED,client-point,client coordinate sitting on aldie drive,32.264557,-64.808841,32.314128,-64.745546,8.12
+545,B0306-24,13 Windermere,Pembroke,RECOVERED,client-point,client coordinate sitting on windermere,32.314128,-64.745546,32.299549,-64.802894,5.63
+546,B0297-24,1 Timber Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on timber lane,32.299549,-64.802894,32.296195,-64.799507,0.49
+547,B0422-23,14 Laffan Street,City of Hamilton,RECOVERED,client-point,client coordinate sitting on laffan street,32.296195,-64.799507,32.297671,-64.785587,1.32
+548,B0295-24,8 Inglewood Lane,Paget,RECOVERED,client-point,client coordinate sitting on inglewood lane,32.297671,-64.785587,32.286772,-64.766868,2.14
+549,B0290-24,4 Lulworth Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on lulworth lane,32.286772,-64.766868,32.2930967,-64.8055015,3.7
+550,BC0008-24,5 The Lane,Paget,RECOVERED,client-point,client coordinate sitting on the lane,32.2935339,-64.8053996,32.290426,-64.772063,3.16
+551,B0307-24,1 High Knoll Lane,Smiths,RECOVERED,client-point,client coordinate sitting on high knoll lane,32.290426,-64.772063,32.316389,-64.718497,5.81
+552,B0327-24,14 Jubilee Road,Devonshire,RECOVERED,client-point,client coordinate sitting on jubilee road,32.316389,-64.718497,32.302098,-64.761213,4.32
+553,B0323-24,17 Friths Farm Road,Paget,REVIEW,parish-anchor,street not in OSM,32.302098,-64.761213,32.2849567,-64.7753406,2.33
+554,B0326-24,,Devonshire,REVIEW,parish-anchor,street not in OSM,32.278675,-64.785147,32.3039374,-64.7591087,3.73
+555,B0315-24,,Warwick,REVIEW,parish-anchor,street not in OSM,0,0,32.2678602,-64.8053367,8058.94
+556,B0314-24,1 Marshall Island,Warwick,REVIEW,parish-anchor,street not in OSM,0,0,32.2678602,-64.8053367,8058.94
+557,B0303-24,10 Valley Road,Paget,OSM,near-number,valley road,32.284704,-64.812308,32.2835016,-64.7776835,3.26
+558,BC0069-24,1 Harbour Road,Bermuda,RECOVERED,client-point,client coordinate sitting on harbour road,32.283866,-64.778036,32.2810336,-64.7948055,1.61
+559,B0292-24,18 First Avenue,Pembroke,OSM,street,first avenue,32.279847,-64.79798,32.2950342,-64.7732414,2.88
+560,B0322-24,3 Devon Point Lane,Devonshire,RECOVERED,client-point,client coordinate sitting on devon point lane,32.294551,-64.773418,32.301149,-64.744688,2.8
+561,B0339-24,13 Middleton Lane,Paget,OSM,street,middleton lane,32.301149,-64.744688,32.2818317,-64.7805188,4
+562,B0185-24,53 Harrington Sound Road,Hamilton,RECOVERED,client-point,client coordinate sitting on harrington sound road,32.280647,-64.779801,32.329076,-64.712027,8.35
+563,B0347-24,51 St. Anne's Road,Southampton,RECOVERED,client-point,client coordinate sitting on street annes road,32.34255,-64.710431,32.2529735,-64.8392026,15.69
+564,BR0167-24,3 Queen Street,Town of St. George,OSM,exact,queen street,32.253122,-64.836435,32.3815161,-64.6780783,20.65
+565,BREV0367-24,4 Lulworth Lane,Pembroke,OSM,exact,lulworth lane,32.3815098,-64.6780743,32.2935435,-64.8054161,15.47
+566,B0348-24,9 Verdmont Valley Drive,Smiths,RECOVERED,client-point,client coordinate sitting on verdmont valley drive,32.2935339,-64.8053996,32.310749,-64.743077,6.17
+567,BREV0347-24,34 South Road,Southampton,OSM,street-anchored,south road,32.310749,-64.743077,32.2485197,-64.8392014,11.39
+568,B0355-24,18 Riddell's Bay Road,Warwick,RECOVERED,client-point,client coordinate sitting on riddells bay road,32.248954,-64.844145,32.263911,-64.819931,2.82
+569,BREV0389-24,1 Timber Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on timber lane,32.264337,-64.821585,32.296195,-64.799507,4.11
+570,B0367-24,1 Turtle Bay Lane,Southampton,RECOVERED,client-point,client coordinate sitting on turtle bay lane,32.296195,-64.799507,32.2511129,-64.8526628,7.09
+571,B0376-24,36 Union Street,City of Hamilton,OSM,exact,union street,32.250024,-64.85148,32.2968566,-64.7801544,8.5
+572,B0357-24,85 North Shore Road,Pembroke,OSM,exact,north shore road,32.29686,-64.780142,32.3056388,-64.7878334,1.22
+573,B0377-24,51 Pitts Bay Road,Pembroke,OSM,near-number,pitts bay road,32.3056493,-64.7878537,32.2918389,-64.7948361,1.67
+574,B0359-24,28 Point Finger Road,Paget,RECOVERED,client-point,client coordinate sitting on point finger road,32.29234,-64.794984,32.291189,-64.766623,2.67
+575,B0343-24,10 Tankfield Lane,Paget,RECOVERED,client-point,client coordinate sitting on tankfield lane,32.291779,-64.767231,32.283678,-64.772568,1.03
+576,BR0041-24,4 Lang Lane,St. George,RECOVERED,client-point,client coordinate sitting on lang lane,32.283678,-64.772568,32.368856,-64.669927,13.54
+577,BREV0402-24,36 Middle Road,Devonshire,OSM,street-anchored,middle road,32.368856,-64.669927,32.295416,-64.76825,12.34
+578,B0389-24,10 Collectors Hill,Smiths,RECOVERED,client-point,client coordinate sitting on collectors hill,32.295787,-64.766126,32.308037,-64.741357,2.7
+579,B0398-24,7 Park View Lane,Devonshire,RECOVERED,client-point,client coordinate sitting on park view lane,32.308037,-64.741357,32.297492,-64.768743,2.83
+580,B0396-24,2 Lulworth Lane,Pembroke,OSM,exact,lulworth lane,32.297492,-64.768743,32.2931148,-64.8054267,3.49
+581,B0333-24,40 Crow Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on crow lane,32.2930967,-64.8055015,32.2936656,-64.772988,3.06
+582,B0397-24,2 Fort George Drive,Town of St. George,RECOVERED,client-point,client coordinate sitting on fort george drive,32.2936656,-64.772988,32.379659,-64.682414,12.82
+583,B0408-24,6 Kiskadee Drive,Hamilton,RECOVERED,client-point,client coordinate sitting on kiskadee drive,32.379659,-64.682414,32.334494,-64.734906,7.04
+584,B0427-24,37 Barry Road,Town of St. George,RECOVERED,client-point,client coordinate sitting on barry road,32.334494,-64.734906,32.3815884,-64.6669631,8.27
+585,B0430-24,11 Turnstile Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on turnstile lane,32.3810447,-64.676717,32.294257,-64.794695,14.71
+586,B0392-24,6 Sylvan Dell Road,Paget,RECOVERED,client-point,client coordinate sitting on sylvan dell road,32.294257,-64.794695,32.274754,-64.784855,2.36
+587,B0409-24,8 Mcgalls Hill Court,Smiths,RECOVERED,client-point,client coordinate sitting on mcgalls hill court,32.274754,-64.784855,32.310369,-64.736565,6.03
+588,BR0231-24,4 Aldie Drive,Smiths,RECOVERED,client-point,client coordinate sitting on aldie drive,32.310369,-64.736565,32.314128,-64.745546,0.94
+589,B0412-24,2 Agar's Hill,Pembroke,RECOVERED,client-point,client coordinate sitting on agars hill,32.314128,-64.745546,32.294947,-64.8042311,5.92
+590,B0437-24,26 Turk's Head Lane,Devonshire,OSM,street,turks head lane,32.294947,-64.8042311,32.2976412,-64.754987,4.64
+591,BC0121-24,11 North Street,Bermuda,RECOVERED,client-point,client coordinate sitting on north street,32.302098,-64.761213,32.299235,-64.781495,1.93
+592,B0432-24,84 The Glebe Road,Devonshire,OSM,exact,the glebe road,32.299235,-64.781495,32.3069668,-64.7749029,1.06
+593,B0440-24,6 Peppercorn Lane,Southampton,RECOVERED,client-point,client coordinate sitting on peppercorn lane,32.30699757586207,-64.7738048172413,32.25866,-64.827887,7.41
+594,B0002-25,5 Long Lane,Hamilton,RECOVERED,client-point,client coordinate sitting on long lane,32.259651,-64.827163,32.3304207,-64.6999353,14.34
+595,B0007-25,1 BFA Way,Devonshire,OSM,exact,bfa way,32.3304207,-64.6999353,32.301,-64.768808,7.26
+596,B0006-25,19 Sunrise Drive,Hamilton,OSM,street-anchored,sunrise drive,32.301044,-64.768792,32.3465046,-64.7167268,7.04
+597,BC0022-25,61 Pitts Bay Road,Pembroke,OSM,exact,pitts bay road,32.345554,-64.715805,32.2915425,-64.7920038,9.35
+598,BREV0447-24,1 The Lane,Paget,OSM,near-number,the lane,32.291726,-64.791811,32.2899995,-64.7716785,1.9
+599,B0028-25,6 Cross Bay Road,Southampton,RECOVERED,client-point,client coordinate sitting on cross bay road,32.289942,-64.772349,32.249624,-64.830499,7.08
+600,B0014-25,22A Cedar Heights Lane,Warwick,OSM,street,cedar heights lane,32.249624,-64.830499,32.2687946,-64.8068447,3.08
+601,BREV0020-25,7 Grasmere Road,Pembroke,RECOVERED,client-point,client coordinate sitting on grasmere road,32.290426,-64.772063,32.300798,-64.807608,3.54
+602,B0026-25,10 Manor Hill,Warwick,OSM,near-number,manor hill,32.300356,-64.807231,32.2777809,-64.7942622,2.79
+603,B0032-25,3 Undina Watch,Southampton,OSM,street,undina watch,32.277717,-64.794515,32.2537229,-64.8351824,4.67
+604,B0372-24,15 Wilderness Lane,Smiths,RECOVERED,client-point,client coordinate sitting on wilderness lane,32.25180835555556,-64.8333210666666,32.315817,-64.730257,12.04
+605,B0373-24,5 Devon Heights Close,Devonshire,RECOVERED,client-point,client coordinate sitting on devon heights close,32.315817,-64.730257,32.303933,-64.747048,2.06
+606,B0009-25,9 Cavello Heights,Sandys,RECOVERED,client-point,client coordinate sitting on cavello heights,32.303933,-64.747048,32.297044,-64.863524,10.99
+607,B0059-25,49 Paynters Hill,Hamilton,REVIEW,parish-anchor,street not in OSM,32.297044,-64.863524,32.3412801,-64.7255713,13.88
+608,BR0045-25,54 Ord Road,Paget,RECOVERED,client-point,client coordinate sitting on ord road,32.3375,-64.70222,32.2776505,-64.781677,10.01
+609,B0374-24,19 Devon Heights Road,Devonshire,RECOVERED,client-point,client coordinate sitting on devon heights road,32.279185,-64.780565,32.303992,-64.746425,4.24
+610,B0068-25,19 Harvey Road,Paget,RECOVERED,client-point,client coordinate sitting on harvey road,32.303992,-64.746425,32.272609,-64.787361,5.2
+611,B0052-25,1 Constable Close,Southampton,RECOVERED,client-point,client coordinate sitting on constable close,32.27254,-64.786562,32.252999,-64.868366,8
+612,BC0146-24,43 Victoria Street,City of Hamilton,OSM,near-number,victoria street,32.252999,-64.868366,32.2950891,-64.7818503,9.4
+613,B0413-24,4 High Knoll Lane,Smiths,RECOVERED,client-point,client coordinate sitting on high knoll lane,32.29535,-64.782378,32.316387,-64.718198,6.48
+614,B0434-24,4 Turtle Bay Crescent,Southampton,RECOVERED,client-point,client coordinate sitting on turtle bay crescent,32.316387,-64.718198,32.250024,-64.85148,14.55
+615,B0054-25,8 Trimingham Hill,Paget,RECOVERED,client-point,client coordinate sitting on trimingham hill,32.249646,-64.853291,32.290288,-64.769736,9.07
+616,B0073-25,23 Melville Road,Devonshire,OSM,street,melville road,32.290288,-64.769736,32.3022975,-64.7524478,2.11
+617,B0075-25,11 Benny's Bay Road,Sandys,RECOVERED,client-point,client coordinate sitting on bennys bay road,32.302289,-64.753397,32.267747,-64.879456,12.47
+618,B0022-25,70 Harbour Road,Paget,RECOVERED,client-point,client coordinate sitting on harbour road,32.267747,-64.879456,32.282617,-64.78968,8.61
+619,BC0138-24,10 Queen Street,City of Hamilton,RECOVERED,client-point,client coordinate sitting on queen street,32.284045,-64.783545,32.293904,-64.786387,1.13
+620,BR0021-25,3 Marshall Island,Warwick,REVIEW,parish-anchor,street not in OSM,32.368971,-64.681281,32.2678602,-64.8053367,16.21
+621,BR0020-25,1 Marshall Island,Warwick,REVIEW,parish-anchor,street not in OSM,32.283819,-64.80844,32.2678602,-64.8053367,1.8
+622,B0090-25,49 Tucker's Point Drive,Hamilton,RECOVERED,client-point,client coordinate sitting on tuckers point drive,32.284704,-64.812308,32.337896,-64.701341,12.01
+623,B0070-25,57 Bloomfield Drive,Warwick,REVIEW,parish-anchor,street not in OSM,32.337896,-64.701341,32.2678602,-64.8053367,12.51
+624,BC0033-25,37 Front Street,City of Hamilton,RECOVERED,client-point,client coordinate sitting on front street,32.266993,-64.821334,32.29234,-64.785665,4.39
+625,B0079-25,40 Crow Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on crow lane,32.29234,-64.785665,32.2936656,-64.772988,1.2
+626,B0096-25,2 Convict Bay Lane,Town of St. George,RECOVERED,client-point,client coordinate sitting on convict bay lane,32.2936656,-64.772988,32.382026,-64.674536,13.51
+627,B0107-25,9 Lolly's Well Road,Smiths,OSM,street,lollys well road,32.382026,-64.674536,32.3183729,-64.7299084,8.79
+628,B0134-25,146 Somerset Road,Sandys,OSM,exact,somerset road,32.32033,-64.729983,32.2846631,-64.8752028,14.23
+629,B0150-25,33 Bloomfield Drive,Warwick,REVIEW,parish-anchor,street not in OSM,32.284683,-64.87527,32.2678602,-64.8053367,6.84
+630,B0101-25,14 Summit View Drive,Hamilton,RECOVERED,client-point,client coordinate sitting on summit view drive,32.265572,-64.820661,32.344695,-64.724579,12.62
+631,B0158-25,8 Devondale Drive,Devonshire,RECOVERED,client-point,client coordinate sitting on devondale drive,32.344695,-64.724579,32.296333,-64.75155,5.95
+632,B0076-25,8 Slip Point Lane,St. George,RECOVERED,client-point,client coordinate sitting on slip point lane,32.296993,-64.75129,32.376398,-64.691503,10.48
+633,B0163-25,8 Hastings Road,Pembroke,RECOVERED,client-point,client coordinate sitting on hastings road,32.376398,-64.691503,32.2929526,-64.8017921,13.92
+634,B0136-25,14 Cottage Hill Road West,Hamilton,OSM,street,cottage hill road west,32.2929526,-64.8017921,32.3416,-64.7286773,8.76
+635,B0092-25,9 West Point Lane,Hamilton,RECOVERED,client-point,client coordinate sitting on west point lane,32.341832,-64.729369,32.33361,-64.740621,1.4
+636,B0126-25,1 Highwood Lane,Paget,RECOVERED,client-point,client coordinate sitting on highwood lane,32.33361,-64.740621,32.288179,-64.779644,6.25
+637,B0115-25,51 Railway Trail,Sandys,RECOVERED,client-point,client coordinate sitting on railway trail,32.288179,-64.779644,32.282405,-64.871083,8.63
+638,B0113-25,17 Melville Crescent,Devonshire,OSM,street,melville crescent,32.282405,-64.871083,32.3000328,-64.7509621,11.47
+639,BR0111-25,1 Homestead Lane,Southampton,RECOVERED,client-point,client coordinate sitting on homestead lane,32.300608,-64.750419,32.25534,-64.862894,11.72
+640,B0180-25,17 Pampas Lane,Smiths,OSM,street,pampas lane,32.25534,-64.862894,32.3042233,-64.738753,12.89
+641,B0181-25,5 Fairyland Road,Pembroke,REVIEW,parish-anchor,street not in OSM,32.306537,-64.737434,32.3008022,-64.7915912,5.14
+642,B0188-25,4 Lemarc Estate,Warwick,OSM,street,lemarc estate,32.296397,-64.799038,32.2609979,-64.8133581,4.16
+643,B0177-25,23 Pearman's Hill West,Warwick,OSM,street,pearmans hill west,32.261128,-64.813306,32.264039,-64.8083577,0.57
+644,BR0095-25,17 Tankfield Hill,Paget,RECOVERED,client-point,client coordinate sitting on tankfield hill,32.3668883,-64.6570664,32.281416,-64.771472,14.36
+645,B0191-25,40 Crow Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on crow lane,32.282667000000004,-64.771985,32.2936656,-64.772988,1.23
+646,B0198-25,8 Tankfield Hill,Paget,RECOVERED,client-point,client coordinate sitting on tankfield hill,32.2936656,-64.772988,32.282667000000004,-64.771985,1.23
+647,B0209-25,13 Mizzentop,Warwick,RECOVERED,client-point,client coordinate sitting on mizzentop,32.281416,-64.771472,32.273322,-64.806901,3.45
+648,B0197-25,47 Paynters Hill,Bermuda,REVIEW,parish-anchor,street not in OSM,32.273322,-64.806901,32.3008022,-64.7915912,3.38
+649,B0185-25,2 Clouds Avenue,Warwick,OSM,street,clouds avenue,32.3375,-64.70222,32.2577787,-64.8131251,13.7
+650,B0237-25,18 Constable Close,Southampton,RECOVERED,client-point,client coordinate sitting on constable close,32.257482,-64.813203,32.251885,-64.867841,5.18
+651,B0226-25,187 South Road,Paget,OSM,near-number,south road,32.251885,-64.867841,32.2936511,-64.7617649,11.02
+652,B0243-25,3 Callen Glen Rise,Hamilton,RECOVERED,client-point,client coordinate sitting on callen glen rise,32.291840433333334,-64.7637586333333,32.351726,-64.719244,7.87
+653,B0235-25,16 Pitts Bay Road,Pembroke,OSM,near-number,pitts bay road,32.351726,-64.719244,32.2984631,-64.7971274,9.42
+654,B0239-25,13 Garthowen Road,Devonshire,RECOVERED,client-point,client coordinate sitting on garthowen road,32.29749,-64.797308,32.298704,-64.755451,3.94
+655,B0187-25,19 Hinson Island,Paget,REVIEW,parish-anchor,street not in OSM,32.298704,-64.755451,32.2849567,-64.7753406,2.42
+656,B0222-25,11 Random Lane,Warwick,RECOVERED,client-point,client coordinate sitting on random lane,32.283568,-64.804394,32.264628,-64.806075,2.11
+657,B0211-25,,Hamilton,REVIEW,parish-anchor,street not in OSM,32.264628,-64.806075,32.3412801,-64.7255713,11.41
+658,B0224-25,3 Ravello Garden Lane,Warwick,OSM,street,ravello garden lane,32.276808,-64.798074,32.2768464,-64.7990126,0.09
+659,B0256-25,5 Ord Road,Warwick,OSM,near-number,ord road,32.276808,-64.798074,32.2720093,-64.7998684,0.56
+660,B0262-25,8 Barnes Valley,Paget,RECOVERED,client-point,client coordinate sitting on barnes valley,32.271113,-64.799826,32.281372,-64.777989,2.35
+661,B0250-25,31 Point Finger Road,Paget,RECOVERED,client-point,client coordinate sitting on point finger road,32.281372,-64.777989,32.289433,-64.764698,1.54
+662,B0253-25,1 Palm Lane,Devonshire,OSM,street,palm lane,32.289433,-64.764698,32.3014706,-64.7451329,2.28
+663,BR0151-25,154 Somerset Road,Sandys,OSM,near-number,somerset road,32.301445,-64.745528,32.2816408,-64.8742465,12.31
+664,B0258-25,2 Green Bay Lane,Pembroke,OSM,street,green bay lane,32.28278,-64.873352,32.302863,-64.811948,6.2
+665,B0263-25,22 Gilbert Hill,Smiths,RECOVERED,client-point,client coordinate sitting on gilbert hill,32.302835,-64.812383,32.310245,-64.738139,7.03
+666,BR0156-25,134 Somerset Road,Sandys,OSM,near-number,somerset road,32.310041,-64.739027,32.2846631,-64.8752028,13.12
+667,B0271-25,9 Reid Street,City of Hamilton,RECOVERED,client-point,client coordinate sitting on reid street,32.28898,-64.8743,32.293206,-64.785407,8.38
+668,B0272-25,3 Rosemont Avenue,Pembroke,RECOVERED,client-point,client coordinate sitting on rosemont avenue,32.293206,-64.785407,32.296842,-64.793113,0.83
+669,B0273-25,41 Brighton Hill Road,Devonshire,RECOVERED,client-point,client coordinate sitting on brighton hill road,32.296842,-64.793113,32.300608,-64.750419,4.04
+670,B0283-25,3 Fractious Street,Hamilton,OSM,street,fractious street,32.301228,-64.750255,32.3484628,-64.7188159,6.03
+671,B0261-25,3 Lolly's Lane,Smiths,RECOVERED,client-point,client coordinate sitting on lollys lane,32.350138,-64.721166,32.320723,-64.729884,3.38
+672,B0269-25,56 Knapton Hill,Smiths,OSM,street,knapton hill,32.320723,-64.729884,32.3161713,-64.7224279,0.87
+673,B0132-25,185 South Road,Paget,OSM,near-number,south road,32.31973,-64.717588,32.2936511,-64.7617649,5.07
+674,BC0075-25,8 Addendum Lane South,Pembroke,RECOVERED,client-point,client coordinate sitting on addendum lane south,32.291840433333334,-64.7637586333333,32.29855,-64.795771,3.1
+675,BR0023-25,19 Devon Point Lane,Devonshire,RECOVERED,client-point,client coordinate sitting on devon point lane,32.29855,-64.795771,32.301297,-64.743375,4.94
+676,B0039-25,4 Cliff Crescent,Southampton,RECOVERED,client-point,client coordinate sitting on cliff crescent,32.301297,-64.743375,32.25617,-64.865239,12.52
+677,BC0069-25,6 Mill Reach Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on mill reach lane,32.25617,-64.865239,32.299117,-64.799605,7.81
+678,B0299-25,7 Rocklands View,Warwick,RECOVERED,client-point,client coordinate sitting on rocklands view,32.299117,-64.799605,32.265453,-64.800223,3.75
+679,B0302-25,13A Middle Road,Southampton,OSM,near-number,middle road,32.265267,-64.800734,32.2625808,-64.8689376,6.43
+680,BC0106-25,9 Reid Street,City of Hamilton,RECOVERED,client-point,client coordinate sitting on reid street,32.264886,-64.869661,32.293206,-64.785407,8.53
+681,B0286-25,4 Sears Hill Road,Smiths,RECOVERED,client-point,client coordinate sitting on sears hill road,32.293206,-64.785407,32.313466,-64.733358,5.39
+682,BC0094-24,2 Pomander Road,Paget,RECOVERED,client-point,client coordinate sitting on pomander road,32.313466,-64.733358,32.291976,-64.77466,4.56
+683,B0282-25,12 Spring Benny Road,Sandys,OSM,street,spring benny road,32.2923598,-64.7708875,32.2685473,-64.8763044,10.27
+684,BC0112-25,4 Maritime Lane,Sandys,RECOVERED,client-point,client coordinate sitting on maritime lane,32.270186,-64.8753,32.327933,-64.833677,7.53
+685,BR0162-25,4 Between The Walls,Pembroke,OSM,street,between the walls,32.327933,-64.833677,32.2935498,-64.7936659,5.37
+686,BC0008-25,25 Serpentine Road,Pembroke,RECOVERED,client-point,client coordinate sitting on serpentine road,32.36781,-64.675603,32.2956001,-64.7900269,13.43
+687,B0317-25,6 Long Point Lane,Sandys,RECOVERED,client-point,client coordinate sitting on long point lane,32.298309,-64.794108,32.298171,-64.859054,6.11
+688,B0333-25,5 North Cote West,Pembroke,RECOVERED,client-point,client coordinate sitting on north cote west,32.298171,-64.859054,32.303902,-64.811026,4.56
+689,B0340-25,9 Wilderness Lane,Smiths,RECOVERED,client-point,client coordinate sitting on wilderness lane,32.303902,-64.811026,32.316752,-64.73161,7.61
+690,B0332-25,5 Friendly Lane,Sandys,RECOVERED,client-point,client coordinate sitting on friendly lane,32.316752,-64.73161,32.295811,-64.867647,13.01
+691,B0329-25,10 Vickers Bay Road,Devonshire,RECOVERED,client-point,client coordinate sitting on vickers bay road,32.295811,-64.867647,32.294555,-64.753803,10.71
+692,B0328-25,7 Sunning Lane,Warwick,RECOVERED,client-point,client coordinate sitting on sunning lane,32.294555,-64.753803,32.267609,-64.81484,6.48
+693,B0334-25,64 Spanish Point Road,Pembroke,RECOVERED,client-point,client coordinate sitting on spanish point road,32.267609,-64.81484,32.305804,-64.807741,4.3
+694,B0341-25,17 Mcgall's Bay Road,Smiths,OSM,street,mcgalls bay road,32.305804,-64.807741,32.3108347,-64.7305954,7.28
+695,B0289-25,59 South Road,Southampton,OSM,exact,south road,32.308879,-64.730553,32.2496504,-64.8415077,12.35
+696,B0342-25,9 Gables Lane,Devonshire,RECOVERED,client-point,client coordinate sitting on gables lane,32.249646,-64.841449,32.293739,-64.754742,9.53
+697,B0346-25,17 Stowe Hill,Paget,OSM,street,stowe hill,32.293739,-64.754742,32.2879876,-64.7724496,1.79
+698,BC0104-25,1 Addendum Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on addendum lane,32.288709,-64.77274,32.299362,-64.797549,2.62
+699,BR0210-25,69 Mangrove Bay Road,Sandys,RECOVERED,client-point,client coordinate sitting on mangrove bay road,32.299362,-64.797549,32.3033237,-64.8640225,6.27
+700,BR0014-25,6 Sylvan Dell Road,Paget,RECOVERED,client-point,client coordinate sitting on sylvan dell road,32.304518,-64.866919,32.274754,-64.784855,8.4
+701,B0368-25,22 Daisyfield Drive,Sandys,RECOVERED,client-point,client coordinate sitting on daisyfield drive,32.274754,-64.784855,32.297097,-64.864832,7.93
+702,BC0139-25,23 Church Street,City of Hamilton,OSM,near-number,church street,32.297097,-64.864832,32.2939525,-64.7850759,7.51
+703,B0347-25,5 Fort George Hill,Town of St. George,RECOVERED,client-point,client coordinate sitting on fort george hill,32.294254,-64.78436,32.379419,-64.682268,13.5
+704,B0377-25,8 Rock Garden Lane,Smiths,RECOVERED,client-point,client coordinate sitting on rock garden lane,32.379419,-64.682268,32.317401,-64.72551,8.01
+705,B0375-25,30 Castile Road,Warwick,REVIEW,parish-anchor,street not in OSM,32.317401,-64.72551,32.2678602,-64.8053367,9.32
+706,B0381-25,3A Spanish Heights Road,Smiths,RECOVERED,client-point,client coordinate sitting on spanish heights road,32.264861,-64.82968,32.316404,-64.726281,11.3
+707,B0383-25,30 Pomander Road,Paget,OSM,near-number,pomander road,32.316404,-64.726281,32.291125,-64.7740484,5.3
+708,B0390-25,11 Seabright Avenue,Paget,RECOVERED,client-point,client coordinate sitting on seabright avenue,32.291976,-64.77466,32.287818,-64.761253,1.34
+709,BC0150-25,31 Queen Street,City of Hamilton,OSM,exact,queen street,32.287818,-64.761253,32.2938591,-64.7863756,2.46
+710,B0003-26,9 Harrington Sound Road,Hamilton,RECOVERED,client-point,client coordinate sitting on harrington sound road,32.293904,-64.786387,32.3375,-64.70222,9.29
+711,B0001-26,1 Spicewood Drive,Warwick,OSM,street,spicewood drive,32.329076,-64.712027,32.2685591,-64.7969487,10.45
+712,B0378-25,7 Wellington Park,St. George,OSM,exact,wellington park,32.269152,-64.796786,32.3780551,-64.6858064,16
+713,BR0236-25,15 Fairways Road,Warwick,RECOVERED,client-point,client coordinate sitting on fairways road,32.379257,-64.68679,32.264297,-64.829422,18.54
+714,B0019-26,6 Fielders Lane,Smiths,RECOVERED,client-point,client coordinate sitting on fielders lane,32.262136,-64.830672,32.320359,-64.734391,11.14
+715,B0017-26,2 Gilbert Hill,Smiths,RECOVERED,client-point,client coordinate sitting on gilbert hill,32.320359,-64.734391,32.311896,-64.740743,1.12
+716,B0013-26,7 Kitty's Drive,Hamilton,RECOVERED,client-point,client coordinate sitting on kittys drive,32.311896,-64.740743,32.34978,-64.717458,4.75
+717,B0009-26,23 Lovers Lane,Paget,RECOVERED,client-point,client coordinate sitting on lovers lane,32.34978,-64.717458,32.287477,-64.776819,8.9
+718,B0016-26,16 Dundonald Street,City of Hamilton,OSM,near-number,dundonald street,32.287477,-64.776819,32.2962282,-64.7828579,1.13
+719,B0015-26,2 Masters Mews,Warwick,RECOVERED,client-point,client coordinate sitting on masters mews,32.295899,-64.783174,32.269559,-64.792222,3.05
+720,B0026-26,,Warwick,REVIEW,parish-anchor,street not in OSM,32.269559,-64.792222,32.2678602,-64.8053367,1.25
+721,B0036-26,10 Morgan Hill,Sandys,RECOVERED,client-point,client coordinate sitting on morgan hill,32.30203,-64.757146,32.287286,-64.871772,10.91
+722,B0404-25,59 Middle Road,Devonshire,OSM,street-anchored,middle road,32.287286,-64.871772,32.3036953,-64.7558272,11.06
+723,B0054-26,21 Tamarind Vale,Warwick,RECOVERED,client-point,client coordinate sitting on tamarind vale,32.297671,-64.785587,32.268846,-64.81404,4.18
+724,B0031-26,9 Ferrars Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on ferrars lane,32.268846,-64.81404,32.29622,-64.791261,3.73
+725,B0062-26,3A Green Acres Road,Devonshire,RECOVERED,client-point,client coordinate sitting on green acres road,32.29622,-64.791261,32.306233,-64.747165,4.3
+726,B0063-26,40 Stovell Bay Road,Pembroke,RECOVERED,client-point,client coordinate sitting on stovell bay road,32.306233,-64.747165,32.305576,-64.811304,6.04
+727,B0051-26,45 Mangrove Bay Road,Sandys,OSM,exact,mangrove bay road,32.305576,-64.811304,32.3033613,-64.8640752,4.97
+728,B0042-26,12 Grasmere Road,Pembroke,RECOVERED,client-point,client coordinate sitting on grasmere road,32.3033237,-64.8640225,32.30135,-64.80713,5.36
+729,B0058-26,28 Parsons Road,Pembroke,RECOVERED,client-point,client coordinate sitting on parsons road,32.30135,-64.80713,32.299264,-64.776518,2.89
+730,B0022-26,23 Knapton Estates Road,Smiths,RECOVERED,client-point,client coordinate sitting on knapton estates road,32.299264,-64.776518,32.3174,-64.71706,5.95
+731,B0010-26,13A Lighthouse Road,Southampton,RECOVERED,client-point,client coordinate sitting on lighthouse road,32.317248,-64.716717,32.253093,-64.832558,13.03
+732,B0060-26,6 Evans Bay Lane,Southampton,RECOVERED,client-point,client coordinate sitting on evans bay lane,32.253093,-64.832558,32.259001,-64.867151,3.32
+733,B0011-26,23 Mill Shares Road,Pembroke,RECOVERED,client-point,client coordinate sitting on mill shares road,32.259001,-64.867151,32.296348,-64.801174,7.47
+734,B0081-26,35 Lolly's Well Road,Smiths,OSM,street,lollys well road,32.298722,-64.805815,32.3183729,-64.7299084,7.47
+735,B0055-26,26 Knapton Hill,Smiths,OSM,street,knapton hill,32.319302,-64.728991,32.3161713,-64.7224279,0.71
+736,B0069-26,84 Harbour Road,Warwick,OSM,near-number,harbour road,32.315555,-64.721756,32.2808345,-64.7962048,8
+737,B0046-26,10 Meadow Lane,Devonshire,RECOVERED,client-point,client coordinate sitting on meadow lane,32.277685,-64.799539,32.303301,-64.750517,5.42
+738,B0040-26,11 West Point Lane,Hamilton,RECOVERED,client-point,client coordinate sitting on west point lane,32.303301,-64.750517,32.333529,-64.740664,3.49
+739,B0092-26,6 Trimingham Hill,Paget,RECOVERED,client-point,client coordinate sitting on trimingham hill,32.333529,-64.740664,32.290852,-64.769715,5.48
+740,BR0005-26,27 Mission Road,Paget,RECOVERED,client-point,client coordinate sitting on mission road,32.290852,-64.769715,32.278925,-64.773151,1.37
+741,B0091-26,52 North Shore Road,Smiths,OSM,street-anchored,north shore road,32.278925,-64.773151,32.3158395,-64.7500276,4.65
+742,B0117-26,185 South Road,Paget,OSM,near-number,south road,32.324809,-64.741325,32.2936511,-64.7617649,3.97
+743,B0114-26,24 Lovers Lane,Paget,OSM,street-anchored,lovers lane,32.291840433333334,-64.7637586333333,32.2857086,-64.7734863,1.14
+744,B0079-26,58 My Lord's Bay Road,Hamilton,RECOVERED,client-point,client coordinate sitting on my lords bay road,32.287681,-64.776073,32.339728,-64.72997,7.24
+745,B0067-26,34 Castile Road,Warwick,REVIEW,parish-anchor,street not in OSM,32.339728,-64.72997,32.2678602,-64.8053367,10.69
+746,BR0042-26,77 Tuckers Town Road,St. George,RECOVERED,client-point,client coordinate sitting on tuckers town road,32.264297,-64.829422,32.338238,-64.676265,16.6
+747,B0103-26,3 Long Lane,Hamilton,OSM,exact,long lane,32.338238,-64.676265,32.3298972,-64.7003512,2.45
+748,B0038-26,18 St. Anne's Road,Southampton,RECOVERED,client-point,client coordinate sitting on street annes road,32.329909,-64.700483,32.251447,-64.841925,15.92
+749,B0109-26,2 St. Anne's Drive,Southampton,OSM,street,street annes drive,32.251447,-64.841925,32.2512559,-64.8443265,0.23
+750,BR0211-25,108 Harbour Road,Warwick,OSM,street-anchored,harbour road,32.250828,-64.844296,32.2808345,-64.7962048,5.63
+751,B0110-26,17 Cavendish Road,Pembroke,OSM,near-number,cavendish road,32.280388,-64.796549,32.2941853,-64.7736257,2.65
+752,B0133-26,9 Williams Estate,Smiths,REVIEW,parish-anchor,street not in OSM,32.29434,-64.774311,32.3154757,-64.7304162,4.75
+753,B0122-26,16 Echo Lane,St. George,OSM,exact,echo lane,32.306612,-64.735527,32.3735401,-64.6967599,8.3
+754,BC0020-26,82 North Shore Road,Devonshire,kept,client-original,,32.3056539905629,-64.78817544197068,32.3056539905629,-64.78817544197068,0
+755,B0136-26,19 Bayfield Road,Warwick,RECOVERED,client-point,client coordinate sitting on bayfield road,32.312172,-64.756669,32.264409,-64.817993,7.85
+756,BR0025-26,38 South Road,Devonshire,OSM,street,south road,32.26494,-64.820282,32.29916,-64.7501123,7.62
+757,BR0043-26,110 South Road,Paget,OSM,near-number,south road,32.299717,-64.747314,32.2807832,-64.775294,3.37
+758,BC0019-26,3 Market Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on market lane,32.282015,-64.77564,32.298309,-64.794108,2.51
+759,B0096-26,42 Mill Shares Road,Pembroke,OSM,street,mill shares road,0,0,32.2981099,-64.8032879,8060.24
+760,B0167-26,18 Tankfield Hill,Paget,OSM,street,tankfield hill,32.299751,-64.805064,32.2819691,-64.7719616,3.69
+761,B0139-26,1 Rocklands View,Warwick,RECOVERED,client-point,client coordinate sitting on rocklands view,32.279493,-64.77106,32.265267,-64.800734,3.21
+762,B0147-26,2 Welcome View,Southampton,REVIEW,parish-anchor,street not in OSM,32.265453,-64.800223,32.2544361,-64.8439449,4.29
+763,B0157-26,14 Cross Bay Road,Southampton,RECOVERED,client-point,client coordinate sitting on cross bay road,32.252626811111114,-64.845693,32.250044,-64.829252,1.57
+764,BC0052-25,18 Quarry Road,Hamilton,OSM,street,quarry road,32.250044,-64.829252,32.3401286,-64.706936,15.27
+765,B0182-26,100 Harbour Road,Paget,RECOVERED,client-point,client coordinate sitting on harbour road,32.308633,-64.744229,32.280359,-64.791405,5.44
+766,B0180-26,19 Rocky Bay Lane,Devonshire,RECOVERED,client-point,client coordinate sitting on rocky bay lane,32.2810336,-64.7948055,32.299717,-64.747314,4.93
+767,B0188-26,71 North Shore Road,Hamilton,RECOVERED,client-point,client coordinate sitting on north shore road,32.3002368,-64.74604,32.335754,-64.736608,4.05
+768,B0197-26,32 Knapton Estates Road,Smiths,RECOVERED,client-point,client coordinate sitting on knapton estates road,32.335754,-64.736608,32.317248,-64.716717,2.78
+769,B0198-26,20 Farmer's Lane,Warwick,RECOVERED,client-point,client coordinate sitting on farmers lane,32.3174,-64.71706,32.2650444,-64.8161718,11
+770,B0177-26,35 St. Anne's Road,Southampton,RECOVERED,client-point,client coordinate sitting on street annes road,32.2650444,-64.8161718,32.250949,-64.843562,3.02
+771,BR0086-26,22 Berry Hill Road,Paget,OSM,street,berry hill road,32.2529735,-64.8392026,32.2940416,-64.7640316,8.43
+772,BR0096-26,81 Ferry Road,St. George,OSM,exact,ferry road,32.321232,-64.7123542,32.3665663,-64.7085009,5.06
+773,BR0082-26,9 Inland Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on inland lane,32.3665563,-64.7085898,32.302365,-64.8018544,11.31
+774,B0204-26,44 Harrington Hundreds Road,Smiths,RECOVERED,client-point,client coordinate sitting on harrington hundreds road,32.302365,-64.8018544,32.320632,-64.72602,7.42
+775,B0228-26,12 Speakers Drive,St. George,OSM,exact,speakers drive,32.3193995,-64.7255581,32.3778255,-64.6851287,7.53
+776,B0193-26,2 North Ridge Close,Devonshire,RECOVERED,client-point,client coordinate sitting on north ridge close,32.3778111,-64.6851087,32.3122977,-64.7551709,9.83
+777,B0222-26,191 South Road,Paget,OSM,near-number,south road,32.3122977,-64.7551709,32.2936511,-64.7617649,2.17
+778,B0210-26,6 Bayfield Road,Warwick,RECOVERED,client-point,client coordinate sitting on bayfield road,32.2699725,-64.7868268,32.26494,-64.820282,3.2
+779,B0132-26,84 North Shore Road,Hamilton,RECOVERED,client-point,client coordinate sitting on north shore road,32.2647901,-64.8186259,32.324809,-64.741325,9.88
+780,B0244-26,18 Lightbourne Lane,Smiths,OSM,street,lightbourne lane,32.3506516,-64.7155702,32.3098527,-64.7435238,5.25
+781,B0213-26,13 Turtle Bay Lane,Southampton,OSM,street,turtle bay lane,32.30819,-64.74237,32.2509501,-64.8525184,12.17
+782,B0242-26,8 Seabright Avenue,Paget,OSM,street,seabright avenue,32.2511129,-64.8526628,32.2883305,-64.7623112,9.46
+783,B0214-26,4 Mid Ocean Drive,St. George,RECOVERED,client-point,client coordinate sitting on mid ocean drive,32.2884612,-64.7620789,32.3333906,-64.6942276,8.11
+784,B0212-26,14 Whale Bay Road,Southampton,RECOVERED,client-point,client coordinate sitting on whale bay road,32.3333906,-64.6942276,32.2564621,-64.869504,18.58
+785,B0231-26,11 Vaughan's Bay Drive,St. George,OSM,exact,vaughans bay drive,32.2564621,-64.869504,32.3695132,-64.6558535,23.73
+786,B0147-27,"Bermuda Airport Solar Farm (""The Finger"")",(blank),REVIEW,parish-anchor,street not in OSM,32.359139,-64.685694,32.3008022,-64.7915912,11.89
+787,B0235-26,5 Seabright Lane,Paget,kept,client-original,,32.288749,-64.760913,32.288749,-64.760913,0
+788,B0243-26,3 Harrington Sound Road,Hamilton,RECOVERED,client-point,client coordinate sitting on harrington sound road,32.288622,-64.7612006,32.3375,-64.70222,7.77

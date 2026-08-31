@@ -1359,7 +1359,13 @@ async function renderSolarRegistry() {
           <p style="font-weight:700;color:#92400e;margin:0 0 4px;font-size:15px">Upload Solar Permit Data (Excel)</p>
           <p style="font-size:13px;color:#78350f;margin:0 0 10px">
             Replaces the active dataset. Required columns: <strong>Permit Number, Address, Permit Type, Permit Status,
-            Permit Issue Date, Permit Description, Extracted AC Capacity, Annual Output (kWh), latitude, longitude</strong>.
+            Permit Issue Date, Permit Description, System Capacity, Annual Output (kWh), latitude, longitude</strong>.
+          </p>
+          <p style="font-size:12px;color:#78350f;margin:0 0 10px;line-height:1.5">
+            Not sure of the format? <strong>Download the template</strong> and fill it in. It lists every column,
+            the units, and the one rule that matters most:
+            <strong>never sort the latitude/longitude columns on their own</strong> &mdash; join coordinates back
+            on Permit Number, or they end up on the wrong permits.
           </p>
           <p style="font-size:12px;color:#b45309;margin:0">Last file: <strong>${lastMod}</strong></p>
         </div>
@@ -1370,6 +1376,9 @@ async function renderSolarRegistry() {
               Choose Excel File
             </span>
           </label>
+          <button class="btn btn-sm" style="white-space:nowrap" onclick="downloadDataTemplate('solar')">
+            Download Template
+          </button>
           <p id="solar-upload-status" style="font-size:12px;color:#6b7280;margin:0"></p>
         </div>
       </div>
@@ -1444,6 +1453,35 @@ async function renderSolarRegistry() {
     `}
   `
   applyRbac(STATE.role)
+}
+
+// Templates are served by the API behind the same session cookie as everything
+// else, so they are fetched and turned into a blob rather than linked directly:
+// a plain <a href> would replace the CMS with a JSON error page if the session
+// had expired, instead of reporting it.
+async function downloadDataTemplate(key) {
+  try {
+    const res = await fetch(`/api/data-files/${key}/template`, { credentials: 'include' })
+    if (!res.ok) {
+      let msg = 'Could not download the template'
+      try { msg = (await res.json()).error || msg } catch (e) {}
+      throw new Error(msg)
+    }
+    const blob = await res.blob()
+    const cd = res.headers.get('Content-Disposition') || ''
+    const m = cd.match(/filename="([^"]+)"/)
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = m ? m[1] : `${key}-template.xlsx`
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+    toast('Template downloaded')
+  } catch (err) {
+    toast(err.message, 'error')
+  }
 }
 
 async function uploadSolarExcel(input) {

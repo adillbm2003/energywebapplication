@@ -1249,6 +1249,118 @@ const DATA_FILES = {
   },
 };
 
+// -- DOWNLOADABLE TEMPLATES --------------------------------------------------
+//
+// The registry was once loaded from a workbook whose latitude/longitude columns
+// had been geocoded correctly but then re-ordered independently of the rows, so
+// roughly 40% of permits carried another permit's coordinates and the public map
+// showed "9 Reid Street, City of Hamilton" out in Sandys. Handing whoever
+// prepares the data a template that states the exact column names, the units and
+// that warning is far cheaper than auditing the result afterwards.
+const DATA_FILE_TEMPLATES = {
+  solar: {
+    filename: 'Solar Panel Applications TEMPLATE.xlsx',
+    sheet: 'Solar Panel Applications',
+    intro: [
+      ['How to fill in this template'],
+      [],
+      ['1.', 'Put one permit on each row of the data sheet in this workbook.'],
+      ['2.', 'Keep the column headings exactly as they are. The importer matches them by'],
+      ['', 'name, so a renamed column is ignored and its data is silently lost.'],
+      ['3.', 'NEVER sort or re-order the latitude/longitude columns on their own.'],
+      ['', 'Sort the whole sheet, or not at all. If the coordinates are produced in a'],
+      ['', 'separate file, join them back on Permit Number - never on row position.'],
+      ['', 'This is the single most common way this data goes wrong.'],
+      ['4.', 'latitude and longitude must be decimal degrees, entered as NUMBERS.'],
+      ['', 'Bermuda latitudes run about 32.24 to 32.39 and are positive.'],
+      ['', 'Bermuda longitudes run about -64.90 to -64.64 and must be NEGATIVE.'],
+      ['', 'Do not use degrees/minutes/seconds, and do not paste them as text.'],
+      ['5.', 'System Capacity must be a NUMBER in kW. A capacity typed as text (for'],
+      ['', 'example with a stray space, " 11.68 ") is left out of the published total,'],
+      ['', 'exactly as Excel leaves it out of SUM. Leave the cell empty if unknown.'],
+      ['6.', 'Dates may be real Excel dates or plain text - both are read.'],
+      ['7.', 'A permit counts as live unless its Permit Status is one of:'],
+      ['', 'Plan Approval Expired, Rejected, Withdrawn, Cancelled, Denied.'],
+      [],
+      ['Column', 'Required', 'What to put in it'],
+    ],
+    columns: [
+      ['Permit Number', 'Yes', 'Unique permit reference. Used as the record key.', 'B0123-26', 'B0124-26'],
+      ['Address', 'Yes', 'Street address of the installation.', '9 Reid Street', '82 North Shore Road'],
+      ['Permit Type', 'No', 'For example Building, Renovation.', 'Building', 'Building'],
+      ['Permit Status', 'Yes', 'Complete / Issued / Under Construction / Rejected / Withdrawn ...', 'Complete', 'Issued'],
+      ['Permit Issue Date', 'No', 'Date the permit was issued.', '2026-03-14', '2026-04-02'],
+      ['Permit Description', 'No', 'Free-text description of the works.', 'Install 12 solar PV panels', 'Roof-mounted PV array'],
+      ['System Capacity', 'No', 'Capacity in kW. Must be a NUMBER, not text.', 11.68, 5.325],
+      ['Permit Work Class', 'No', 'Residential / Commercial / Utility.', 'Residential', 'Commercial'],
+      ['Permit Application Date', 'No', 'Date the application was made.', '2026-01-20', '2026-02-11'],
+      ['Permit District', 'No', 'Parish: Pembroke, Paget, Warwick, Southampton, Sandys, Devonshire,', 'Pembroke', 'Devonshire'],
+      ['Permit Expiration Date', 'No', "Smith's, Hamilton, St. George's. (Parish list continues from above.)", '2028-03-14', '2028-04-02'],
+      ['Annual Output (kWh)', 'No', 'Estimated annual generation in kWh.', 7790, 3600],
+      ['latitude', 'Yes', 'Decimal degrees, positive, about 32.24 to 32.39.', 32.293156, 32.312204],
+      ['longitude', 'Yes', 'Decimal degrees, NEGATIVE, about -64.90 to -64.64.', -64.785384, -64.756646],
+    ],
+  },
+  vehicles: {
+    filename: 'Vehicles by Fuel Type TEMPLATE.xlsx',
+    sheet: 'FORECAST',
+    intro: [
+      ['How to fill in this template'],
+      [],
+      ['1.', 'One vehicle per row on the FORECAST sheet.'],
+      ['2.', 'The first three columns are read by position, not by name:'],
+      ['', 'column A = category, column B = sub-category, column C = make.'],
+      ['3.', 'Keep the heading row in place - the importer skips it.'],
+      ['4.', 'Categories are counted verbatim, so spelling must stay consistent'],
+      ['', '(for example "Private Car", never "Private cars").'],
+      [],
+      ['Column', 'Required', 'What to put in it'],
+    ],
+    columns: [
+      ['Category', 'Yes', 'Private Car, Truck, Motor Cycle, Omnibus, Taxi, ...', 'Private Car', 'Truck'],
+      ['Sub-category', 'No', 'Any finer classification used by TCD.', 'Light Private', 'Light Truck'],
+      ['Make', 'No', 'Manufacturer.', 'Nissan', 'Toyota'],
+    ],
+  },
+};
+
+app.get('/api/data-files/:key/template', authenticate, authorize('Administrator', 'Approver'), (req, res, next) => {
+  try {
+    const spec = DATA_FILE_TEMPLATES[req.params.key];
+    if (!spec) return res.status(404).json({ error: 'No template is available for this data file' });
+
+    const XLSX = require('xlsx');
+    const wb = XLSX.utils.book_new();
+
+    // Sheet 1 explains the rules and every column. It deliberately labels its own
+    // table "Column" rather than "Permit Number", because the importer picks its
+    // data sheet by looking for a "Permit Number" heading and would otherwise
+    // import this guidance sheet instead of the real one.
+    const intro = spec.intro.concat(spec.columns.map(c => [c[0], c[1], c[2]]));
+    const ws1 = XLSX.utils.aoa_to_sheet(intro);
+    ws1['!cols'] = [{ wch: 26 }, { wch: 10 }, { wch: 76 }];
+    XLSX.utils.book_append_sheet(wb, ws1, 'How to fill this in');
+
+    // Sheet 2 carries the real headings and two worked example rows.
+    const headers = spec.columns.map(c => c[0]);
+    const ws2 = XLSX.utils.aoa_to_sheet([
+      headers,
+      spec.columns.map(c => c[3]),
+      spec.columns.map(c => c[4]),
+    ]);
+    ws2['!cols'] = headers.map(h => ({ wch: Math.max(14, h.length + 4) }));
+    XLSX.utils.book_append_sheet(wb, ws2, spec.sheet);
+
+    const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="' + spec.filename + '"');
+    res.setHeader('Content-Length', buf.length);
+    res.send(buf);
+  } catch (err) {
+    next(err);
+  }
+});
+
 app.get('/api/data-files', authenticate, (req, res) => {
   const result = Object.entries(DATA_FILES).map(([key, meta]) => {
     const filePath = path.join(DATA_DIR, meta.filename);
