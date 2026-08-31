@@ -1217,9 +1217,15 @@ app.get('/api/solar/installations', async (req, res) => {
         ? row.install_date.toISOString().split('T')[0]
         : (row.install_date || null),
       annualOutput: parseFloat(row.annual_output) || 0,
-      lat: parseFloat(row.lat) || 0,
-      lng: parseFloat(row.lng) || 0,
-    }));
+      // `|| 0` here sent any row with a null/unparseable coordinate to 0,0 — a
+      // point in the Gulf of Guinea. One such row is enough to break the whole
+      // map, because the GIS layer fits its viewport to the bounds of every
+      // marker, so the island collapses to a dot beside the Atlantic. Rows
+      // without a usable coordinate are dropped from the map feed instead;
+      // they are still counted by /api/solar/stats, which never reads lat/lng.
+      lat: parseFloat(row.lat),
+      lng: parseFloat(row.lng),
+    })).filter(s => Number.isFinite(s.lat) && Number.isFinite(s.lng));
     res.json(installations);
   } catch (err) {
     console.error('Solar installations error:', err.message);
