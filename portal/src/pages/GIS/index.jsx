@@ -23,23 +23,41 @@ export default function GIS() {
   const { data: installations } = useAsyncData(() => gisService.getInstallations(), [], gisInstallations)
   const { data: parishes } = useAsyncData(() => gisService.getParishes(), [], defaultParishes)
 
+  // A permit whose capacity the Planning export stores as text carries no
+  // capacity figure here, and those were drawn as grey dots that no size band
+  // could describe. They are off the map at the client's request.
+  //
+  // The filter is applied once, at the top of the page, rather than inside
+  // HeatMap: every figure on this screen then describes the same set of sites,
+  // and the map badge cannot disagree with the tile above it. It also settles an
+  // existing contradiction, because the page used to report 782 sites beside a
+  // capacity total that only 609 of them contributed anything to.
+  //
+  // Nothing is deleted. These permits remain in the database, in the Renewable
+  // Energy Registry listing and in /api/solar/stats, which is what the
+  // Department publishes against.
+  const hasRecordedCapacity = (i) =>
+    typeof i.capacity === 'number' && Number.isFinite(i.capacity) && i.capacity > 0
+
+  const mapped = useMemo(
+    () => (installations ?? []).filter(hasRecordedCapacity),
+    [installations],
+  )
+
   // Derive types from live data, overriding: capacity >500kW = Utility
   const types = useMemo(() => {
-    const list = installations ?? gisInstallations
+    const list = (installations ?? gisInstallations).filter(hasRecordedCapacity)
     const effectiveTypes = list.map(i => i.capacity > 500 ? 'Utility' : i.type)
     return [...new Set(effectiveTypes)].filter(Boolean).sort()
   }, [installations])
 
   const summary = useMemo(() => {
-    const list = installations ?? []
     return {
-      sites: list.length,
-      // Unrecorded capacities are null, so the headline total is the sum of the
-      // figures actually recorded — the same basis as the Department's own sheet.
-      capacity: list.reduce((sum, i) => sum + (i.capacity || 0), 0),
-      parishes: new Set(list.map((i) => i.parish)).size,
+      sites: mapped.length,
+      capacity: mapped.reduce((sum, i) => sum + i.capacity, 0),
+      parishes: new Set(mapped.map((i) => i.parish)).size,
     }
-  }, [installations])
+  }, [mapped])
 
   return (
     <>
@@ -81,7 +99,7 @@ export default function GIS() {
                 onTypeChange={setType}
               />
               <HeatMap
-                installations={installations ?? []}
+                installations={mapped}
                 selectedParish={parish}
                 selectedType={type}
               />

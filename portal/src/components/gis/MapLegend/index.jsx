@@ -6,11 +6,10 @@ const LEGEND_ITEMS = [
   { label: 'Commercial (20–499 kW)', color: '#0077B6', size: 'md' },
   { label: 'Small Commercial (5–19 kW)', color: '#33B0E0', size: 'sm' },
   { label: 'Residential (<5 kW)', color: '#C9A227', size: 'xs' },
-  // Permits whose capacity the Planning export stores as text. Excel omits them
-  // from its totals and the Department publishes that figure, so they carry no
-  // capacity here. They are mapped, but cannot be banded by size — without this
-  // entry they would read as unexplained grey dots.
-  { label: 'Capacity not recorded', color: '#94A3B8', size: 'xs' },
+  // There was a fifth grey band here, 'Capacity not recorded', for permits whose
+  // capacity the Planning export stores as text. Those permits are no longer
+  // drawn on the map, so the key must not advertise a colour that never appears.
+  // Restore both together or neither.
 ]
 
 const sizes = { lg: 'h-4 w-4', md: 'h-3.5 w-3.5', sm: 'h-3 w-3', xs: 'h-2.5 w-2.5' }
