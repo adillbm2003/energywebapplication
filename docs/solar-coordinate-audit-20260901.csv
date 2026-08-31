@@ -645,7 +645,7 @@ row,no,addr,district,action,conf,via,oldLat,oldLng,newLat,newLng,movedKm
 645,B0191-25,40 Crow Lane,Pembroke,RECOVERED,client-point,client coordinate sitting on crow lane,32.282667000000004,-64.771985,32.2936656,-64.772988,1.23
 646,B0198-25,8 Tankfield Hill,Paget,RECOVERED,client-point,client coordinate sitting on tankfield hill,32.2936656,-64.772988,32.282667000000004,-64.771985,1.23
 647,B0209-25,13 Mizzentop,Warwick,RECOVERED,client-point,client coordinate sitting on mizzentop,32.281416,-64.771472,32.273322,-64.806901,3.45
-648,B0197-25,47 Paynters Hill,Bermuda,REVIEW,parish-anchor,street not in OSM,32.273322,-64.806901,32.3008022,-64.7915912,3.38
+648,B0197-25,47 Paynters Hill,Bermuda,kept,client-original (no district to verify against),,32.273322,-64.806901,32.273322,-64.806901,0
 649,B0185-25,2 Clouds Avenue,Warwick,OSM,street,clouds avenue,32.3375,-64.70222,32.2577787,-64.8131251,13.7
 650,B0237-25,18 Constable Close,Southampton,RECOVERED,client-point,client coordinate sitting on constable close,32.257482,-64.813203,32.251885,-64.867841,5.18
 651,B0226-25,187 South Road,Paget,OSM,near-number,south road,32.251885,-64.867841,32.2936511,-64.7617649,11.02
@@ -783,6 +783,6 @@ row,no,addr,district,action,conf,via,oldLat,oldLng,newLat,newLng,movedKm
 783,B0214-26,4 Mid Ocean Drive,St. George,RECOVERED,client-point,client coordinate sitting on mid ocean drive,32.2884612,-64.7620789,32.3333906,-64.6942276,8.11
 784,B0212-26,14 Whale Bay Road,Southampton,RECOVERED,client-point,client coordinate sitting on whale bay road,32.3333906,-64.6942276,32.2564621,-64.869504,18.58
 785,B0231-26,11 Vaughan's Bay Drive,St. George,OSM,exact,vaughans bay drive,32.2564621,-64.869504,32.3695132,-64.6558535,23.73
-786,B0147-27,"Bermuda Airport Solar Farm (""The Finger"")",(blank),REVIEW,parish-anchor,street not in OSM,32.359139,-64.685694,32.3008022,-64.7915912,11.89
+786,B0147-27,"Bermuda Airport Solar Farm (""The Finger"")",(blank),kept,client-original (no district to verify against),,32.359139,-64.685694,32.359139,-64.685694,0
 787,B0235-26,5 Seabright Lane,Paget,kept,client-original,,32.288749,-64.760913,32.288749,-64.760913,0
 788,B0243-26,3 Harrington Sound Road,Hamilton,RECOVERED,client-point,client coordinate sitting on harrington sound road,32.288622,-64.7612006,32.3375,-64.70222,7.77
