@@ -17,27 +17,34 @@ const DEFAULT_ZOOM = 12
 // every basemap. Switching provider was raised as a fix for misplaced pins and
 // is not one.
 //
-// CARTO Voyager replaces the raw OpenStreetMap layer: same OSM data, but a
-// cleaner label hierarchy and, via {r}, retina tiles that stay sharp on the
-// high-DPI screens where the old layer looked soft. Free, and properly licensed
-// with the attribution below -- unlike pointing Leaflet at Google's tile URLs,
-// which their terms forbid.
+// Both layers come from Esri, which serves these basemaps without an API key.
+//
+// This was CARTO Voyager until CARTO put their basemaps behind a key: the tiles
+// kept returning HTTP 200, so nothing errored, but every one of them was a grey
+// placeholder stamped "API KEY REQUIRED" and the public map was unreadable.
+// Raw OpenStreetMap tiles are not the fallback either -- their volunteer servers
+// block this kind of production use outright and return a 403 "Access blocked"
+// image. Esri's World Street Map is keyless, carries Bermuda's parish and road
+// labels, and is already the source of the satellite layer below, so the map now
+// depends on one provider instead of two.
+//
+// If these tiles ever start rendering as placeholders again, check the tile URL
+// in the browser's network tab before touching anything else: a watermarked tile
+// is a 200, so it will not show up as a failure anywhere.
 //
 // maxZoom matters here: Leaflet stops zooming at the layer's limit, and at 18
 // it was impossible to zoom in far enough to separate neighbouring rooftops.
 const MAP_STYLES = {
   streets: {
     label: 'Street map',
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    subdomains: 'abcd',
-    maxZoom: 20,
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    maxZoom: 19,
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener noreferrer">CARTO</a>',
+      'Tiles &copy; <a href="https://www.esri.com" target="_blank" rel="noopener noreferrer">Esri</a> &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, USGS',
   },
   satellite: {
     label: 'Satellite',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    subdomains: 'abc',
     maxZoom: 19,
     attribution: 'Tiles &copy; Esri, Maxar, Earthstar Geographics',
   },
