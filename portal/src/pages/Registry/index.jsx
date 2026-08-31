@@ -15,6 +15,12 @@ import { filterBySearch, filterByField } from '../../utils/filter'
 import { formatDate, formatNumber } from '../../utils/format'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 
+// Both public data exports on this page -- the "Download Full Dataset"
+// spreadsheet link and the "Export CSV" button -- are hidden at the client's
+// request. The code behind them is intact and still tested by the build; set
+// this to true to bring both back, and nothing else needs changing.
+const SHOW_DATA_EXPORTS = false
+
 function SolarStats() {
   const [solar, setSolar] = useState(null)
 
@@ -39,13 +45,15 @@ function SolarStats() {
             <h2 className="text-xl font-bold text-navy-900">Solar Panel Applications — {solar.byYear[0]?.year} to Present</h2>
             <p className="text-sm text-slate-500 mt-1">Planning permits for solar PV installations island-wide · Last updated: {new Date(solar.fileLastModified).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'})}</p>
           </div>
-          <a
-            href={`${import.meta.env.BASE_URL}documents/Solar Panel Application 2019-now.xlsx`}
-            download
-            className="inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-800 hover:bg-amber-50 transition-colors"
-          >
-            ⬇ Download Full Dataset
-          </a>
+          {SHOW_DATA_EXPORTS && (
+            <a
+              href={`${import.meta.env.BASE_URL}documents/Solar Panel Application 2019-now.xlsx`}
+              download
+              className="inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white px-4 py-2 text-sm font-semibold text-amber-800 hover:bg-amber-50 transition-colors"
+            >
+              ⬇ Download Full Dataset
+            </a>
+          )}
         </div>
 
         {/* KPI row — "Total Permit Applications" and "Permits in <year>" were
@@ -200,13 +208,15 @@ export default function Registry() {
                 options={[{ value: 'all', label: 'All Types' }, ...(types ?? []).map((t) => ({ value: t, label: t }))]}
               />
             </div>
-            <button
-              type="button"
-              onClick={handleExport}
-              className="rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-            >
-              Export CSV
-            </button>
+            {SHOW_DATA_EXPORTS && (
+              <button
+                type="button"
+                onClick={handleExport}
+                className="rounded-md border border-slate-300 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+              >
+                Export CSV
+              </button>
+            )}
           </div>
 
           {items.length === 0 ? (
