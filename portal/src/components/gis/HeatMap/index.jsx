@@ -35,9 +35,16 @@ const DEFAULT_ZOOM = 12
 // maxZoom matters here: Leaflet stops zooming at the layer's limit, and at 18
 // it was impossible to zoom in far enough to separate neighbouring rooftops.
 const MAP_STYLES = {
+  // `subdomains` must stay even though neither URL contains an {s} placeholder.
+  // Leaflet's getTileUrl() builds `s: this._getSubdomain(coords)` unconditionally,
+  // and _getSubdomain reads `this.options.subdomains.length`. Passing undefined
+  // overwrites Leaflet's own 'abc' default, so the first tile throws
+  // "Cannot read properties of undefined (reading 'length')" and takes the entire
+  // GIS page down to a white screen. Removing it as dead config did exactly that.
   streets: {
     label: 'Street map',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    subdomains: 'abc',
     maxZoom: 19,
     attribution:
       'Tiles &copy; <a href="https://www.esri.com" target="_blank" rel="noopener noreferrer">Esri</a> &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, USGS',
@@ -45,6 +52,7 @@ const MAP_STYLES = {
   satellite: {
     label: 'Satellite',
     url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    subdomains: 'abc',
     maxZoom: 19,
     attribution: 'Tiles &copy; Esri, Maxar, Earthstar Geographics',
   },
