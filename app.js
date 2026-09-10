@@ -1615,13 +1615,29 @@ async function uploadSolarExcel(input) {
   input.value = ''
 }
 
+// The statuses a Planning permit actually carries. The drawer previously offered
+// Active / Inactive / Under Review, none of which a permit ever has, so the
+// <select> matched nothing, fell back to its first option and silently rewrote
+// "Complete" as "Active" the moment anything else on the record was saved --
+// which is how 42 Smiths Island lost its status while its coordinates were being
+// corrected. Worse, an excluded status such as "Plan Approval Expired" would have
+// been turned into a counted one, quietly changing the published totals.
+//
+// EXCLUDED_PERMIT_STATUSES in server.cjs is the matching list on the server; keep
+// the two in step.
+const SOLAR_PERMIT_STATUSES = [
+  'Complete', 'Issued', 'Under Construction', 'Issue Certificate',
+  'Plan Approval Expired', 'Rejected', 'Withdrawn', 'Cancelled', 'Denied',
+]
+
 function openSolarDrawer(id) {
   const item = id ? (STATE.db.solarInstallations||[]).find(s=>s.id===id)||{} : {}
   openDrawer({
     title: id ? 'Edit Installation' : 'New Installation',
     body: `
       <div class="form-field"><label class="form-label">Address / Location <span class="form-required">*</span></label>
-        <input id="sol-addr" class="form-input" value="${esc(item.address||item.name||item.location||'')}" placeholder="Installation address" required></div>
+        <textarea id="sol-addr" class="form-input" rows="2" placeholder="Installation address" required>${esc(item.address||item.name||item.location||'')}</textarea>
+        <p style="font-size:11px;color:#94a3b8;margin:4px 0 0">Permit addresses run to two lines. A single-line input silently joined them, turning "42 Smiths Island / St. George's" into "42 Smiths IslandSt. George's".</p></div>
       <div class="field-row">
         <div class="form-field"><label class="form-label">Capacity (kW)</label>
           <input id="sol-cap" type="number" step="0.1" class="form-input" value="${esc(item.capacity||item.capacityKw||'')}"></div>
@@ -1635,7 +1651,8 @@ function openSolarDrawer(id) {
           <input id="sol-date" type="date" class="form-input" value="${esc(((item.installDate||item.date)||'').split('T')[0])}"></div>
         <div class="form-field"><label class="form-label">Status</label>
           <select id="sol-status" class="form-select">
-            ${['Active','Inactive','Under Review'].map(s=>`<option${s===(item.status||'Active')?' selected':''}>${s}</option>`).join('')}
+            ${[...new Set([item.status || 'Complete', ...SOLAR_PERMIT_STATUSES])]
+              .map(s=>`<option${s===(item.status||'Complete')?' selected':''}>${esc(s)}</option>`).join('')}
           </select></div>
       </div>
       <div class="field-row">
@@ -1651,9 +1668,13 @@ function openSolarDrawer(id) {
 async function saveSolar(id) {
   const address = val('sol-addr')
   if (!address) { toast('Address is required','warning'); return }
+  // `name` is the first line of the address, which is what the importer stores and
+  // what the public map prints under a marker. Assigning the whole address to it
+  // put the parish and postcode into the map label.
+  const firstLine = address.split(/[\r\n]/)[0].trim()
   // Keys must match real solar_installations columns — the server drops anything else.
   const payload = {
-    address, name: address,
+    address, name: firstLine || address,
     capacity: val('sol-cap'),
     type: val('sol-type'),
     installDate: val('sol-date'),
