@@ -1308,6 +1308,65 @@ async function deleteKpi(id) {
 }
 
 // ─── SOLAR REGISTRY ───────────────────────────
+// The registry runs to hundreds of permits, so the table renders a slice rather
+// than all of them. The search box used to call filterTable(), which only shows
+// and hides the <tr> elements already in the DOM -- so it searched the 20 rows on
+// screen and nothing else. Looking up "PDP-0037-19" found nothing, because ids
+// beginning with P sort far past the first page, and the record was reported as
+// missing from the CMS altogether.
+//
+// searchSolarRegistry() filters the full cached list instead and re-renders the
+// body from it. Everything is already in memory -- renderSolarRegistry caches
+// every row on STATE.db.solarInstallations for the edit drawer -- so there is no
+// request to make.
+const SOLAR_PREVIEW_LIMIT = 20
+const SOLAR_SEARCH_LIMIT = 100
+
+function solarRowHtml(s) {
+  return `<tr class="sol-rows">
+            <td style="font-family:monospace;font-size:12px;white-space:nowrap">${esc(s.id||'\u2014')}</td>
+            <td class="td-title"><span class="td-title-text" style="max-width:260px">${esc(s.address||s.name||'\u2014')}</span></td>
+            <td>${statusBadge(s.status||'Unknown')}</td>
+            <td class="td-muted" style="white-space:nowrap">${s.installDate ? formatDate(s.installDate) : '\u2014'}</td>
+            <td class="td-muted" style="text-align:right">${s.capacity ? s.capacity.toFixed(3) : '\u2014'}</td>
+            <td class="td-muted" style="text-align:right">${s.annualOutput ? Number(s.annualOutput).toLocaleString() : '\u2014'}</td>
+            <td class="td-muted" style="text-align:right;font-family:monospace;font-size:11px">${s.lat ? s.lat.toFixed(4)+', '+s.lng.toFixed(4) : '\u2014'}</td>
+            <td class="write-only" style="text-align:right;white-space:nowrap">
+              <button class="btn btn-sm" onclick="openSolarDrawer('${esc(s.id)}')">Edit</button>
+              <button class="btn btn-sm btn-danger admin-only" onclick="deleteSolar('${esc(s.id)}')">Delete</button>
+            </td>
+          </tr>`
+}
+
+function searchSolarRegistry(q) {
+  const all = STATE.db.solarInstallations || []
+  const term = String(q || '').trim().toLowerCase()
+  const matched = term
+    ? all.filter(s => `${s.id||''} ${s.address||''} ${s.name||''} ${s.parish||''} ${s.status||''}`
+        .toLowerCase().includes(term))
+    : all
+  const limit = term ? SOLAR_SEARCH_LIMIT : SOLAR_PREVIEW_LIMIT
+  const shown = matched.slice(0, limit)
+
+  const tbody = document.getElementById('sol-tbody')
+  if (!tbody) return
+  tbody.innerHTML = shown.length
+    ? shown.map(solarRowHtml).join('')
+    : `<tr><td colspan="8" style="text-align:center;padding:28px;color:#94a3b8">No permit matches \u201c${esc(term)}\u201d.</td></tr>`
+
+  const label = document.getElementById('sol-count')
+  if (label) {
+    label.textContent = term
+      ? `Search \u2014 ${matched.length.toLocaleString()} match${matched.length === 1 ? '' : 'es'}` +
+        (matched.length > limit ? ` (showing first ${limit})` : '')
+      : `Data Preview (first ${shown.length} of ${all.length.toLocaleString()} records)`
+  }
+
+  // The rows are new elements, so role-based visibility has to be reapplied or
+  // Edit/Delete would reappear for a Viewer after any search.
+  applyRbac(STATE.role)
+}
+
 async function renderSolarRegistry() {
   const vc = document.getElementById('view-container')
 
@@ -1412,12 +1471,12 @@ async function renderSolarRegistry() {
 
     <!-- ── Preview table ── -->
     <div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-      <h3 style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin:0">
+      <h3 id="sol-count" style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin:0">
         Data Preview (first ${shown.length} of ${fmtNum(preview.length)} records)
       </h3>
       <div class="filter-search" style="width:240px">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" placeholder="Filter preview…" oninput="filterTable(this.value,'sol-tbody','sol-rows')">
+        <input type="search" placeholder="Search all ${fmtNum(preview.length)} permits…" oninput="searchSolarRegistry(this.value)">
       </div>
     </div>
     <div class="table-wrap">
@@ -1433,23 +1492,11 @@ async function renderSolarRegistry() {
           <th class="write-only" style="text-align:right">Actions</th>
         </tr></thead>
         <tbody id="sol-tbody">
-          ${shown.map(s => `<tr class="sol-rows">
-            <td style="font-family:monospace;font-size:12px;white-space:nowrap">${esc(s.id||'—')}</td>
-            <td class="td-title"><span class="td-title-text" style="max-width:260px">${esc(s.address||s.name||'—')}</span></td>
-            <td>${statusBadge(s.status||'Unknown')}</td>
-            <td class="td-muted" style="white-space:nowrap">${s.installDate ? formatDate(s.installDate) : '—'}</td>
-            <td class="td-muted" style="text-align:right">${s.capacity ? s.capacity.toFixed(3) : '—'}</td>
-            <td class="td-muted" style="text-align:right">${s.annualOutput ? fmtNum(s.annualOutput) : '—'}</td>
-            <td class="td-muted" style="text-align:right;font-family:monospace;font-size:11px">${s.lat ? s.lat.toFixed(4)+', '+s.lng.toFixed(4) : '—'}</td>
-            <td class="write-only" style="text-align:right;white-space:nowrap">
-              <button class="btn btn-sm" onclick="openSolarDrawer('${esc(s.id)}')">Edit</button>
-              <button class="btn btn-sm btn-danger admin-only" onclick="deleteSolar('${esc(s.id)}')">Delete</button>
-            </td>
-          </tr>`).join('')}
+          ${shown.map(solarRowHtml).join('')}
         </tbody>
       </table>
     </div>
-    ${preview.length > 20 ? `<p style="text-align:center;font-size:12px;color:#94a3b8;margin:8px 0 0">Showing 20 of ${fmtNum(preview.length)} records — all records are used for the GIS map and statistics.</p>` : ''}
+    ${preview.length > SOLAR_PREVIEW_LIMIT ? `<p style="text-align:center;font-size:12px;color:#94a3b8;margin:8px 0 0">Showing ${SOLAR_PREVIEW_LIMIT} of ${fmtNum(preview.length)} records — search above to find any permit by number, address, parish or status. All records are used for the GIS map and statistics.</p>` : ''}
     `}
   `
   applyRbac(STATE.role)
