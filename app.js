@@ -1319,8 +1319,12 @@ async function deleteKpi(id) {
 // body from it. Everything is already in memory -- renderSolarRegistry caches
 // every row on STATE.db.solarInstallations for the edit drawer -- so there is no
 // request to make.
-const SOLAR_PREVIEW_LIMIT = 20
-const SOLAR_SEARCH_LIMIT = 100
+const SOLAR_PAGE_SIZE = 20
+
+// Search term and page are held here rather than read back out of the DOM, so
+// paging keeps the current search and searching resets to page 1.
+let solarSearchTerm = ''
+let solarPage = 1
 
 function solarRowHtml(s) {
   return `<tr class="sol-rows">
@@ -1338,33 +1342,84 @@ function solarRowHtml(s) {
           </tr>`
 }
 
-function searchSolarRegistry(q) {
+function solarMatches() {
   const all = STATE.db.solarInstallations || []
-  const term = String(q || '').trim().toLowerCase()
-  const matched = term
-    ? all.filter(s => `${s.id||''} ${s.address||''} ${s.name||''} ${s.parish||''} ${s.status||''}`
-        .toLowerCase().includes(term))
-    : all
-  const limit = term ? SOLAR_SEARCH_LIMIT : SOLAR_PREVIEW_LIMIT
-  const shown = matched.slice(0, limit)
+  if (!solarSearchTerm) return all
+  return all.filter(s => `${s.id||''} ${s.address||''} ${s.name||''} ${s.parish||''} ${s.status||''}`
+    .toLowerCase().includes(solarSearchTerm))
+}
 
+// One renderer for the body, the heading and the pager, used by the first paint
+// and by every search or page change, so the three can never disagree about how
+// many records there are or which page is showing.
+function renderSolarTable() {
   const tbody = document.getElementById('sol-tbody')
   if (!tbody) return
+
+  const matched = solarMatches()
+  const totalPages = Math.max(1, Math.ceil(matched.length / SOLAR_PAGE_SIZE))
+  solarPage = Math.min(Math.max(1, solarPage), totalPages)
+
+  const from = (solarPage - 1) * SOLAR_PAGE_SIZE
+  const shown = matched.slice(from, from + SOLAR_PAGE_SIZE)
+
   tbody.innerHTML = shown.length
     ? shown.map(solarRowHtml).join('')
-    : `<tr><td colspan="8" style="text-align:center;padding:28px;color:#94a3b8">No permit matches \u201c${esc(term)}\u201d.</td></tr>`
+    : `<tr><td colspan="8" style="text-align:center;padding:28px;color:#94a3b8">No permit matches \u201c${esc(solarSearchTerm)}\u201d.</td></tr>`
 
   const label = document.getElementById('sol-count')
   if (label) {
-    label.textContent = term
-      ? `Search \u2014 ${matched.length.toLocaleString()} match${matched.length === 1 ? '' : 'es'}` +
-        (matched.length > limit ? ` (showing first ${limit})` : '')
-      : `Data Preview (first ${shown.length} of ${all.length.toLocaleString()} records)`
+    label.textContent = matched.length
+      ? `Showing ${(from + 1).toLocaleString()}\u2013${(from + shown.length).toLocaleString()} of ${matched.length.toLocaleString()}` +
+        (solarSearchTerm ? ' matching permits' : ' permits')
+      : 'No matching permits'
+  }
+
+  const pager = document.getElementById('sol-pager')
+  if (pager) {
+    if (matched.length <= SOLAR_PAGE_SIZE) {
+      pager.innerHTML = ''
+    } else {
+      const btn = (lbl, page, disabled, title) =>
+        `<button class="btn btn-sm" ${disabled ? 'disabled style="opacity:.4;cursor:default"' : ''} ` +
+        `title="${title}" onclick="solarGoToPage(${page})">${lbl}</button>`
+      pager.innerHTML = `
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin:12px 0 0;flex-wrap:wrap">
+          ${btn('\u00ab First', 1, solarPage === 1, 'First page')}
+          ${btn('\u2039 Prev', solarPage - 1, solarPage === 1, 'Previous page')}
+          <span style="font-size:12px;color:#64748b;padding:0 4px">Page ${solarPage.toLocaleString()} of ${totalPages.toLocaleString()}</span>
+          ${btn('Next \u203a', solarPage + 1, solarPage === totalPages, 'Next page')}
+          ${btn('Last \u00bb', totalPages, solarPage === totalPages, 'Last page')}
+        </div>`
+    }
   }
 
   // The rows are new elements, so role-based visibility has to be reapplied or
-  // Edit/Delete would reappear for a Viewer after any search.
+  // Edit/Delete would reappear for a Viewer after any search or page change.
   applyRbac(STATE.role)
+}
+
+function solarGoToPage(page) {
+  solarPage = page
+  renderSolarTable()
+  const t = document.querySelector('.table-wrap')
+  // Guarded: scrollIntoView is absent in non-browser DOM implementations, and a
+  // convenience scroll must never be the thing that breaks paging.
+  if (t && typeof t.scrollIntoView === 'function') {
+    t.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }
+}
+
+// The search box used to call filterTable(), which only sets display:none on the
+// <tr> elements already in the DOM -- so it searched the 20 rows on screen and
+// nothing else. PDP-0037-19 sits at position 721 of 782, because ids beginning
+// with P sort past every B id, so it was invisible and reported as missing from
+// the CMS altogether. This filters the full cached list instead; every row is
+// already in memory for the edit drawer, so there is no request to make.
+function searchSolarRegistry(q) {
+  solarSearchTerm = String(q || '').trim().toLowerCase()
+  solarPage = 1
+  renderSolarTable()
 }
 
 async function renderSolarRegistry() {
@@ -1397,8 +1452,9 @@ async function renderSolarRegistry() {
   const complete = stats?.byStatus?.find(s=>s.status==='Complete')?.count
   const lastMod  = stats?.fileLastModified ? new Date(stats.fileLastModified).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : 'No file uploaded yet'
 
-  // Top 20 preview rows
-  const shown = preview.slice(0, 20)
+  // Opening the view is a fresh start: no search, first page.
+  solarSearchTerm = ''
+  solarPage = 1
 
   vc.innerHTML = `
     <div class="view-header">
@@ -1472,7 +1528,7 @@ async function renderSolarRegistry() {
     <!-- ── Preview table ── -->
     <div style="margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
       <h3 id="sol-count" style="font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:#64748b;margin:0">
-        Data Preview (first ${shown.length} of ${fmtNum(preview.length)} records)
+        Data Preview
       </h3>
       <div class="filter-search" style="width:240px">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1491,14 +1547,16 @@ async function renderSolarRegistry() {
           <th style="text-align:right">Lat / Lng</th>
           <th class="write-only" style="text-align:right">Actions</th>
         </tr></thead>
-        <tbody id="sol-tbody">
-          ${shown.map(solarRowHtml).join('')}
-        </tbody>
+        <tbody id="sol-tbody"></tbody>
       </table>
     </div>
-    ${preview.length > SOLAR_PREVIEW_LIMIT ? `<p style="text-align:center;font-size:12px;color:#94a3b8;margin:8px 0 0">Showing ${SOLAR_PREVIEW_LIMIT} of ${fmtNum(preview.length)} records — search above to find any permit by number, address, parish or status. All records are used for the GIS map and statistics.</p>` : ''}
+    <div id="sol-pager"></div>
+    <p style="text-align:center;font-size:12px;color:#94a3b8;margin:8px 0 0">Search by permit number, address, parish or status. All ${fmtNum(preview.length)} records are used for the GIS map and statistics.</p>
     `}
   `
+  // Paint the body, heading and pager through the same renderer the search and
+  // the pager buttons use, so the first page cannot drift from later ones.
+  renderSolarTable()
   applyRbac(STATE.role)
 }
 
