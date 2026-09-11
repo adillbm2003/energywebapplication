@@ -51,13 +51,21 @@ export default function GIS() {
     return [...new Set(effectiveTypes)].filter(Boolean).sort()
   }, [installations])
 
+  // The tiles report the registry, not the map. Reporting the plotted count here
+  // read as though sites were missing from the register: the Department publishes
+  // 777, and a headline of 605 under the words "Registered sites" invited exactly
+  // that reading. The capacity is identical either way, because a permit with no
+  // recorded capacity contributes nothing to the total.
   const summary = useMemo(() => {
+    const all = installations ?? []
     return {
-      sites: mapped.length,
-      capacity: mapped.reduce((sum, i) => sum + i.capacity, 0),
-      parishes: new Set(mapped.map((i) => i.parish)).size,
+      sites: all.length,
+      capacity: all.reduce((sum, i) => sum + (i.capacity || 0), 0),
+      parishes: new Set(all.map((i) => i.parish)).size,
+      plotted: mapped.length,
+      unplotted: all.length - mapped.length,
     }
-  }, [mapped])
+  }, [installations, mapped])
 
   return (
     <>
@@ -87,6 +95,20 @@ export default function GIS() {
               <p className="text-h2 font-bold text-navy-900">{summary.parishes}</p>
             </div>
           </div>
+
+          {/* The registry total and the number of markers differ, and saying so
+              here is cheaper than answering the question every time the map is
+              reviewed. Rendered only when they actually differ. */}
+          {summary.unplotted > 0 && (
+            <p className="text-caption text-slate-500">
+              All {formatNumber(summary.sites)} registered sites are included in the totals above.{' '}
+              {formatNumber(summary.unplotted)} of them are not shown on the map: the Department of
+              Planning export records their capacity as text rather than a number, so they carry no
+              capacity figure and cannot be sized or colour-banded. They are excluded from the
+              published capacity total for the same reason. The map plots the remaining{' '}
+              {formatNumber(summary.plotted)}.
+            </p>
+          )}
 
           <div className="grid gap-4 lg:grid-cols-4">
             <div className="lg:col-span-3 space-y-4">
