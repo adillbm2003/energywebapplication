@@ -1,5 +1,5 @@
 Permit Number,Address,Capacity kW,Latitude,Longitude,Why listed
-PDP-0037-19,"42 Smiths Island, St. George's, BM DD01, Bermuda",5.325,32.371716,-64.6645257,"street not in OpenStreetMap - coordinate is the Department supplied value, unverified"
+PDP-0037-19,"42 Smiths Island, St. George's, BM DD01, Bermuda",5.325,32.371716,-64.6645257,"repositioned to the centre of Smith's Island and confirmed correct by the Department on 10 Sep"
 PDP-0273-20,"3 Perots Island, Southampton, BM SN04, Bermuda",7.9,32.260736,-64.830029,"street not in OpenStreetMap - coordinate is the Department supplied value, unverified"
 PDP-0397-20,"36 Hinson Island, Paget, BM PG01, Bermuda",9.135,32.282623,-64.800339,"street not in OpenStreetMap - coordinate is the Department supplied value, unverified"
 PDP-0405-20,"41 Hinson Island, Paget, BM PG01, Bermuda",5.04,32.282095,-64.801389,"street not in OpenStreetMap - coordinate is the Department supplied value, unverified"
