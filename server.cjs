@@ -1536,12 +1536,39 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       };
       const latCols = findCoordCols(['lat', 'latitude', 'y']);
       const lonCols = findCoordCols(['lon', 'lng', 'long', 'longitude', 'x']);
+
+      // Refuse the file outright rather than importing it without positions.
+      //
+      // This used to log a warning and carry on, placing every permit on a
+      // jittered parish centre. A workbook rebuilt from the Planning export --
+      // which carries no coordinates -- was uploaded on 14 September and scattered
+      // all 777 permits across the island: 639 of them landed more than 500 m from
+      // the road their own address names, and the upload reported success. A
+      // registry with no coordinates is not a registry the public map can draw, and
+      // failing loudly here costs one clear error message instead of a rebuild.
+      //
+      // The truncate-and-reload runs below, so returning now leaves the existing
+      // registry untouched.
       if (latCols.first === -1 || lonCols.first === -1) {
-        console.warn('[Solar import] No coordinate columns found — markers will fall back to parish centroids.');
+        try { fs.unlinkSync(req.file.path); } catch (e) {}
+        const missing = [];
+        if (latCols.first === -1) missing.push('latitude');
+        if (lonCols.first === -1) missing.push('longitude');
+        return res.status(400).json({
+          error: `The spreadsheet has no ${missing.join(' or ')} column, so the permits could not be placed on the map. ` +
+                 `Nothing was changed — the existing registry is still in place. ` +
+                 `Add a column headed "latitude" and one headed "longitude" holding decimal degrees ` +
+                 `(latitude around 32.3, longitude negative, around -64.7), then upload again. ` +
+                 `Download Template on this page produces a workbook with the right columns.`,
+          missingColumns: missing,
+          sheet: sheetName,
+          headingsFound: headers.filter(Boolean).map(String),
+        });
       }
 
       const skipped = [];
       const filteredOut = [];
+      let noCoordinateCount = 0;
       const inserted = await db.executeTransaction(async (client) => {
       await client.query('TRUNCATE solar_installations');
 
@@ -1596,7 +1623,7 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
 
         let lat, lng;
         if (hasCoords) { lat = parsedLat; lng = parsedLng; }
-        else { const c = PARISH_COORDS[parish] || PARISH_COORDS['Bermuda']; lat = c[0]+Math.sin(i*7.3)*0.003; lng = c[1]+Math.cos(i*5.1)*0.003; }
+        else { noCoordinateCount++; const c = PARISH_COORDS[parish] || PARISH_COORDS['Bermuda']; lat = c[0]+Math.sin(i*7.3)*0.003; lng = c[1]+Math.cos(i*5.1)*0.003; }
         if (parish === 'Bermuda') parish = nearestParish(lat, lng);
 
         // Capacity counts only when the cell is a real number. In the Planning
@@ -1726,6 +1753,10 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         excludedRows: filteredOut.slice(0, 20),
         skipped: skipped.length,
         skippedRows: skipped.slice(0, 20),
+        // A coordinate column can be present and still be mostly empty. Those rows
+        // fall back to a parish centre, which is a guess; saying how many did keeps
+        // that visible instead of leaving it to be discovered on the map.
+        withoutCoordinates: noCoordinateCount,
       });
     } catch (parseErr) {
       console.error('Solar Excel parse error:', parseErr);
