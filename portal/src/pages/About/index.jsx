@@ -54,32 +54,31 @@ export default function About() {
             image={PAGE_IMAGES.home}
             imageAlt="Hamilton, Bermuda"
           >
-            <p>
-              The Department of Energy is responsible for developing and implementing Bermuda&apos;s energy policy,
-              regulating the energy sector, and promoting the transition to a sustainable, secure, and affordable
-              energy system for all residents.
-            </p>
-            <p className="mt-4">
-              We oversee renewable energy programmes, electronic communications, space and satellite services,
-              and provide the public with data, tools, and resources to participate in Bermuda&apos;s energy future.
+            <p className="text-lg font-medium text-navy-900">
+              To support the development of policy and legislation for the space, energy, and
+              telecommunications industries.
             </p>
           </ContentBlock>
 
           <ContentBlock
-            title="Our Vision"
-            subtitle="A cleaner, more resilient Bermuda"
+            title="The Department Overview"
             image={PAGE_IMAGES.bermudaVision}
             imageAlt="Aerial view of Bermuda coastline"
             reverse
           >
-            <p className="text-lg font-medium text-navy-900">
-              A Bermuda powered by clean, reliable, and affordable energy — resilient to climate change and
-              positioned as a leader in the Atlantic region.
+            <p>
+              The Department of Energy supports the development of policy and legislation for Bermuda&apos;s
+              energy, telecommunications, space and satellite industries. The Department advises and supports
+              the Minister in promoting affordable, secure, and sustainable energy, modern digital connectivity,
+              and resilient infrastructure, while fostering a stable and enabling regulatory environment that
+              supports innovation, investment, and economic growth.
             </p>
-            <p className="mt-4 text-slate-600">
-              Through targeted policy, investment, and public engagement, the Department is steering Bermuda
-              toward a future where renewable energy is the norm, energy costs are manageable, and every
-              Bermudian benefits from a sustainable energy transition.
+            <p className="mt-4">
+              Through policy development, legislative reform, stakeholder engagement, and public outreach, the
+              Department works collaboratively with regulators, Government ministries, statutory bodies, and
+              industry partners to advance national priorities, reduce reliance on imported fossil fuels,
+              address cost-of-living pressures, and position Bermuda as a competitive jurisdiction within the
+              global energy and space economy.
             </p>
           </ContentBlock>
         </div>
