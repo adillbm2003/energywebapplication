@@ -1,0 +1,65 @@
+Slot,Image file,Bytes,Provenance,Used on
+gisHeatmap,heat-gis.png,2017267,AI-GENERATED (signed),data/bursary.js | data/home.js | data/innovation.js | pages/Dashboard/index.jsx | pages/GIS/index.jsx | services/innovationService.js | services/projectService.js | utils/contentImages.js
+logo,dept-of-energy-white.png,0,FILE MISSING,(not referenced)
+logoPublic,dept-of-energy-white.png,0,FILE MISSING,(not referenced)
+evFleetBermuda,ev-fleet-bermuda.jpg,199269,real photograph (camera data),data/dashboard.js
+solarFieldBermuda,solar-field-bermuda.jpg,362020,real photograph (camera data),data/bursary.js | data/dashboard.js | data/education.js | data/home.js | data/news.js | pages/Dashboard/RenewableDashboard.jsx | services/innovationService.js | services/projectService.js | utils/contentImages.js | utils/policyImages.js
+summerStudentPhoto,summer-student-photo.jpg,93032,real photograph (camera data),services/newsService.js
+analytics,analytics.jpg,86079,unknown - metadata stripped,data/innovation.js | pages/Dashboard/TransitionDashboard.jsx | pages/Energy/index.jsx | utils/policyImages.js
+balconySolar,balcony-solar.jpg,209080,unknown - metadata stripped,data/education.js | data/home.js | data/projects.js | services/projectService.js | utils/contentImages.js | utils/policyImages.js
+battery,battery-storage.jpg,243100,unknown - metadata stripped,data/bursary.js | data/education.js | data/innovation.js | pages/Dashboard/RenewableDashboard.jsx | pages/Home/index.jsx | services/innovationService.js
+batteryRooms,battery-rooms.jpg,243100,unknown - metadata stripped,data/dashboard.js | services/projectService.js
+batteryStorage,battery-storage.jpg,243100,unknown - metadata stripped,(not referenced)
+bermuda,bermuda.jpg,180958,unknown - metadata stripped,data/space.js | pages/NotFound/index.jsx
+bermudaVision,bermuda-vision.webp,541000,unknown - metadata stripped,pages/About/index.jsx
+bhcHousing,bhc-housing.jpg,235061,unknown - metadata stripped,data/home.js | data/news.js | data/projects.js | pages/About/index.jsx | pages/Simulator/index.jsx | services/projectService.js | utils/contentImages.js
+blockchain,blockchain.jpg,54461,unknown - metadata stripped,data/innovation.js
+bursary,bursary.jpg,117486,unknown - metadata stripped,(not referenced)
+bus,bus.jpg,244838,unknown - metadata stripped,data/dashboard.js | data/home.js
+charging,charging.jpg,88743,unknown - metadata stripped,data/dashboard.js | data/education.js | data/installers.js | data/projects.js | pages/Energy/Vehicles.jsx | services/projectService.js
+consultation,consultation.jpg,58394,unknown - metadata stripped,data/home.js | data/news.js | pages/Consultations/index.jsx | pages/Energy/index.jsx | pages/ProgressTracker/index.jsx | utils/policyImages.js
+contact,bermuda.jpg,180958,unknown - metadata stripped,pages/Contact/index.jsx
+dockyardSolar,dockyard-solar.jpg,147020,unknown - metadata stripped,data/dashboard.js | data/innovation.js | pages/Registry/index.jsx | services/innovationService.js | services/projectService.js
+dptElectrification,dpt-electrification.jpg,36784,unknown - metadata stripped,data/dashboard.js | data/projects.js | services/projectService.js
+education,education.jpg,114721,unknown - metadata stripped,pages/Bursary/index.jsx | pages/Dashboard/index.jsx
+educationOutreach,education-outreach.jpg,80081,unknown - metadata stripped,data/education.js | data/home.js | data/news.js | pages/Education/index.jsx | utils/contentImages.js
+efficiency,efficiency.jpg,145546,unknown - metadata stripped,data/bursary.js | data/education.js | data/innovation.js | data/projects.js | pages/Energy/index.jsx | services/projectService.js
+electricBus,electric-bus.jpg,7151,unknown - metadata stripped,data/news.js | pages/Dashboard/TransitionDashboard.jsx | utils/policyImages.js
+electricBuses,electric-buses.jpg,103521,unknown - metadata stripped,data/bursary.js | services/innovationService.js | utils/contentImages.js | utils/policyImages.js
+energy,energy.jpg,116852,unknown - metadata stripped,pages/Energy/index.jsx | pages/News/index.jsx | utils/policyImages.js
+ev,ev.jpg,154494,unknown - metadata stripped,data/education.js | data/home.js | pages/Dashboard/TransitionDashboard.jsx | pages/Energy/index.jsx | pages/Energy/Vehicles.jsx | services/projectService.js
+evExpo,ev-expo.jpg,102934,unknown - metadata stripped,data/dashboard.js
+floatingSolar,floating-solar.jpg,50990,unknown - metadata stripped,data/bursary.js | data/education.js | pages/About/index.jsx | services/projectService.js
+government,government.jpg,48251,unknown - metadata stripped,pages/About/index.jsx | pages/Contact/index.jsx | pages/Legal/LegalPage.jsx | pages/Policies/index.jsx | utils/policyImages.js
+govSolarField,gov-solar-field.jpg,416991,unknown - metadata stripped,data/bursary.js | data/education.js | data/projects.js | pages/Projects/index.jsx | services/projectService.js | utils/policyImages.js
+grid,grid.jpg,63998,unknown - metadata stripped,data/innovation.js | pages/ElectronicCommunications/index.jsx | pages/Energy/index.jsx | utils/policyImages.js
+hamiltonStreet,hamilton-street.jpg,67431,unknown - metadata stripped,data/bursary.js | data/home.js | utils/contentImages.js | utils/policyImages.js
+home,home.jpg,139599,unknown - metadata stripped,pages/About/index.jsx
+innovation,innovation.jpg,167839,unknown - metadata stripped,data/bursary.js | data/innovation.js | pages/ElectronicCommunications/index.jsx | pages/Innovation/index.jsx | services/innovationService.js | utils/policyImages.js
+motorcycle,motorcycle.jpg,138078,unknown - metadata stripped,data/dashboard.js
+policy,consultation.jpg,58394,unknown - metadata stripped,(not referenced)
+portrait,portrait.jpg,50532,unknown - metadata stripped,(not referenced)
+registry,registry.jpg,85269,unknown - metadata stripped,data/innovation.js | data/installers.js | pages/Dashboard/index.jsx | pages/Dashboard/RenewableDashboard.jsx
+renewableDashboard,bermuda-energy-dashboard.png,319767,unknown - metadata stripped,pages/Dashboard/index.jsx
+satellite,satellite.jpg,72020,unknown - metadata stripped,data/education.js | data/news.js | pages/About/index.jsx | pages/SpaceSatellite/index.jsx | services/innovationService.js | utils/contentImages.js | utils/policyImages.js
+simulator,home.jpg,139599,unknown - metadata stripped,pages/Dashboard/index.jsx
+solar,solar.jpg,116852,unknown - metadata stripped,constants/branding.js | data/installers.js | pages/Dashboard/index.jsx | pages/Dashboard/RenewableDashboard.jsx | pages/Energy/index.jsx | pages/Home/index.jsx
+solarCommercial,solar-commercial.jpg,238696,unknown - metadata stripped,data/installers.js | pages/Energy/index.jsx
+solarRooftop,solar-rooftop.jpg,238696,unknown - metadata stripped,data/education.js | data/installers.js | pages/Home/index.jsx
+solarWorkers,solar-workers.jpg,52813,unknown - metadata stripped,data/bursary.js | data/home.js | data/innovation.js | pages/About/index.jsx | pages/Energy/Installers.jsx | services/innovationService.js | services/projectService.js | utils/contentImages.js | utils/siteImages.js
+space,space.jpg,230882,unknown - metadata stripped,(not referenced)
+spaceAstronaut,space-astronaut.jpg,92418,unknown - metadata stripped,data/space.js
+spaceDish,space-dish.jpg,153956,unknown - metadata stripped,data/space.js
+spaceEarth,space-earth.jpg,109158,unknown - metadata stripped,(not referenced)
+spaceInsurance,space-insurance.jpg,133879,unknown - metadata stripped,data/space.js
+spaceLaunch,space-launch.jpg,148118,unknown - metadata stripped,(not referenced)
+spaceNightsky,space-nightsky.jpg,168889,unknown - metadata stripped,data/space.js
+spaceOrbit,space-orbit.jpg,207208,unknown - metadata stripped,data/space.js
+spaceSatellites,space-satellites.jpg,319032,unknown - metadata stripped,data/home.js | pages/SpaceSatellite/index.jsx | pages/SpaceSatellite/SpacePage.jsx | services/projectService.js | utils/policyImages.js
+spaceStrategy,space-strategy.jpg,142442,unknown - metadata stripped,data/space.js
+telecom,telecom.jpg,51090,unknown - metadata stripped,pages/Broadcasting/index.jsx | pages/ElectronicCommunications/index.jsx | utils/policyImages.js
+transitionDashboard,bermuda-energy-dashboard.png,319767,unknown - metadata stripped,pages/Dashboard/index.jsx
+transport,transport.jpg,89075,unknown - metadata stripped,pages/Energy/index.jsx
+van,van.jpg,99563,unknown - metadata stripped,(not referenced)
+wind,wind.jpg,95118,unknown - metadata stripped,pages/Dashboard/RenewableDashboard.jsx | pages/Home/index.jsx
+windTurbine,wind-turbine.jpg,46484,unknown - metadata stripped,data/bursary.js | data/dashboard.js | services/projectService.js | utils/policyImages.js
