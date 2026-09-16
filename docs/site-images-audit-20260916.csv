@@ -1,7 +1,7 @@
 Slot,Image file,Bytes,Provenance,Used on
 gisHeatmap,heat-gis.png,2017267,AI-GENERATED (signed),data/bursary.js | data/home.js | data/innovation.js | pages/Dashboard/index.jsx | pages/GIS/index.jsx | services/innovationService.js | services/projectService.js | utils/contentImages.js
-logo,dept-of-energy-white.png,0,FILE MISSING,(not referenced)
-logoPublic,dept-of-energy-white.png,0,FILE MISSING,(not referenced)
+logo,dept-of-energy-white.png,56331,official Department lockup - not a photograph,"header and footer (via BRANDING, not PAGE_IMAGES)"
+logoPublic,dept-of-energy-white.png,56331,official Department lockup - not a photograph,"header and footer (via BRANDING, not PAGE_IMAGES)"
 evFleetBermuda,ev-fleet-bermuda.jpg,199269,real photograph (camera data),data/dashboard.js
 solarFieldBermuda,solar-field-bermuda.jpg,362020,real photograph (camera data),data/bursary.js | data/dashboard.js | data/education.js | data/home.js | data/news.js | pages/Dashboard/RenewableDashboard.jsx | services/innovationService.js | services/projectService.js | utils/contentImages.js | utils/policyImages.js
 summerStudentPhoto,summer-student-photo.jpg,93032,real photograph (camera data),services/newsService.js
