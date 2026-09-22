@@ -113,7 +113,7 @@ export default function Home() {
         </div>
       </section>
 
-      <EnergyAwarenessGuides stats={stats} loading={statsLoading} />
+      <EnergyAwarenessGuides loading={statsLoading} />
 
       <section className="section-padding bg-slate-100/80" aria-labelledby="explore-heading">
         <div className="container-page">

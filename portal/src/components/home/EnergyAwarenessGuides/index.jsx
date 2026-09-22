@@ -1,10 +1,8 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import SectionHeading from '../../ui/SectionHeading'
-import Button from '../../ui/Button'
 import { CardSkeleton } from '../../ui/Skeleton'
 import { energyAwarenessGuides } from '../../../data/energyGuides'
-import { getGuideKeyGuidance } from '../../../utils/homeStats'
 
 const fadeUp = {
   initial: { opacity: 0, y: 20 },
@@ -13,7 +11,7 @@ const fadeUp = {
   transition: { duration: 0.5 },
 }
 
-export default function EnergyAwarenessGuides({ stats, loading = false }) {
+export default function EnergyAwarenessGuides({ loading = false }) {
   return (
     <section className="section-padding bg-white" aria-labelledby="energy-guides-heading">
       <div className="container-page">
@@ -24,12 +22,14 @@ export default function EnergyAwarenessGuides({ stats, loading = false }) {
           align="center"
         />
 
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {/* auto-fit + justify-center so a row that does not fill the grid is
+            centred rather than pushed left. There are three guides and the grid
+            used to be four columns wide, which left the group off-centre beneath
+            a centred heading. */}
+        <div className="grid justify-center gap-4 [grid-template-columns:repeat(auto-fit,minmax(16rem,22rem))]">
           {loading
             ? Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)
             : energyAwarenessGuides.map((guide, index) => {
-                const keyGuidance = getGuideKeyGuidance(stats, guide)
-
                 return (
                   <motion.article
                     key={guide.id}
@@ -55,8 +55,7 @@ export default function EnergyAwarenessGuides({ stats, loading = false }) {
                         <p className="text-caption font-semibold uppercase tracking-wide text-teal-700">
                           Key Guidance
                         </p>
-                        <p className="mt-1 text-h3 font-bold text-navy-900">{keyGuidance}</p>
-                        <p className="mt-1 text-caption text-slate-600">{guide.guidanceNote}</p>
+                        <p className="mt-1 text-body-small text-slate-600">{guide.guidanceNote}</p>
                       </div>
 
                       <p className="mt-4 flex-1 text-body-small text-slate-600">{guide.description}</p>
