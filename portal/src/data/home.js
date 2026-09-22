@@ -59,13 +59,16 @@ export const homeSpotlights = [
   },
 ]
 
+// Quick Access exists to reach pages the rest of the home page does not already
+// link to. Four tiles were removed because they repeated a destination reached
+// higher up the same page -- GIS Solar PV Map and Renewable Capacity from the
+// Data, Dashboards & GIS block, EV Adoption from that block and the roadmap, and
+// Solar Installers from the installers section directly above. Policies and
+// Education Centre are reachable from nowhere else on the page, which is exactly
+// why this section is worth keeping.
 export const homeQuickAccess = [
-  { label: 'GIS Solar PV Map', to: ROUTES.gis, image: PAGE_IMAGES.gisHeatmap },
-  { label: 'Public Sector Fleet', to: ROUTES.projectDetail('prj-dpt-electrification'), image: PAGE_IMAGES.bus },
-  { label: 'Balcony Solar Pilot', to: ROUTES.projectDetail('prj-balcony-solar'), image: PAGE_IMAGES.balconySolar },
-  { label: 'EV Adoption', to: ROUTES.transitionDashboard, image: PAGE_IMAGES.ev },
-  { label: 'Renewable Capacity', to: ROUTES.renewableDashboard, image: PAGE_IMAGES.solarFieldBermuda },
-  { label: 'Solar Installers', to: ROUTES.installers, image: PAGE_IMAGES.solarWorkers },
   { label: 'Policies', to: ROUTES.policies, image: PAGE_IMAGES.hamiltonStreet },
   { label: 'Education Centre', to: ROUTES.education, image: PAGE_IMAGES.educationOutreach },
+  { label: 'Public Sector Fleet', to: ROUTES.projectDetail('prj-dpt-electrification'), image: PAGE_IMAGES.bus },
+  { label: 'Balcony Solar Pilot', to: ROUTES.projectDetail('prj-balcony-solar'), image: PAGE_IMAGES.balconySolar },
 ]

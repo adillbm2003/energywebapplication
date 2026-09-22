@@ -5,7 +5,6 @@ import SectionHeading from '../../components/ui/SectionHeading'
 import Button from '../../components/ui/Button'
 import NewsCard from '../../components/cards/NewsCard'
 import ProjectCard from '../../components/cards/ProjectCard'
-import InstallerCard from '../../components/cards/InstallerCard'
 import KPIWidget from '../../components/dashboard/KPIWidget'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
@@ -15,7 +14,6 @@ import {
   consultationService,
   projectService,
 } from '../../services'
-import { installerService } from '../../services/installerService'
 import { ROUTES } from '../../constants/routes'
 import { EXTERNAL_LINKS } from '../../constants/externalLinks'
 import { homePriorities, homeSpotlights, homeQuickAccess } from '../../data/home'
@@ -41,11 +39,9 @@ export default function Home() {
   const { data: news, loading: newsLoading } = useAsyncData(() => newsService.getAll(), [])
   const { data: consultations } = useAsyncData(() => consultationService.getActive(), [])
   const { data: projects } = useAsyncData(() => projectService.getFeatured(), [])
-  const { data: installers } = useAsyncData(() => installerService.getAll(), [])
 
   const latestNews = news?.slice(0, 4) ?? []
   const activeConsultations = consultations ?? []
-  const topInstallers = installers?.slice(0, 3) ?? []
 
   const dashboardHighlights = renewableKPIs?.slice(0, 4) ?? []
 
@@ -217,16 +213,15 @@ export default function Home() {
         </div>
       </section>
 
+      {/* A pointer to the register, not a copy of it. Three installers used to be
+          listed here as full cards, which put the same companies on two pages and
+          implied the Department was featuring three of them. The register itself
+          is the authoritative list and lives on its own page. */}
       <section className="section-padding bg-white" aria-labelledby="installers-heading">
         <div className="container-page">
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <div className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeading title="Registered Solar PV Installers" subtitle="Registered professionals for your renewable energy project" className="mb-0" />
             <Button to={ROUTES.installers} variant="outline">View All Installers</Button>
-          </div>
-          <div className="flex flex-col gap-3">
-            {topInstallers.map((installer) => (
-              <InstallerCard key={installer.id} installer={installer} />
-            ))}
           </div>
         </div>
       </section>
