@@ -16,7 +16,7 @@ import {
 } from '../../services'
 import { ROUTES } from '../../constants/routes'
 import { EXTERNAL_LINKS } from '../../constants/externalLinks'
-import { homePriorities, homeSpotlights, homeQuickAccess } from '../../data/home'
+import { homePriorities, homeExplore } from '../../data/home'
 import { PAGE_IMAGES } from '../../constants/branding'
 import { formatDate } from '../../utils/format'
 import SafeImage from '../../components/common/SafeImage'
@@ -115,11 +115,11 @@ export default function Home() {
 
       <EnergyAwarenessGuides stats={stats} loading={statsLoading} />
 
-      <section className="section-padding bg-slate-100/80" aria-labelledby="spotlight-heading">
+      <section className="section-padding bg-slate-100/80" aria-labelledby="explore-heading">
         <div className="container-page">
-          <SectionHeading title="Spotlight" subtitle="Featured programmes and tools from across the platform" align="center" />
+          <SectionHeading title="Explore" subtitle="Programmes and resources across the Department" align="center" />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {homeSpotlights.map((spot) => (
+            {homeExplore.map((spot) => (
               <Link
                 key={spot.title}
                 to={spot.to}
@@ -330,30 +330,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section-padding bg-slate-100/80" aria-labelledby="quick-access-heading">
-        <div className="container-page">
-          <SectionHeading title="Quick Access" subtitle="Jump to key sections of energy.bm" align="center" />
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {homeQuickAccess.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="group overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow transition-all hover:-translate-y-1 hover:border-teal-300 hover:card-shadow-hover"
-              >
-                <div className="aspect-[4/3] overflow-hidden">
-                  <img
-                    src={link.image}
-                    alt=""
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                    loading="lazy"
-                  />
-                </div>
-                <p className="p-3 text-center text-sm font-semibold text-navy-900">{link.label}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       <section className="section-padding bg-teal-700" aria-labelledby="cta-heading">
         <div className="container-page text-center">

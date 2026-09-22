@@ -28,21 +28,22 @@ export const homePriorities = [
   },
 ]
 
-export const homeSpotlights = [
-  {
-    title: 'BHC Community Solar',
-    description: 'Shared renewable generation for Bermuda Housing Corporation residents and eligible subscribers island-wide.',
-    image: PAGE_IMAGES.bhcHousing,
-    to: ROUTES.projectDetail('prj-bhc-solar'),
-    tag: 'Featured Project',
-  },
-  {
-    title: 'GIS Solar PV Map',
-    description: 'Explore solar installation locations across Bermuda on an interactive island map.',
-    image: PAGE_IMAGES.gisHeatmap,
-    to: ROUTES.gis,
-    tag: 'Data & GIS',
-  },
+// One "Explore" grid, replacing the separate Spotlight and Quick Access sections.
+// They were two navigation grids two sections apart, and between them they
+// repeated four destinations the page already linked to.
+//
+// What was dropped and why:
+//   GIS Solar PV Map      - the Data, Dashboards & GIS block links it already
+//   BHC Community Solar   - a project; Featured Initiatives and View All Projects cover it
+//   Public Sector Fleet   - likewise, and it is currently one of the three Featured cards
+//   Balcony Solar Pilot   - likewise
+//
+// Which projects appear under Featured Initiatives is decided by the CMS (first
+// three under 100% progress), so hardcoding project tiles here duplicated a card
+// above whenever the two happened to coincide. Projects are reached through the
+// projects section; this grid is for the parts of the Department's work that the
+// rest of the page never mentions.
+export const homeExplore = [
   {
     title: 'Space & Satellite Sector',
     description: "Bermuda's premier jurisdiction for satellite filing, earth stations, and space insurance.",
@@ -51,24 +52,24 @@ export const homeSpotlights = [
     tag: 'Space Economy',
   },
   {
+    title: 'Policies & Legislation',
+    description: 'Acts, policies, consultation documents and guidance notes across energy, telecommunications and space.',
+    image: PAGE_IMAGES.hamiltonStreet,
+    to: ROUTES.policies,
+    tag: 'Policy',
+  },
+  {
+    title: 'Education Centre',
+    description: 'Guides, tools and resources to help households and businesses use energy well.',
+    image: PAGE_IMAGES.education,
+    to: ROUTES.education,
+    tag: 'Education',
+  },
+  {
     title: 'Energy Bursary Programme',
     description: 'Supporting Bermudian students pursuing careers in energy, sustainability, and space STEM.',
     image: PAGE_IMAGES.educationOutreach,
     to: ROUTES.bursary,
     tag: 'Programmes',
   },
-]
-
-// Quick Access exists to reach pages the rest of the home page does not already
-// link to. Four tiles were removed because they repeated a destination reached
-// higher up the same page -- GIS Solar PV Map and Renewable Capacity from the
-// Data, Dashboards & GIS block, EV Adoption from that block and the roadmap, and
-// Solar Installers from the installers section directly above. Policies and
-// Education Centre are reachable from nowhere else on the page, which is exactly
-// why this section is worth keeping.
-export const homeQuickAccess = [
-  { label: 'Policies', to: ROUTES.policies, image: PAGE_IMAGES.hamiltonStreet },
-  { label: 'Education Centre', to: ROUTES.education, image: PAGE_IMAGES.educationOutreach },
-  { label: 'Public Sector Fleet', to: ROUTES.projectDetail('prj-dpt-electrification'), image: PAGE_IMAGES.bus },
-  { label: 'Balcony Solar Pilot', to: ROUTES.projectDetail('prj-balcony-solar'), image: PAGE_IMAGES.balconySolar },
 ]
