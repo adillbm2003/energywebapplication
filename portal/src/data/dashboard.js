@@ -1,10 +1,18 @@
 import { PAGE_IMAGES } from '../constants/branding'
 
+// Values here are only the fallback shown before the CMS and the solar registry
+// answer; getHomeStats overwrites value and unit from live data.
+//
+// They used to carry `change` and `trend` as well. Nothing refreshed those, so a
+// hardcoded "+9% YoY" stayed put while the capacity above it moved from 15.6 MW
+// to 16.8 MW -- a year-on-year figure describing a number that was no longer
+// there. `trend` was read by nothing at all. Both are gone; if the Department
+// wants real year-on-year movement it has to come from the data, not a literal.
 export const homeStats = [
-  { label: 'Installed Solar Capacity', value: '15.6', unit: 'MW', change: '+9%', trend: 'up' },
-  { label: 'Renewable Penetration', value: '8.4', unit: '%', change: '+1.2%', trend: 'up' },
-  { label: 'Registered EVs', value: '842', unit: '', change: '+28%', trend: 'up' },
-  { label: 'Solar Installations', value: '720', unit: '', change: '+12%', trend: 'up' },
+  { label: 'Installed Solar Capacity', value: '15.6', unit: 'MW' },
+  { label: 'Renewable Penetration', value: '8.4', unit: '%' },
+  { label: 'Registered EVs', value: '842', unit: '' },
+  { label: 'Solar Installations', value: '720', unit: '' },
 ]
 
 export const renewableKPIs = [

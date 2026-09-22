@@ -101,12 +101,14 @@ export default function Home() {
             {statsLoading
               ? Array.from({ length: 4 }).map((_, i) => <CardSkeleton key={i} />)
               : stats?.map((stat) => (
+                  // No year-on-year figure: the values below are refreshed from the
+                  // CMS and the solar registry, but the percentages never were, so
+                  // "+9% YoY" sat under a capacity it had not been calculated from.
                   <KPIWidget
                     key={stat.label}
                     label={stat.label}
                     value={stat.value}
                     unit={stat.unit}
-                    change={stat.change ? parseFloat(stat.change) : undefined}
                   />
                 ))}
           </div>
