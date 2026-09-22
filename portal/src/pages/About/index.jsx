@@ -52,7 +52,7 @@ export default function About() {
           <ContentBlock
             title="Our Mission"
             image={PAGE_IMAGES.home}
-            imageAlt="Hamilton, Bermuda"
+            imageAlt="Placeholder — image to be confirmed"
           >
             <p className="text-lg font-medium text-navy-900">
               To support the development of policy and legislation for the space, energy, and

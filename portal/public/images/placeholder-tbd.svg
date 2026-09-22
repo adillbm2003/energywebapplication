@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" width="1200" height="900" role="img" aria-label="Image to be confirmed">
+  <title>Image to be confirmed</title>
+  <!-- 4:3 to match the aspect-[4/3] object-cover frames these sit in, so nothing
+       is cropped. Deliberately plain: this is a gap marker for the Department to
+       review, not decoration. -->
+  <rect width="1200" height="900" fill="#F1F5F9"/>
+  <rect x="24" y="24" width="1152" height="852" rx="24"
+        fill="none" stroke="#CBD5E1" stroke-width="4" stroke-dasharray="20 16"/>
+  <circle cx="600" cy="392" r="132" fill="#E2E8F0"/>
+  <text x="600" y="392"
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="168" font-weight="700" fill="#64748B"
+        text-anchor="middle" dominant-baseline="central">?</text>
+  <text x="600" y="600"
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="46" font-weight="600" fill="#475569" text-anchor="middle">Image to be confirmed</text>
+  <text x="600" y="660"
+        font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif"
+        font-size="32" font-weight="400" fill="#94A3B8" text-anchor="middle">Awaiting a photograph from the Department</text>
+</svg>

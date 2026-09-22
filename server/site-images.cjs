@@ -34,8 +34,8 @@ const GROUPS = {
   ],
 
   'About page': [
-    ['home', 'About — “Our Mission” photo', 'About page, the photo beside the “Our Mission” text', 'home.jpg', '1200×800 landscape'],
-    ['bermudaVision', 'About — “Our Vision” photo', 'About page, the photo beside the “Our Vision” text', 'bermuda-vision.webp', '1600×900'],
+    ['home', 'About — “Our Mission” photo', 'About page, beside the “Our Mission” text. Currently a placeholder — upload a photograph to replace it.', 'placeholder-tbd.svg', '1200×800 landscape'],
+    ['bermudaVision', 'About — “The Department Overview” photo', 'About page, the photo beside the “The Department Overview” text', 'bermuda-vision.webp', '1600×900'],
     ['government', 'Government building', 'About, Contact, Policies and Legal pages', 'government.jpg', '1200×800'],
     ['floatingSolar', 'About — “Sustainability” value card', 'About page, one of the four value cards', 'floating-solar.jpg', '800×600'],
     ['solarWorkers', 'About — “Transparency” value card', 'About value card, and the Installers page', 'solar-workers.jpg', '800×600'],
