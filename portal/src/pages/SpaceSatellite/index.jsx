@@ -13,8 +13,6 @@ import { SPACE_NAV } from '../../constants/navigation'
 
 import { ROUTES } from '../../constants/routes'
 
-import { EXTERNAL_LINKS } from '../../constants/externalLinks'
-
 import { spacePages } from '../../data/space'
 
 
@@ -49,7 +47,7 @@ export default function SpaceSatellite() {
 
         <div className="container-page">
 
-          <div className="grid gap-6 lg:grid-cols-2">
+          <div className="grid gap-6 lg:grid-cols-2 lg:items-center">
 
             <div>
 
@@ -69,8 +67,6 @@ export default function SpaceSatellite() {
 
                 <Button to={`${ROUTES.spaceSatellite}/why-choose-bermuda`} variant="primary">Why Choose Bermuda</Button>
 
-                <Button href={EXTERNAL_LINKS.spaceEmail} variant="outline">Contact Space Team</Button>
-
               </div>
 
             </div>
@@ -83,7 +79,7 @@ export default function SpaceSatellite() {
 
                 alt=""
 
-                className="h-full min-h-[240px] w-full object-cover"
+                className="aspect-[4/3] w-full object-cover"
 
                 loading="lazy"
 
