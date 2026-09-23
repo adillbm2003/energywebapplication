@@ -68,7 +68,7 @@ const GROUPS = {
 
   'Space & Satellite': [
     ['satellite', 'Satellite — primary', 'Space & Satellite landing banner, and an About value card', 'satellite.jpg', '1600×900'],
-    ['spaceSatellites', 'Satellites in orbit', 'Satellite constellation imagery', 'space-satellites.jpg', '1200×800'],
+    ['spaceSatellites', 'Satellites in orbit', 'Space & Satellite banner, home card, space policy and project cards — used at several shapes, so keep the subject central', 'space-satellites.jpg', '1600×900'],
     ['space', 'Space — generic', 'Not currently displayed — spare space image', 'space.jpg', '1200×800'],
     ['spaceOrbit', 'Orbit', 'Orbital operations sub-page', 'space-orbit.jpg', '1200×800'],
     ['spaceDish', 'Ground station dish', 'Ground segment sub-page', 'space-dish.jpg', '1200×800'],
