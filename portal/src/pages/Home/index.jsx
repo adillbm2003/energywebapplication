@@ -275,22 +275,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
-
-      <section className="section-padding bg-teal-700" aria-labelledby="cta-heading">
-        <div className="container-page text-center">
-          <h2 id="cta-heading" className="text-white">Get in Touch</h2>
-          <p className="mx-auto mt-2 max-w-xl text-body-small text-teal-100">
-            Questions about energy policy, renewable programmes, or consultations? Our team is here to help.
-          </p>
-          <div className="mt-4 flex flex-wrap justify-center gap-3">
-            <Button to={ROUTES.contact} variant="gold" size="lg">Contact the Department</Button>
-            <Button to={ROUTES.about} variant="outline" size="lg" className="border-white/60 text-white hover:bg-white/10">
-              About Us
-            </Button>
-          </div>
-        </div>
-      </section>
     </>
   )
 }
