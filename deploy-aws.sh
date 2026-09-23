@@ -67,7 +67,17 @@ aws s3 sync portal/dist/ "s3://$BUCKET/" \
 # overwriting it would put energy.bm back in front of the public without anyone
 # intending it. The real entry page is kept beside it as index.live-backup.html;
 # going live is then a one-line copy, done deliberately.
-if [ "$TARGET" = "prod" ] && aws s3 cp "s3://$BUCKET/index.html" - 2>/dev/null | grep -q 'name="robots" content="noindex'; then
+# Read the current index.html into a variable rather than piping it into
+# grep: under `set -o pipefail`, grep -q exiting early can SIGPIPE the aws
+# process and make the whole pipeline report failure, which would read as
+# "no holding page" and publish the site.
+live_index=""
+if [ "$TARGET" = "prod" ]; then
+  live_index=$(aws s3 cp "s3://$BUCKET/index.html" - 2>/dev/null || true)
+  [ -n "$live_index" ] || fail "could not read s3://$BUCKET/index.html -- refusing to guess whether the holding page is up"
+fi
+
+if [ "$TARGET" = "prod" ] && printf '%s' "$live_index" | grep -q 'name="robots" content="noindex'; then
   if [ "${PUBLISH_LIVE:-0}" != "1" ]; then
     aws s3 cp portal/dist/index.html "s3://$BUCKET/index.live-backup.html" \
       --cache-control "no-cache,no-store,must-revalidate" --content-type "text/html"
