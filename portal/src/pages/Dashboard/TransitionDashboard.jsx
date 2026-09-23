@@ -1,4 +1,6 @@
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+import PageBanner from '../../components/common/PageBanner'
+import Button from '../../components/ui/Button'
 import KPIWidget from '../../components/dashboard/KPIWidget'
 import EVChart from '../../components/dashboard/EVChart'
 import DashboardPanelImage from '../../components/dashboard/DashboardPanelImage'
@@ -9,7 +11,8 @@ import { useAsyncData } from '../../hooks/useAsyncData'
 import { dashboardService } from '../../services'
 import { formatNumber } from '../../utils/format'
 import { PAGE_IMAGES } from '../../constants/branding'
-import { transitionKPIs, evAdoptionData, evByCategory, chargingInfrastructure, publicTransportElectrification } from '../../data/dashboard'
+import { ROUTES } from '../../constants/routes'
+import { transitionKPIs, evAdoptionData, evByCategory } from '../../data/dashboard'
 
 export default function TransitionDashboard() {
   useDocumentTitle('Energy Transition Dashboard')
@@ -17,15 +20,22 @@ export default function TransitionDashboard() {
   const { data: kpis } = useAsyncData(() => dashboardService.getTransitionKPIs(), [], transitionKPIs)
   const { data: evData } = useAsyncData(() => dashboardService.getEVAdoption(), [], evAdoptionData)
   const { data: evCategories } = useAsyncData(() => dashboardService.getEVByCategory(), [], evByCategory)
-  const { data: charging } = useAsyncData(() => dashboardService.getChargingInfrastructure(), [], chargingInfrastructure)
-  const { data: transport } = useAsyncData(() => dashboardService.getPublicTransport(), [], publicTransportElectrification)
 
   return (
-    <section className="section-padding">
+    <>
+      {/* See RenewableDashboard: this was the other tab, and now stands alone. */}
+      <PageBanner
+        title="Energy Transition Dashboard"
+        subtitle="Electric vehicle adoption across Bermuda, by category and over time."
+        breadcrumbs={[
+          { label: 'Data & GIS', to: ROUTES.dashboard },
+          { label: 'Energy Transition', to: ROUTES.transitionDashboard },
+        ]}
+        image={PAGE_IMAGES.electricBus}
+      />
+
+      <section className="section-padding">
       <div className="container-page space-y-10">
-        <div className="overflow-hidden rounded-xl border border-slate-200">
-          <SafeImage src={PAGE_IMAGES.electricBus} alt="" className="aspect-[21/6] w-full object-cover" />
-        </div>
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {kpis?.map((kpi) => (
@@ -34,7 +44,6 @@ export default function TransitionDashboard() {
               label={kpi.label}
               value={kpi.value}
               unit={kpi.unit}
-              change={kpi.change}
               image={kpi.image}
             />
           ))}
@@ -88,5 +97,18 @@ export default function TransitionDashboard() {
 
       </div>
     </section>
+
+      <section className="section-padding bg-slate-50 pt-0">
+        <div className="container-page">
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white card-padding card-shadow">
+            <div>
+              <p className="text-body-small font-semibold text-navy-900">Looking for solar capacity and battery storage?</p>
+              <p className="text-caption text-slate-600">Those figures live on the Renewable Energy Dashboard.</p>
+            </div>
+            <Button to={ROUTES.renewableDashboard} variant="outline">Renewable Energy Dashboard</Button>
+          </div>
+        </div>
+      </section>
+    </>
   )
 }

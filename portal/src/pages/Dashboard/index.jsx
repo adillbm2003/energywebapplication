@@ -1,16 +1,10 @@
-﻿import { Link, NavLink, Outlet } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import PageBanner from '../../components/common/PageBanner'
 import SafeImage from '../../components/common/SafeImage'
 import SectionHeading from '../../components/ui/SectionHeading'
 import { PAGE_IMAGES } from '../../constants/branding'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { ROUTES } from '../../constants/routes'
-import { cn } from '../../utils/cn'
-
-const TABS = [
-  { label: 'Renewable Energy', to: ROUTES.renewableDashboard },
-  { label: 'Energy Transition', to: ROUTES.transitionDashboard },
-]
 
 const QUICK_ACCESS = [
   { label: 'Renewable Dashboard', to: ROUTES.renewableDashboard, image: PAGE_IMAGES.renewableDashboard },
@@ -28,7 +22,7 @@ export default function Dashboard() {
     <>
       <PageBanner
         title="Energy Dashboards"
-        subtitle="Interactive data on Bermuda's renewable energy and energy transition progress."
+        subtitle="Choose a dashboard, or jump straight to the registry, the solar map or the simulator."
         breadcrumbs={[{ label: 'Dashboards', to: ROUTES.dashboard }]}
         image={PAGE_IMAGES.solar}
       />
@@ -63,30 +57,7 @@ export default function Dashboard() {
         </div>
       </section>
 
-      <div className="border-b border-slate-200 bg-white">
-        <div className="container-page">
-          <nav aria-label="Dashboard sections" className="flex gap-1 overflow-x-auto">
-            {TABS.map((tab) => (
-              <NavLink
-                key={tab.to}
-                to={tab.to}
-                className={({ isActive }) =>
-                  cn(
-                    'whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors',
-                    isActive
-                      ? 'border-teal-600 text-teal-700'
-                      : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700',
-                  )
-                }
-              >
-                {tab.label}
-              </NavLink>
-            ))}
-          </nav>
-        </div>
-      </div>
 
-      <Outlet />
     </>
   )
 }

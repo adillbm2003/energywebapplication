@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts'
+import PageBanner from '../../components/common/PageBanner'
+import Button from '../../components/ui/Button'
 import KPIWidget from '../../components/dashboard/KPIWidget'
 import EnergyChart from '../../components/dashboard/EnergyChart'
 import SolarChart from '../../components/dashboard/SolarChart'
 import DashboardFilters from '../../components/dashboard/DashboardFilters'
 import DashboardPanelImage from '../../components/dashboard/DashboardPanelImage'
-import SafeImage from '../../components/common/SafeImage'
 import SectionHeading from '../../components/ui/SectionHeading'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { dashboardService } from '../../services'
 import { PAGE_IMAGES } from '../../constants/branding'
+import { ROUTES } from '../../constants/routes'
 import { renewableKPIs, solarGrowthData, capacityByType as defaultCapacity, batteryStorageData, penetrationData } from '../../data/dashboard'
 
 export default function RenewableDashboard() {
@@ -27,12 +29,23 @@ export default function RenewableDashboard() {
   const filteredSolar = year === 'all' ? solarGrowth : solarGrowth?.filter((d) => String(d.year) === year)
 
   return (
-    <section className="section-padding">
-      <div className="container-page space-y-10">
-        <div className="overflow-hidden rounded-xl border border-slate-200">
-          <SafeImage src={PAGE_IMAGES.solarFieldBermuda} alt="" className="aspect-[21/6] w-full object-cover" />
-        </div>
+    <>
+      {/* Its own banner. This used to be a tab inside a shared Energy Dashboards
+          shell, so the page began with a wide strip image under someone else's
+          heading. The banner carries that image now, which also removes the two
+          stacked hero images the page used to open with. */}
+      <PageBanner
+        title="Renewable Energy Dashboard"
+        subtitle="Installed solar capacity, battery storage and renewable penetration across Bermuda."
+        breadcrumbs={[
+          { label: 'Data & GIS', to: ROUTES.dashboard },
+          { label: 'Renewable Energy', to: ROUTES.renewableDashboard },
+        ]}
+        image={PAGE_IMAGES.solarFieldBermuda}
+      />
 
+      <section className="section-padding">
+      <div className="container-page space-y-10">
         <DashboardFilters year={year} onYearChange={setYear} years={years} />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -42,7 +55,6 @@ export default function RenewableDashboard() {
               label={kpi.label}
               value={kpi.value}
               unit={kpi.unit}
-              change={kpi.change}
               image={kpi.image}
             />
           ))}
@@ -95,5 +107,18 @@ export default function RenewableDashboard() {
         </div>
       </div>
     </section>
+
+      <section className="section-padding bg-slate-50 pt-0">
+        <div className="container-page">
+          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white card-padding card-shadow">
+            <div>
+              <p className="text-body-small font-semibold text-navy-900">Looking for electric vehicles and public transport?</p>
+              <p className="text-caption text-slate-600">Those figures live on the Energy Transition Dashboard.</p>
+            </div>
+            <Button to={ROUTES.transitionDashboard} variant="outline">Energy Transition Dashboard</Button>
+          </div>
+        </div>
+      </section>
+    </>
   )
 }

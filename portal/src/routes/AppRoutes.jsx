@@ -1,8 +1,7 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import MainLayout from '../layouts/MainLayout'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
-import { ROUTES } from '../constants/routes'
 
 const Home = lazy(() => import('../pages/Home'))
 const About = lazy(() => import('../pages/About'))
@@ -53,11 +52,12 @@ export default function AppRoutes() {
           <Route path="consultations" element={<Consultations />} />
           <Route path="projects" element={<Projects />} />
           <Route path="projects/:id" element={<ProjectDetail />} />
-          <Route path="dashboard" element={<Dashboard />}>
-            <Route index element={<Navigate to="renewable" replace />} />
-            <Route path="renewable" element={<RenewableDashboard />} />
-            <Route path="transition" element={<TransitionDashboard />} />
-          </Route>
+          {/* Three sibling pages, not a tabbed parent. The two dashboards each
+              carry their own banner now, and /dashboard is a hub that links to
+              them. The URLs are unchanged, so every existing link still works. */}
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="dashboard/renewable" element={<RenewableDashboard />} />
+          <Route path="dashboard/transition" element={<TransitionDashboard />} />
           <Route path="registry" element={<Registry />} />
           <Route path="gis" element={<GIS />} />
           <Route path="education" element={<Education />} />
