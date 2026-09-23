@@ -8,7 +8,10 @@ import { fetchFromAPI } from '../../services/api'
 
 const VALUES = [
   { title: 'Transparency', description: 'Open, accountable governance in energy policy and public engagement.', image: PAGE_IMAGES.solarWorkers },
-  { title: 'Sustainability', description: 'Long-term environmental stewardship and climate resilience for Bermuda.', image: PAGE_IMAGES.floatingSolar },
+  // Was PAGE_IMAGES.floatingSolar -- panels moored on open water. Bermuda has no
+  // floating solar array, so it illustrated a technology the island does not use.
+  // This is a photograph of a real Bermuda solar field.
+  { title: 'Sustainability', description: 'Long-term environmental stewardship and climate resilience for Bermuda.', image: PAGE_IMAGES.solarFieldBermuda },
   { title: 'Innovation', description: 'Embracing new technologies to modernise our energy systems.', image: PAGE_IMAGES.satellite },
   { title: 'Equity', description: 'Ensuring fair access to clean energy benefits for all Bermudians.', image: PAGE_IMAGES.bhcHousing },
 ]

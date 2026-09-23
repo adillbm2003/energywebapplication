@@ -30,14 +30,14 @@ const GROUPS = {
     ['battery', 'Battery storage', 'Home and Renewable Dashboard — storage card', 'battery-storage.jpg', '800×600'],
     ['balconySolar', 'Balcony solar', 'Home, Education and Projects — balcony solar pilot card', 'balcony-solar.jpg', '800×600'],
     ['hamiltonStreet', 'Hamilton street scene', 'Home, Bursary and news/policy cards — street-level imagery', 'hamilton-street.jpg', '800×600'],
-    ['solarFieldBermuda', 'Solar field (Bermuda)', 'Renewable Dashboard, plus news and project cards', 'solar-field-bermuda.jpg', '1200×800'],
+    ['solarFieldBermuda', 'Solar field (Bermuda)', 'Renewable Dashboard, the About page’s “Sustainability” value card, plus news and project cards', 'solar-field-bermuda.jpg', '1200×800'],
   ],
 
   'About page': [
     ['home', 'About — “Our Mission” photo', 'About page, beside the “Our Mission” text. Currently a placeholder — upload a photograph to replace it.', 'placeholder-tbd.svg', '1200×800 landscape'],
     ['bermudaVision', 'About — “The Department Overview” photo', 'About page, the photo beside the “The Department Overview” text', 'bermuda-vision.webp', '1600×900'],
     ['government', 'Government building', 'About, Contact, Policies and Legal pages', 'government.jpg', '1200×800'],
-    ['floatingSolar', 'About — “Sustainability” value card', 'About page, one of the four value cards', 'floating-solar.jpg', '800×600'],
+    ['floatingSolar', 'Floating solar', 'Bursary categories, an education resource, and any project about floating solar', 'floating-solar.jpg', '800×600'],
     ['solarWorkers', 'About — “Transparency” value card', 'About value card, and the Installers page', 'solar-workers.jpg', '800×600'],
     ['bhcHousing', 'About — “Equity” value card', 'About value card, and the Simulator page', 'bhc-housing.jpg', '800×600'],
     ['portrait1', 'Leadership portrait 1', 'About → leadership team, position 1', 'portraits/774909.jpg', '400×400 square'],
