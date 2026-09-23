@@ -17,9 +17,7 @@ import {
 import { ROUTES } from '../../constants/routes'
 import { EXTERNAL_LINKS } from '../../constants/externalLinks'
 import { homePriorities, homeExplore } from '../../data/home'
-import { PAGE_IMAGES } from '../../constants/branding'
 import { formatDate } from '../../utils/format'
-import SafeImage from '../../components/common/SafeImage'
 import Badge from '../../components/ui/Badge'
 import { CardSkeleton } from '../../components/ui/Skeleton'
 import EnergyAwarenessGuides from '../../components/home/EnergyAwarenessGuides'
@@ -35,7 +33,6 @@ export default function Home() {
   useDocumentTitle('Home')
 
   const { data: stats, loading: statsLoading } = useAsyncData(() => dashboardService.getHomeStats(), [])
-  const { data: renewableKPIs } = useAsyncData(() => dashboardService.getRenewableKPIs(), [])
   const { data: news, loading: newsLoading } = useAsyncData(() => newsService.getAll(), [])
   const { data: consultations } = useAsyncData(() => consultationService.getActive(), [])
   const { data: projects } = useAsyncData(() => projectService.getFeatured(), [])
@@ -43,7 +40,6 @@ export default function Home() {
   const latestNews = news?.slice(0, 4) ?? []
   const activeConsultations = consultations ?? []
 
-  const dashboardHighlights = renewableKPIs?.slice(0, 4) ?? []
 
   return (
     <>
@@ -162,63 +158,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section-padding bg-gradient-to-br from-navy-900 via-[#2E5496] to-teal-900 text-white" aria-labelledby="dashboard-preview-heading">
-        <div className="container-page">
-          <motion.div {...fadeUp} className="grid items-center gap-6 lg:grid-cols-2">
-            <div>
-              <h2 id="dashboard-preview-heading" className="text-white">
-                Data, Dashboards & GIS
-              </h2>
-              <p className="mt-2 text-body-small text-slate-300">
-                Track installed capacity, solar growth, EV adoption, and renewable penetration. Explore installations on our interactive Bermuda solar PV map.
-              </p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Button to={ROUTES.renewableDashboard} variant="primary">Renewable Dashboard</Button>
-                <Button to={ROUTES.transitionDashboard} variant="outline" className="border-white/60 text-white hover:bg-white/10">
-                  Transition Dashboard
-                </Button>
-                <Button to={ROUTES.gis} variant="outline" className="border-white/60 text-white hover:bg-white/10">
-                  GIS Solar PV Map
-                </Button>
-                <Button to={ROUTES.registry} variant="outline" className="border-white/60 text-white hover:bg-white/10">
-                  Energy Registry
-                </Button>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              {dashboardHighlights.map((item, index) => {
-                // The fourth tile is Renewable Penetration and used to show
-                // PAGE_IMAGES.wind, which is a photograph of an aircraft
-                // propeller -- not a wind turbine, and not renewable generation
-                // of any kind. It shows the government solar field instead,
-                // which is what Bermuda's renewable share actually comes from.
-                const highlightImages = [
-                  PAGE_IMAGES.solar,
-                  PAGE_IMAGES.solarRooftop,
-                  PAGE_IMAGES.battery,
-                  PAGE_IMAGES.govSolarField,
-                ]
-                return (
-                <div key={item.label} className="overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">
-                  <SafeImage
-                    src={highlightImages[index]}
-                    alt=""
-                    className="h-16 w-full object-cover opacity-80"
-                  />
-                  <div className="p-4 pt-3">
-                  <p className="text-xs text-slate-400">{item.label}</p>
-                  <p className="mt-1 text-h3 font-bold text-white">
-                    {item.value}
-                    {item.unit && <span className="ml-1 text-sm font-medium text-slate-300">{item.unit}</span>}
-                  </p>
-                  </div>
-                </div>
-                )
-              })}
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
       {/* A pointer to the register, not a copy of it. Three installers used to be
           listed here as full cards, which put the same companies on two pages and
