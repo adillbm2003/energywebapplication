@@ -58,9 +58,17 @@ aws s3 sync portal/dist/assets/ "s3://$BUCKET/assets/" \
 # deliberately. Some of those files were uploaded straight to the bucket and
 # have no copy in git; a whole-bucket --delete (what this script used to do)
 # would erase them, and neither bucket has versioning to restore from.
+#
+# These also must NOT be immutable. Only assets/ has content-hashed names; a
+# file here keeps the same URL when its contents change, and "immutable" tells
+# the browser never to re-check it. Replacing images/space-insurance.jpg in
+# place left viewers looking at the old picture for a year, with no refresh
+# that would help. A week, revalidated after that, keeps them fast without
+# making a correction unshippable. Renaming the file is still what forces an
+# immediate change for anyone already holding the old one.
 aws s3 sync portal/dist/ "s3://$BUCKET/" \
   --exclude "assets/*" --exclude "*.html" \
-  --cache-control "public,max-age=31536000,immutable"
+  --cache-control "public,max-age=604800,stale-while-revalidate=86400"
 
 # index.html must not be cached, so the browser always gets the current shell.
 # Production currently serves a pre-launch holding page instead of the site, and
