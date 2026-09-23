@@ -49,31 +49,6 @@ export default function ProjectDetail() {
                 <p className="mt-3 text-slate-600 leading-relaxed">{project.summary}</p>
               </div>
 
-              {project.milestones?.length > 0 && (
-              <div>
-                <h2 className="text-xl font-bold text-navy-900">Milestones</h2>
-                <ol className="mt-4 space-y-3">
-                  {project.milestones.map((milestone, index) => (
-                    <li key={milestone.title} className="flex gap-4">
-                      <div
-                        className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold ${
-                          milestone.completed ? 'bg-teal-600 text-white' : 'bg-slate-200 text-slate-500'
-                        }`}
-                        aria-hidden="true"
-                      >
-                        {milestone.completed ? '✓' : index + 1}
-                      </div>
-                      <div>
-                        <p className={`font-medium ${milestone.completed ? 'text-navy-900' : 'text-slate-500'}`}>
-                          {milestone.title}
-                        </p>
-                        <p className="text-sm text-slate-500">{formatDate(milestone.date)}</p>
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              </div>
-              )}
 
               {project.gallery?.length > 0 && (
                 <div>
