@@ -19,7 +19,10 @@ export const renewableKPIs = [
   { label: 'Installed Capacity', value: 15.6, unit: 'MW', change: 9.0, image: PAGE_IMAGES.solarFieldBermuda },
   { label: 'Solar Installations', value: 720, unit: 'Systems', change: 12.0, image: PAGE_IMAGES.dockyardSolar },
   { label: 'Battery Storage', value: 3.2, unit: 'MWh', change: 45.0, image: PAGE_IMAGES.batteryRooms },
-  { label: 'Renewable Penetration', value: 8.4, unit: '%', change: 1.2, image: PAGE_IMAGES.windTurbine },
+  // Was PAGE_IMAGES.windTurbine, a photograph of a SailGP event sign with a
+  // turbine behind it. Bermuda's renewable share comes from solar, so the tile
+  // shows the government solar field.
+  { label: 'Renewable Penetration', value: 8.4, unit: '%', change: 1.2, image: PAGE_IMAGES.govSolarField },
 ]
 
 export const solarGrowthData = [

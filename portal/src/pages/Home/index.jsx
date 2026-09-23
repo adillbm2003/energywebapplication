@@ -187,11 +187,16 @@ export default function Home() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               {dashboardHighlights.map((item, index) => {
+                // The fourth tile is Renewable Penetration and used to show
+                // PAGE_IMAGES.wind, which is a photograph of an aircraft
+                // propeller -- not a wind turbine, and not renewable generation
+                // of any kind. It shows the government solar field instead,
+                // which is what Bermuda's renewable share actually comes from.
                 const highlightImages = [
                   PAGE_IMAGES.solar,
                   PAGE_IMAGES.solarRooftop,
                   PAGE_IMAGES.battery,
-                  PAGE_IMAGES.wind,
+                  PAGE_IMAGES.govSolarField,
                 ]
                 return (
                 <div key={item.label} className="overflow-hidden rounded-xl border border-white/10 bg-white/5 backdrop-blur-sm">

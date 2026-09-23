@@ -98,7 +98,9 @@ export default function RenewableDashboard() {
             </div>
           </div>
           <div className="overflow-hidden rounded-lg border border-slate-200 bg-white card-shadow">
-            <DashboardPanelImage src={PAGE_IMAGES.wind} />
+            {/* Was PAGE_IMAGES.wind: an aircraft propeller, above a chart of
+                Bermuda's renewable share. */}
+            <DashboardPanelImage src={PAGE_IMAGES.govSolarField} />
             <div className="card-padding">
               <SectionHeading title="Renewable Penetration" subtitle="Share of total electricity generation" className="mb-4" />
               <EnergyChart data={penetration || []} dataKey="penetration" label="Penetration (%)" />
