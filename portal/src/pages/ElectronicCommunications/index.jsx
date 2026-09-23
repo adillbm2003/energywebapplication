@@ -39,7 +39,7 @@ const INITIATIVES = [
     tag: 'Connectivity',
     title: 'Broadband Expansion',
     description: 'Advancing national broadband coverage to underserved areas and improving affordability through competition policy and infrastructure investment.',
-    image: PAGE_IMAGES.grid,
+    image: PAGE_IMAGES.broadband,
   },
   {
     tag: 'Digital Economy',

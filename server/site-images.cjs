@@ -63,6 +63,7 @@ const GROUPS = {
 
   'Electronic Communications': [
     ['telecom', 'Telecommunications', 'Banner for Electronic Communications and Broadcasting', 'telecom.jpg', '1600×900'],
+    ['broadband', 'Broadband Expansion card', 'Electronic Communications — “Broadband Expansion” initiative card. Currently a placeholder — upload a photograph to replace it.', 'placeholder-tbd.svg', '800×600'],
   ],
 
   'Space & Satellite': [

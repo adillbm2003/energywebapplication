@@ -56,6 +56,12 @@ export const PAGE_IMAGES = {
   analytics: base + 'images/analytics.jpg',
   blockchain: base + 'images/blockchain.jpg',
   telecom: base + 'images/telecom.jpg',
+  // Broadband Expansion used PAGE_IMAGES.grid, which is a photograph of
+  // electricity transmission pylons -- the Energy page's infrastructure image,
+  // and the right one there. On a broadband card it showed the wrong utility
+  // entirely. It has its own slot now so the two cannot drift back together,
+  // and is a placeholder until the Department supplies a photograph.
+  broadband: base + 'images/placeholder-tbd.svg',
   charging: base + 'images/charging.jpg',
   transport: base + 'images/transport.jpg',
   contact: base + 'images/bermuda.jpg',
