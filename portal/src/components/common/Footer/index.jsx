@@ -4,7 +4,6 @@ import { EXTERNAL_LINKS } from '../../../constants/externalLinks'
 import { BRANDING } from '../../../constants/branding'
 import { useSiteSettings } from '../../../contexts/SiteSettingsContext'
 import Logo from '../Logo'
-import NewsletterForm from '../../forms/NewsletterForm'
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -16,7 +15,7 @@ export default function Footer() {
       <div className="h-0.5 bg-gradient-to-r from-teal-600 via-[#2E5496] to-gold-500" aria-hidden="true" />
 
       <div className="container-page pt-12 pb-8">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-12">
+        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-10">
 
           {/* Brand column */}
           <div className="lg:col-span-4">
@@ -92,11 +91,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Newsletter */}
-          <div className="lg:col-span-2">
-            <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-slate-200">Stay Informed</h3>
-            <NewsletterForm />
-          </div>
         </div>
 
         {/* Divider */}
