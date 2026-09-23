@@ -23,7 +23,7 @@ export default function Installers() {
         subtitle="Official list of companies registered with the Department of Energy to install solar photovoltaic systems in Bermuda."
         image={PAGE_IMAGES.solarWorkers}
         breadcrumbs={[
-          { label: 'Energy', to: ROUTES.energy },
+          { label: 'Sector', to: ROUTES.energy },
           { label: 'Registered Installers', to: ROUTES.installers },
         ]}
       />

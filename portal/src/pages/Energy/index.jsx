@@ -117,14 +117,14 @@ const CONSUMER_GUIDES = [
 ]
 
 export default function Energy() {
-  useDocumentTitle('Energy')
+  useDocumentTitle('Sector')
 
   return (
     <>
       <PageBanner
-        title="Energy"
+        title="Sector"
         subtitle="Bermuda's comprehensive approach to a sustainable, secure, and affordable energy future."
-        breadcrumbs={[{ label: 'Energy', to: ROUTES.energy }]}
+        breadcrumbs={[{ label: 'Sector', to: ROUTES.energy }]}
         image={PAGE_IMAGES.energy}
       />
 

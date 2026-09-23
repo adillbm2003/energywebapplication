@@ -50,7 +50,7 @@ export const MAIN_NAV = [
 export const FOOTER_LINKS = {
   department: [
     { label: 'About the Department', to: ROUTES.about },
-    { label: 'Energy', to: ROUTES.energy },
+    { label: 'Sector', to: ROUTES.energy },
     { label: 'Registered Installers', to: ROUTES.installers },
     { label: 'Contact Us', to: ROUTES.contact },
   ],

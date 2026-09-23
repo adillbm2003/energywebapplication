@@ -132,7 +132,7 @@ export default function Vehicles() {
         title="Vehicles & Transport Energy"
         subtitle="Live data on Bermuda's registered electric vehicle fleet, fuel types, and the Department's work to support cleaner transport."
         breadcrumbs={[
-          { label: 'Energy', to: ROUTES.energy },
+          { label: 'Sector', to: ROUTES.energy },
           { label: 'Vehicles', to: ROUTES.vehicles },
         ]}
         image={PAGE_IMAGES.ev}
