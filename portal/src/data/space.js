@@ -51,7 +51,7 @@ export const spacePages = {
   'why-choose-bermuda': {
     title: 'Why Choose Bermuda',
     subtitle: 'Competitive advantages for space industry investment and operations',
-    image: PAGE_IMAGES.bermuda,
+    image: PAGE_IMAGES.spaceWhyBermuda,
     content: [
       'Bermuda offers a unique combination of strategic geography, regulatory sophistication, financial depth, and political stability that makes it one of the world\'s most attractive jurisdictions for space and satellite industry investment, operations, and risk management.',
     ],

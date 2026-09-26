@@ -43,6 +43,11 @@ replaces this one without a deploy.
 | File | Source | Note |
 |------|--------|------|
 | `broadband-expansion-2026.jpg` | Supplied by the Department, September 2026, for the Broadband Expansion card. Cropped to 2:1 from a 1024×1024 original. | Appears to be AI-generated, not a photograph |
+| `space-economy-20260926.jpg` | Supplied 26 September 2026, for Bermuda & Global Space Economy. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
+| `space-why-bermuda-20260926.jpg` | Supplied 26 September 2026, for Why Choose Bermuda. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
+| `space-filing-20260926.jpg` | Supplied 26 September 2026, for Satellite Filing & Guidance. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
+| `space-insurance-20260926.jpg` | Supplied 26 September 2026, for Space Insurance. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated; replaced the NASA Blue Marble composition |
+| `space-strategy-20260926.jpg` | Supplied 26 September 2026, for National Space Strategy. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
 
 The 1024×1024 square, the absence of any camera metadata and the rendering of
 the cable drums and flowers all point to an image that was generated rather
@@ -52,6 +57,15 @@ photographs to be taken off the site and replaced with the "image to be
 confirmed" placeholder — this slot held that placeholder. It was supplied
 deliberately, so it is in use; the note is here so nobody later mistakes it
 for documentary evidence of works that took place.
+
+The same applies to the five Space & Satellite card images supplied on
+26 September 2026, which share the signature exactly. Two depict Bermuda
+itself — an island seen from orbit, and a harbour of pastel houses — and
+neither is a real view of it.
+
+`space-insurance-2026.jpg`, the NASA Blue Marble composition, is no longer
+displayed anywhere; it is kept in the repository in case the supplied
+render is withdrawn.
 
 ## Known problems, not yet resolved
 

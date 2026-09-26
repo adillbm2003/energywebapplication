@@ -70,14 +70,17 @@ const GROUPS = {
     ['satellite', 'Satellite — primary', 'Space & Satellite landing banner, and an About value card', 'satellite.jpg', '1600×900'],
     ['spaceSatellites', 'Satellites in orbit', 'Space & Satellite banner, home card, space policy and project cards — used at several shapes, so keep the subject central', 'space-satellites-2026.jpg', '1600×900'],
     ['space', 'Space — generic', 'Not currently displayed — spare space image', 'space.jpg', '1200×800'],
-    ['spaceOrbit', 'Orbit', 'Orbital operations sub-page', 'space-orbit.jpg', '1200×800'],
+    ['spaceOrbit', 'Bermuda & global space economy', 'Bermuda & Global Space Economy sub-page and its card', 'space-economy-20260926.jpg', '1024×576 (16:9)'],
+    ['spaceWhyBermuda', 'Why choose Bermuda', 'Why Choose Bermuda sub-page and its card', 'space-why-bermuda-20260926.jpg', '1024×576 (16:9)'],
     ['spaceDish', 'Ground station dish', 'Ground segment sub-page', 'space-dish.jpg', '1200×800'],
     ['spaceLaunch', 'Launch', 'Not displayed — the stock photo carries a launch company’s branding, replace before use', 'space-launch.jpg', '1280×720'],
     ['spaceEarth', 'Earth from space', 'Not currently displayed — spare space image', 'space-earth.jpg', '1200×800'],
-    ['spaceInsurance', 'Space insurance', 'Space insurance sub-page — shown 16:9, so avoid a 3:2 crop', 'space-insurance-2026.jpg', '1280×720'],
-    ['spaceStrategy', 'Space strategy', 'Strategy sub-page', 'space-strategy.jpg', '1200×800'],
+    ['spaceInsurance', 'Space insurance', 'Space insurance sub-page and its card', 'space-insurance-20260926.jpg', '1024×576 (16:9)'],
+    ['spaceStrategy', 'National space strategy', 'National Space Strategy sub-page and its card', 'space-strategy-20260926.jpg', '1024×576 (16:9)'],
     ['spaceAstronaut', 'Astronaut', 'Human spaceflight sub-page', 'space-astronaut.jpg', '1200×800'],
-    ['spaceNightsky', 'Night sky', 'Astronomy / night sky sub-page', 'space-nightsky.jpg', '1200×800'],
+    // Key kept as spaceNightsky so existing CMS overrides keep working; it has
+    // held the Satellite Filing & Guidance image since September 2026.
+    ['spaceNightsky', 'Satellite filing & guidance', 'Satellite Filing & Guidance sub-page and its card', 'space-filing-20260926.jpg', '1024×576 (16:9)'],
   ],
 
   'Policies & Consultations': [
@@ -125,7 +128,7 @@ const GROUPS = {
 
   'Contact & Errors': [
     ['contact', 'Contact banner', 'Contact page banner', 'bermuda.jpg', '1600×900'],
-    ['bermuda', 'Bermuda scenery', 'Page-not-found (404) page', 'bermuda.jpg', '1200×800'],
+    ['bermuda', 'Bermuda scenery', 'Page-not-found (404) page only', 'bermuda.jpg', '1200×800'],
   ],
 };
 
