@@ -2,11 +2,12 @@ import { news } from '../data/news'
 import { fetchMockById, fetchFromAPI } from './api'
 import { slugify } from '../utils/format'
 import { sortByNewest } from '../utils/sortContent'
-import { PAGE_IMAGES } from '../constants/branding'
 
+// Whatever the Department uploaded for the story. This used to swap in a
+// bundled photograph of two identifiable people for any bursary-recipient
+// headline, which hid the Department's own photograph of the actual
+// recipients behind a stock portrait.
 function pickNewsImage(n) {
-  const text = `${n.title || ''} ${n.slug || ''}`.toLowerCase()
-  if (text.includes('bursary') && text.includes('recipient')) return PAGE_IMAGES.summerStudentPhoto
   return n.image
 }
 

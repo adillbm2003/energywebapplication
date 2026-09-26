@@ -28,7 +28,7 @@ export default function Bursary() {
           <div className="grid gap-5 lg:grid-cols-2">
             <div>
               <div className="mb-4 overflow-hidden rounded-xl">
-                <img src={PAGE_IMAGES.education} alt="" className="aspect-[16/9] w-full object-cover" loading="lazy" />
+                <img src={PAGE_IMAGES.bursaryOverview} alt="" className="aspect-[16/9] w-full object-cover" loading="lazy" />
               </div>
               <SectionHeading title="Programme Overview" className="mb-4" />
               <p className="text-slate-600 leading-relaxed">{programme?.overview}</p>

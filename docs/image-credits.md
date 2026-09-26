@@ -82,6 +82,16 @@ render is withdrawn.
 | `wind-farm-20260926.jpg` | Power County wind farm, Idaho. US Department of Energy. | **Public domain — no attribution required** |
 | `hydrogen-station-20260926.jpg` | Fukuoka City hydrogen refuelling station, producing hydrogen from sewage biogas. By Hirho, Wikimedia Commons. | **CC BY-SA 4.0 — credited on /image-credits** |
 | `earth-station-dish-20260926.jpg` | A 16:9 crop of `satellite.jpg`, already in the library. | as the original |
+| `library-reading-room-20260926.jpg` | The Main Reading Room of the Library of Congress, by Carol M. Highsmith. Empty — no people in frame. | **Public domain — no attribution required** |
+| `library-bookshelves-20260926.jpg` | The Picton Reading Room, Liverpool Central Library. Wikimedia Commons. No people in frame. | **CC0 — no attribution required** |
+
+Both were chosen over better-composed candidates specifically because nobody
+appears in them. A stock photograph of identifiable people carries both a
+licence and a consent question that a government site should not have to
+answer, and `education.jpg` — a group of identifiable young men around a laptop
+— had been the Bursary banner, the Education Centre tile and the home Education
+card. Each new file was checked at full resolution, not at thumbnail size,
+before use.
 
 These three close the last gaps where a slot had nothing accurate to show.
 Before them, `government` was a boatshed in Perth, wind and hydrogen both

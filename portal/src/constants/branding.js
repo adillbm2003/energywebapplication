@@ -34,7 +34,9 @@ export const PAGE_IMAGES = {
   bermudaVision: base + 'images/bermuda-vision.webp',
   government: base + 'images/sessions-house-20260926.jpg',
   space: base + 'images/space.jpg',
-  education: base + 'images/education.jpg',
+  education: base + 'images/library-reading-room-20260926.jpg',
+  // A second library, so the Bursary page is not the same room twice.
+  bursaryOverview: base + 'images/library-bookshelves-20260926.jpg',
   ev: base + 'images/electric-vehicles-20260926.jpg',
   consultation: base + 'images/consultation.jpg',
   // The About page's "Our Mission" photo was a stock image of a North American
@@ -53,7 +55,7 @@ export const PAGE_IMAGES = {
   wind: base + 'images/wind.jpg',
   innovation: base + 'images/innovation.jpg',
   hydrogen: base + 'images/hydrogen-station-20260926.jpg',
-  bursary: base + 'images/bursary.jpg',
+  bursary: base + 'images/library-bookshelves-20260926.jpg',
   registry: base + 'images/registry.jpg',
   efficiency: base + 'images/energy-efficiency-20260926.jpg',
   analytics: base + 'images/analytics.jpg',

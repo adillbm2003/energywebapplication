@@ -123,10 +123,11 @@ const GROUPS = {
   ],
 
   'Education & Bursary': [
-    ['education', 'Education banner', 'Bursary page banner and the Dashboard education tile', 'education.jpg', '1600×900'],
+    ['education', 'Education Centre / Bursary', 'Bursary banner, the Education Centre tile, the home Education card and the Career Pathways fallback. A library reading room with no people in it - the previous photograph showed identifiable individuals.', 'library-reading-room-20260926.jpg', '1800x1012 (16:9)'],
+    ['bursaryOverview', 'Bursary overview card', 'Bursary page - the image beside Programme Overview. A second library, so the page is not the same room twice.', 'library-bookshelves-20260926.jpg', '1800x1012 (16:9)'],
     ['educationOutreach', 'Education outreach', 'Education centre page, plus news and home cards', 'education-outreach.jpg', '800×600'],
-    ['bursary', 'Bursary banner', 'Not currently displayed — Bursary uses the Education banner', 'bursary.jpg', '1600×900'],
-    ['summerStudentPhoto', 'Summer student photo', 'Student programme news imagery', 'summer-student-photo.jpg', '800×600'],
+    ['bursary', 'Bursary (spare)', 'Not currently displayed. Was a crowd of graduates with faces visible.', 'library-bookshelves-20260926.jpg', '1800x1012 (16:9)'],
+    ['summerStudentPhoto', 'Student portraits - NOT IN USE', 'Not displayed. It used to be substituted for any bursary-recipient news story, which hid the photograph uploaded by the Department. Identifiable individuals - do not put it back into use without consent.', 'summer-student-photo.jpg', '900x600'],
   ],
 
   'Innovation': [
