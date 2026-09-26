@@ -6,6 +6,9 @@ export default function ContentBlock({
   children,
   image,
   imageAlt = '',
+  // A photographer credit, where the licence on the image requires one to be
+  // shown. Left off, nothing is rendered.
+  imageCredit = null,
   reverse = false,
   className = '',
 }) {
@@ -23,9 +26,14 @@ export default function ContentBlock({
         <div className="mt-3 text-slate-600">{children}</div>
       </div>
       {image && (
-        <div className={`overflow-hidden rounded-2xl border border-slate-200 card-shadow ${reverse ? 'lg:order-1' : ''}`}>
-          <img src={image} alt={imageAlt} className="aspect-[4/3] w-full object-cover" loading="lazy" />
-        </div>
+        <figure className={`m-0 ${reverse ? 'lg:order-1' : ''}`}>
+          <div className="overflow-hidden rounded-2xl border border-slate-200 card-shadow">
+            <img src={image} alt={imageAlt} className="aspect-[4/3] w-full object-cover" loading="lazy" />
+          </div>
+          {imageCredit && (
+            <figcaption className="mt-2 text-caption text-slate-500">{imageCredit}</figcaption>
+          )}
+        </figure>
       )}
     </motion.div>
   )

@@ -34,7 +34,7 @@ const GROUPS = {
   ],
 
   'About page': [
-    ['home', 'About — “Our Mission” photo', 'About page, beside the “Our Mission” text. Currently a placeholder — upload a photograph to replace it.', 'placeholder-tbd.svg', '1200×800 landscape'],
+    ['home', 'About — “Our Mission” photo', 'About page, beside the “Our Mission” text. Currently the only freely-licensed photo of the Cabinet Building, at 612×459 — replace it with a Department photograph when one is available.', 'cabinet-building-hamilton.jpg', '1200×900 (4:3)'],
     ['bermudaVision', 'About — “The Department Overview” photo', 'About page, the photo beside the “The Department Overview” text', 'bermuda-vision.webp', '1600×900'],
     ['government', 'Government building', 'About, Contact, Policies and Legal pages', 'government.jpg', '1200×800'],
     ['floatingSolar', 'Floating solar', 'Bursary categories, an education resource, and any project about floating solar', 'floating-solar.jpg', '800×600'],

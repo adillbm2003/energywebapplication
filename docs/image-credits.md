@@ -20,6 +20,20 @@ NASA still images are generally not copyrighted and may be used without
 requesting permission. The exceptions are the NASA insignia and identifiable
 individuals, neither of which appears in these two.
 
+| `cabinet-building-hamilton.jpg` | The Cabinet Building, Front Street, Hamilton. Cropped to 4:3 from `Bermuda-Cabinet Office and Senate-1.jpg` on Wikimedia Commons, by Seán Pól Ó Creachmhaoil. | **CC BY 2.5 — attribution required and shown on the page** |
+
+CC BY 2.5 is the one licence here that obliges us to credit the photographer
+where the image appears, which is why the About page carries a caption under
+it. Remove the caption only if the image is replaced.
+
+This is also the only freely-licensed photograph of the Cabinet Building that
+exists on Commons or Openverse, and it is 659×459 — below what the page wants.
+Everything larger is either a different building, or Flickr images licensed
+NonCommercial, which is not a safe basis for a government site. The right fix
+is a photograph from the Department, who own the building: it would be full
+resolution and need no attribution. Dropping it into the `home` slot in the CMS
+replaces this one without a deploy.
+
 ## Known problems, not yet resolved
 
 - `space-launch.jpg` and the former `space-insurance.jpg` are photographs of a
