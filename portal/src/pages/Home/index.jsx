@@ -45,7 +45,7 @@ export default function Home() {
     <>
       <Hero
         title="Powering Bermuda's Sustainable Energy Future"
-        subtitle="The Department of Energy is Bermuda's authoritative source for energy policy, renewable energy data, consultations, education, and innovation."
+        subtitle="The Department of Energy shapes Bermuda's policy, legislation, and regulatory framework for the energy, telecommunications, broadcasting, space, and satellite sectors, working to secure an affordable, sustainable, and reliable energy future for the island."
         ctaLabel="Explore Renewable Dashboard"
         ctaTo={ROUTES.renewableDashboard}
         secondaryLabel="View Consultations"
