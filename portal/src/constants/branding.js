@@ -43,7 +43,7 @@ export const PAGE_IMAGES = {
   // without a deploy from CMS -> Site Images -> About -> "Our Mission" photo.
   home: base + 'images/cabinet-building-hamilton.jpg',
   simulator: base + 'images/home.jpg',
-  battery: base + 'images/battery-storage.jpg',
+  battery: base + 'images/innovation-battery-20260926.jpg',
   van: base + 'images/van.jpg',
   bus: base + 'images/bus.jpg',
   motorcycle: base + 'images/motorcycle.jpg',
@@ -124,7 +124,7 @@ export const PAGE_IMAGES = {
   satellite: base + 'images/satellite.jpg',
   spaceSatellites: base + 'images/space-satellites-2026.jpg',
   solarFieldBermuda: base + 'images/solar-field-bermuda.jpg',
-  batteryStorage: base + 'images/battery-storage.jpg',
+  batteryStorage: base + 'images/innovation-battery-20260926.jpg',
   dockyardSolar: base + 'images/dockyard-solar.jpg',
   govSolarField: base + 'images/gov-solar-field.jpg',
   bhcHousing: base + 'images/bhc-housing.jpg',
@@ -133,7 +133,7 @@ export const PAGE_IMAGES = {
   solarWorkers: base + 'images/solar-workers.jpg',
   windTurbine: base + 'images/wind-turbine.jpg',
   evExpo: base + 'images/ev-expo.jpg',
-  batteryRooms: base + 'images/battery-rooms.jpg',
+  batteryRooms: base + 'images/innovation-vpp-20260926.jpg',
   dptElectrification: base + 'images/dpt-electrification.jpg',
   evFleetBermuda: base + 'images/ev-fleet-bermuda.jpg',
   // The two dashboard tiles in Quick Access. They previously shared a single

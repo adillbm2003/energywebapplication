@@ -76,7 +76,10 @@ export const bursaryPathwayImages = {
   'Energy Regulation': PAGE_IMAGES.pathwayEnergyRegulation,
   'Environmental Science': PAGE_IMAGES.pathwayEnvironmentalScience,
   'Sustainability': PAGE_IMAGES.pathwaySustainability,
-  'Climate Resilience': PAGE_IMAGES.windTurbine,
+  // Was windTurbine -- a photograph of a SailGP event sign, not a turbine.
+  // No image was supplied for this pathway; the aerial coastline stands in,
+  // which at least reads as what climate resilience is about here.
+  'Climate Resilience': PAGE_IMAGES.bermudaVision,
   'Project Management': PAGE_IMAGES.pathwayProjectManagement,
   'Data Analytics': PAGE_IMAGES.pathwayDataAnalytics,
   'GIS & Geospatial Technologies': PAGE_IMAGES.pathwayGis,

@@ -27,7 +27,7 @@ const GROUPS = {
     ['solar', 'Solar — primary', 'Home, Energy and Dashboard — lead solar image', 'solar.jpg', '1200×800 landscape'],
     ['solarRooftop', 'Rooftop solar', 'Home — residential rooftop card', 'solar-rooftop.jpg', '800×600'],
     ['wind', 'Wind energy', 'Home and Renewable Dashboard — wind card', 'wind.jpg', '800×600'],
-    ['battery', 'Battery storage', 'Home and Renewable Dashboard — storage card', 'battery-storage.jpg', '800×600'],
+    ['battery', 'Battery storage', 'Renewable Dashboard storage panel and an education resource', 'innovation-battery-20260926.jpg', '1024×640 (16:10)'],
     ['balconySolar', 'Balcony solar', 'Home, Education and Projects — balcony solar pilot card', 'balcony-solar.jpg', '800×600'],
     ['hamiltonStreet', 'Hamilton street scene', 'Home, Bursary and news/policy cards — street-level imagery', 'hamilton-street.jpg', '800×600'],
     ['solarFieldBermuda', 'Solar field (Bermuda)', 'Renewable Dashboard, the About page’s “Sustainability” value card, plus news and project cards', 'solar-field-bermuda.jpg', '1200×800'],
@@ -38,7 +38,10 @@ const GROUPS = {
     ['bermudaVision', 'About — “The Department Overview” photo', 'About page, the photo beside the “The Department Overview” text', 'bermuda-vision.webp', '1600×900'],
     ['government', 'Government building', 'About, Contact, Policies and Legal pages', 'government.jpg', '1200×800'],
     ['floatingSolar', 'Floating solar', 'Bursary categories, an education resource, and any project about floating solar', 'floating-solar.jpg', '800×600'],
-    ['solarWorkers', 'About — “Transparency” value card', 'About value card, and the Installers page', 'solar-workers.jpg', '800×600'],
+    // This slot feeds FIVE places, not just the Transparency card: the About
+    // value card, the Installers page, installer content images, and the project
+    // and policy matchers. An override uploaded here shows up in all of them.
+    ['solarWorkers', 'Solar workers (About “Transparency”, Installers, + 3 more)', 'Used in five places — About value card, Installers page, installer content, project matcher, policy matcher. Anything uploaded here replaces the photograph in ALL of them.', 'solar-workers.jpg', '800×600'],
     ['bhcHousing', 'About — “Equity” value card', 'About value card, and the Simulator page', 'bhc-housing.jpg', '800×600'],
     ['portrait1', 'Leadership portrait 1', 'About → leadership team, position 1', 'portraits/774909.jpg', '400×400 square'],
     ['portrait2', 'Leadership portrait 2', 'About → leadership team, position 2', 'portraits/91227.jpg', '400×400 square'],
@@ -72,7 +75,7 @@ const GROUPS = {
     ['space', 'Space — generic', 'Not currently displayed — spare space image', 'space.jpg', '1200×800'],
     ['spaceOrbit', 'Bermuda & global space economy', 'Bermuda & Global Space Economy sub-page and its card', 'space-economy-20260926.jpg', '1024×576 (16:9)'],
     ['spaceWhyBermuda', 'Why choose Bermuda', 'Why Choose Bermuda sub-page and its card', 'space-why-bermuda-20260926.jpg', '1024×576 (16:9)'],
-    ['spaceDish', 'Ground station dish', 'Ground segment sub-page', 'space-dish.jpg', '1200×800'],
+    ['spaceDish', 'Ground station dish', 'Earth Stations & Operations sub-page and its card. The current file is NOT a dish — it is a close-up of someone soldering, with two component brands legible. Replace it.', 'space-dish.jpg', '1024×576 (16:9)'],
     ['spaceLaunch', 'Launch', 'Not displayed — the stock photo carries a launch company’s branding, replace before use', 'space-launch.jpg', '1280×720'],
     ['spaceEarth', 'Earth from space', 'Not currently displayed — spare space image', 'space-earth.jpg', '1200×800'],
     ['spaceInsurance', 'Space insurance', 'Space insurance sub-page and its card', 'space-insurance-20260926.jpg', '1024×576 (16:9)'],
@@ -106,9 +109,14 @@ const GROUPS = {
     ['evExpo', 'EV expo', 'EV adoption / events card', 'ev-expo.jpg', '800×600'],
     ['evFleetBermuda', 'EV fleet (Bermuda)', 'Local EV fleet imagery', 'ev-fleet-bermuda.jpg', '800×600'],
     ['bmw3', 'EV model photo', 'Vehicle model card', 'bmw-3.jpg', '800×600'],
-    ['batteryRooms', 'Battery rooms', 'Grid-scale storage facility', 'battery-rooms.jpg', '800×600'],
-    ['batteryStorage', 'Battery storage (alt)', 'Not currently displayed — duplicate of the Battery storage image', 'battery-storage.jpg', '800×600'],
-    ['windTurbine', 'Wind turbine', 'Wind generation card', 'wind-turbine.jpg', '800×600'],
+    ['batteryRooms', 'Grid-scale storage', 'Battery Storage KPI, and any project matching “battery” or “storage”', 'innovation-vpp-20260926.jpg', '1024×640 (16:10)'],
+    ['batteryStorage', 'Battery storage (alt)', 'Not currently displayed — duplicate of the Battery storage image', 'innovation-battery-20260926.jpg', '1024×640 (16:10)'],
+    // Not displayed anywhere since 26 September 2026. The file is a photograph
+    // of a SAILGP event sign, with the wordmark filling most of the frame and a
+    // turbine small behind it; it was standing in for wind generation, hydrogen
+    // policy and climate resilience. Upload a real wind photograph before
+    // putting this slot back into use.
+    ['windTurbine', 'Wind turbine — NOT IN USE', 'Not displayed. The stock file is a SailGP event sign, not a turbine; replace it before reusing.', 'wind-turbine.jpg', '800×600'],
     ['dockyardSolar', 'Dockyard solar', 'Registry page banner and project card', 'dockyard-solar.jpg', '1200×800'],
   ],
 
