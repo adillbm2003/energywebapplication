@@ -6,7 +6,7 @@ export const CONTENT_PLACEHOLDERS = {
   project: PAGE_IMAGES.solarFieldBermuda,
   news: PAGE_IMAGES.solarFieldBermuda,
   consultation: PAGE_IMAGES.hamiltonStreet,
-  installer: PAGE_IMAGES.solarWorkers,
+  installer: PAGE_IMAGES.solarInstallers,
   education: PAGE_IMAGES.educationOutreach,
   policy: PAGE_IMAGES.hamiltonStreet,
   bursary: PAGE_IMAGES.educationOutreach,

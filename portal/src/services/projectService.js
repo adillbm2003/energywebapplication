@@ -26,7 +26,7 @@ function pickProjectImage(p) {
   if (text.includes('dockyard') || text.includes('harbour') || text.includes('harbor')) return PAGE_IMAGES.dockyardSolar
   if (text.includes('government') || text.includes('govt') || text.includes('ministry') || text.includes('public sector')) return PAGE_IMAGES.govSolarField
   if (text.includes('rooftop') || text.includes('roof top')) return PAGE_IMAGES.dockyardSolar
-  if (text.includes('worker') || text.includes('install') || text.includes('belco')) return PAGE_IMAGES.solarWorkers
+  if (text.includes('worker') || text.includes('install') || text.includes('belco')) return PAGE_IMAGES.solarInstallers
 
   return PAGE_IMAGES.solarFieldBermuda
 }

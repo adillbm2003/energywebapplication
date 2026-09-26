@@ -36,12 +36,13 @@ const GROUPS = {
   'About page': [
     ['home', 'About — “Our Mission” photo', 'About page, beside the “Our Mission” text. Currently the only freely-licensed photo of the Cabinet Building, at 612×459 — replace it with a Department photograph when one is available.', 'cabinet-building-hamilton.jpg', '1200×900 (4:3)'],
     ['bermudaVision', 'About — “The Department Overview” photo', 'About page, the photo beside the “The Department Overview” text', 'bermuda-vision.webp', '1600×900'],
-    ['government', 'Government building', 'About, Contact, Policies and Legal pages', 'government.jpg', '1200×800'],
+    ['government', 'Government building banner', 'Banner for About, Contact, Policies and the legal pages, plus the Policy and Legislation card images. Was the Crawley Edge Boatshed in Perth, Australia. Only 612x459 - a Department photograph would be better.', 'cabinet-building-hamilton.jpg', '612x459'],
     ['floatingSolar', 'Floating solar', 'Bursary categories, an education resource, and any project about floating solar', 'floating-solar.jpg', '800×600'],
     // This slot feeds FIVE places, not just the Transparency card: the About
     // value card, the Installers page, installer content images, and the project
     // and policy matchers. An override uploaded here shows up in all of them.
     ['solarWorkers', 'Solar workers (About “Transparency”, Installers, + 3 more)', 'Used in five places — About value card, Installers page, installer content, project matcher, policy matcher. Anything uploaded here replaces the photograph in ALL of them.', 'solar-workers.jpg', '800×600'],
+    ['solarInstallers', 'Solar installers photo (Installers page and matchers)', 'The same photograph on a separate slot, so that an upload to Solar workers - which the About value card uses - does not also change the Installers page, installer content and the project matcher.', 'solar-workers.jpg', '800x600'],
     ['bhcHousing', 'About — “Equity” value card', 'About value card, and the Simulator page', 'bhc-housing.jpg', '800×600'],
     ['portrait1', 'Leadership portrait 1', 'About → leadership team, position 1', 'portraits/774909.jpg', '400×400 square'],
     ['portrait2', 'Leadership portrait 2', 'About → leadership team, position 2', 'portraits/91227.jpg', '400×400 square'],
@@ -56,11 +57,11 @@ const GROUPS = {
     ['solarCommercial', 'Commercial solar', 'Commercial installations card', 'solar-commercial.jpg', '800×600'],
     ['grid', 'Electricity grid', 'Energy and Electronic Communications — infrastructure card', 'grid.jpg', '800×600'],
     ['efficiency', 'Energy efficiency', 'Efficiency programmes card', 'efficiency.jpg', '800×600'],
-    ['transport', 'Transport', 'Transport section card', 'transport.jpg', '800×600'],
-    ['ev', 'Electric vehicle', 'EV imagery across energy and dashboards', 'ev.jpg', '800×600'],
+    ['transport', 'Energy transition', 'Energy page - Energy Transition Dashboard card and the Energy Transition callout. Was a snow-covered mountain.', 'dpt-electrification.jpg', '1200x800'],
+    ['ev', 'Electric vehicles', 'Electric Vehicles card, Vehicles page banner, Transition Dashboard panel and EV projects. Was a 3D rendering of the letters AI.', 'ev-fleet-bermuda.jpg', '1200x800'],
     ['charging', 'EV charging', 'Charging infrastructure — Vehicles page', 'charging.jpg', '800×600'],
     ['van', 'Electric van', 'Not currently displayed — spare vehicle image', 'van.jpg', '800×600'],
-    ['bus', 'Public bus', 'Public transport card', 'bus.jpg', '800×600'],
+    ['bus', 'Buses and fleet', 'Transition Dashboard - the Buses & Fleet vehicle category. Was an aerial of a motorway interchange.', 'electric-bus.jpg', '1200x800'],
     ['motorcycle', 'Electric motorcycle', 'Two-wheeler category card', 'motorcycle.jpg', '800×600'],
   ],
 
@@ -75,7 +76,7 @@ const GROUPS = {
     ['space', 'Space — generic', 'Not currently displayed — spare space image', 'space.jpg', '1200×800'],
     ['spaceOrbit', 'Bermuda & global space economy', 'Bermuda & Global Space Economy sub-page and its card', 'space-economy-20260926.jpg', '1024×576 (16:9)'],
     ['spaceWhyBermuda', 'Why choose Bermuda', 'Why Choose Bermuda sub-page and its card', 'space-why-bermuda-20260926.jpg', '1024×576 (16:9)'],
-    ['spaceDish', 'Ground station dish', 'Earth Stations & Operations sub-page and its card. The current file is NOT a dish — it is a close-up of someone soldering, with two component brands legible. Replace it.', 'space-dish.jpg', '1024×576 (16:9)'],
+    ['spaceDish', 'Ground station dish', 'Earth Stations & Operations sub-page and its card. Was a close-up of someone soldering a circuit board.', 'earth-station-dish-20260926.jpg', '900x506 (16:9)'],
     ['spaceLaunch', 'Launch', 'Not displayed — the stock photo carries a launch company’s branding, replace before use', 'space-launch.jpg', '1280×720'],
     ['spaceEarth', 'Earth from space', 'Not currently displayed — spare space image', 'space-earth.jpg', '1200×800'],
     ['spaceInsurance', 'Space insurance', 'Space insurance sub-page and its card', 'space-insurance-20260926.jpg', '1024×576 (16:9)'],
@@ -101,7 +102,7 @@ const GROUPS = {
   'Dashboards': [
     ['renewableDashboard', 'Renewable Dashboard tile', 'Dashboards page → Quick Access, the “Renewable Dashboard” tile', 'bermuda-energy-dashboard.png', '1200×900 (4:3 — the tile crops to 4:3)'],
     ['transitionDashboard', 'Transition Dashboard tile', 'Dashboards page → Quick Access, the “Transition Dashboard” tile', 'bermuda-energy-dashboard.png', '1200×900 (4:3 — the tile crops to 4:3)'],
-    ['simulator', 'Energy simulator tile', 'Simulator promo tile on the dashboard', 'home.jpg', '800×600'],
+    ['simulator', 'Energy Simulator tile', 'Dashboards page - the Energy Simulator tile. Was a North American suburban house.', 'balcony-solar.jpg', '1200x900'],
     ['registry', 'Registry tile', 'Energy registry tile on the dashboard', 'registry.jpg', '800×600'],
     ['analytics', 'Analytics', 'Analytics / data imagery on transition dashboard', 'analytics.jpg', '800×600'],
     ['electricBus', 'Electric bus', 'Transition dashboard — bus electrification', 'electric-bus.jpg', '800×600'],
