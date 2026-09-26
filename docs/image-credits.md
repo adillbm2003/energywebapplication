@@ -50,6 +50,7 @@ replaces this one without a deploy.
 | `space-strategy-20260926.jpg` | Supplied 26 September 2026, for National Space Strategy. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
 | `space-enquiries-20260926.jpg` | Supplied 26 September 2026, for Sector Enquiries. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
 | `innovation-*-20260926.jpg` (9 files) | Supplied 26 September 2026, one per Emerging Technologies card on the Innovation page. Each cropped to 16:10 from 1024×1024. | Appear to be AI-generated |
+| `pathway-*-20260926.jpg` (15 files) | Supplied 26 September 2026, one per Career Pathways card on the Bursary page. Delivered at 1024×341 and used as given. | Appear to be AI-generated |
 
 The 1024×1024 square, the absence of any camera metadata and the rendering of
 the cable drums and flowers all point to an image that was generated rather

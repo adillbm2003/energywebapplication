@@ -94,6 +94,28 @@ export const PAGE_IMAGES = {
   innovBattery: base + 'images/innovation-battery-20260926.jpg',
   innovDigitalCurrency: base + 'images/innovation-digital-currency-20260926.jpg',
   innovSmartGrids: base + 'images/innovation-smart-grids-20260926.jpg',
+
+  // Career Pathways strips on the Bursary page. Own slots for the same reason
+  // as the Innovation cards: the seventeen pathways were sharing seven images
+  // between them -- solarWorkers alone covered Electrical Engineering,
+  // Mechanical Engineering and Project Management, and carries a CMS override
+  // besides -- and those images are used across the rest of the site.
+  // Supplied at 1024x341; the card is a wide strip, so they are used as given.
+  pathwayRenewableEnergy: base + 'images/pathway-renewable-energy-20260926.jpg',
+  pathwayElectricalEng: base + 'images/pathway-electrical-engineering-20260926.jpg',
+  pathwayMechanicalEng: base + 'images/pathway-mechanical-engineering-20260926.jpg',
+  pathwayEnergyPolicy: base + 'images/pathway-energy-policy-20260926.jpg',
+  pathwayEnergyRegulation: base + 'images/pathway-energy-regulation-20260926.jpg',
+  pathwayEnvironmentalScience: base + 'images/pathway-environmental-science-20260926.jpg',
+  pathwaySustainability: base + 'images/pathway-sustainability-20260926.jpg',
+  pathwayProjectManagement: base + 'images/pathway-project-management-20260926.jpg',
+  pathwayDataAnalytics: base + 'images/pathway-data-analytics-20260926.jpg',
+  pathwayGis: base + 'images/pathway-gis-geospatial-technologies-20260926.jpg',
+  pathwayBatteryStorage: base + 'images/pathway-battery-energy-storage-20260926.jpg',
+  pathwayEnergyEfficiency: base + 'images/pathway-energy-efficiency-20260926.jpg',
+  pathwayPublicSectorPlanning: base + 'images/pathway-public-sector-energy-planning-20260926.jpg',
+  pathwayUtilityOperations: base + 'images/pathway-utility-operations-20260926.jpg',
+  pathwayEmergingTech: base + 'images/pathway-emerging-technologies-20260926.jpg',
   hamiltonStreet: base + 'images/hamilton-street.jpg',
   educationOutreach: base + 'images/education-outreach.jpg',
   electricBus: base + 'images/electric-bus.jpg',

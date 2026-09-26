@@ -137,6 +137,24 @@ const GROUPS = {
     ['innovSmartGrids', 'Smart Grids', 'Innovation → Emerging Technologies, the “Smart Grids” card', 'innovation-smart-grids-20260926.jpg', '1024×640 (16:10)'],
   ],
 
+  'Bursary — career pathways': [
+    ['pathwayRenewableEnergy', 'Renewable Energy', 'Bursary → Career Pathways, the “Renewable Energy” card', 'pathway-renewable-energy-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayElectricalEng', 'Electrical Engineering', 'Bursary → Career Pathways, the “Electrical Engineering” card', 'pathway-electrical-engineering-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayMechanicalEng', 'Mechanical Engineering', 'Bursary → Career Pathways, the “Mechanical Engineering” card', 'pathway-mechanical-engineering-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayEnergyPolicy', 'Energy Policy', 'Bursary → Career Pathways, the “Energy Policy” card', 'pathway-energy-policy-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayEnergyRegulation', 'Energy Regulation', 'Bursary → Career Pathways, the “Energy Regulation” card', 'pathway-energy-regulation-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayEnvironmentalScience', 'Environmental Science', 'Bursary → Career Pathways, the “Environmental Science” card', 'pathway-environmental-science-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwaySustainability', 'Sustainability', 'Bursary → Career Pathways, the “Sustainability” card', 'pathway-sustainability-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayProjectManagement', 'Project Management', 'Bursary → Career Pathways, the “Project Management” card', 'pathway-project-management-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayDataAnalytics', 'Data Analytics', 'Bursary → Career Pathways, the “Data Analytics” card', 'pathway-data-analytics-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayGis', 'GIS & Geospatial Technologies', 'Bursary → Career Pathways, the “GIS & Geospatial Technologies” card', 'pathway-gis-geospatial-technologies-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayBatteryStorage', 'Battery Energy Storage', 'Bursary → Career Pathways, the “Battery Energy Storage” card', 'pathway-battery-energy-storage-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayEnergyEfficiency', 'Energy Efficiency', 'Bursary → Career Pathways, the “Energy Efficiency” card', 'pathway-energy-efficiency-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayPublicSectorPlanning', 'Public Sector Energy Planning', 'Bursary → Career Pathways, the “Public Sector Energy Planning” card', 'pathway-public-sector-energy-planning-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayUtilityOperations', 'Utility Operations', 'Bursary → Career Pathways, the “Utility Operations” card', 'pathway-utility-operations-20260926.jpg', '1024×341 (3:1 strip)'],
+    ['pathwayEmergingTech', 'Emerging Technologies', 'Bursary → Career Pathways, the “Emerging Technologies” card', 'pathway-emerging-technologies-20260926.jpg', '1024×341 (3:1 strip)'],
+  ],
+
   'Contact & Errors': [
     ['contact', 'Contact banner', 'Contact page banner', 'bermuda.jpg', '1600×900'],
     ['bermuda', 'Bermuda scenery', 'Page-not-found (404) page only', 'bermuda.jpg', '1200×800'],
