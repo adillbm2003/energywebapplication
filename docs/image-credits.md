@@ -38,6 +38,21 @@ is a photograph from the Department, who own the building: it would be full
 resolution and need no attribution. Dropping it into the `home` slot in the CMS
 replaces this one without a deploy.
 
+## Supplied by the client
+
+| File | Source | Note |
+|------|--------|------|
+| `broadband-expansion-2026.jpg` | Supplied by the Department, September 2026, for the Broadband Expansion card. Cropped to 2:1 from a 1024×1024 original. | Appears to be AI-generated, not a photograph |
+
+The 1024×1024 square, the absence of any camera metadata and the rendering of
+the cable drums and flowers all point to an image that was generated rather
+than taken. That is worth recording because it is not a picture of anywhere in
+Bermuda, and because the Department had previously asked for AI-generated
+photographs to be taken off the site and replaced with the "image to be
+confirmed" placeholder — this slot held that placeholder. It was supplied
+deliberately, so it is in use; the note is here so nobody later mistakes it
+for documentary evidence of works that took place.
+
 ## Known problems, not yet resolved
 
 - `space-launch.jpg` and the former `space-insurance.jpg` are photographs of a

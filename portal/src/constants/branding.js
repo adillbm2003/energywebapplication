@@ -61,7 +61,7 @@ export const PAGE_IMAGES = {
   // and the right one there. On a broadband card it showed the wrong utility
   // entirely. It has its own slot now so the two cannot drift back together,
   // and is a placeholder until the Department supplies a photograph.
-  broadband: base + 'images/placeholder-tbd.svg',
+  broadband: base + 'images/broadband-expansion-2026.jpg',
   charging: base + 'images/charging.jpg',
   transport: base + 'images/transport.jpg',
   contact: base + 'images/bermuda.jpg',
