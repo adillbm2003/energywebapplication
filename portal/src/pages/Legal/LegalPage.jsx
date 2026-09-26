@@ -31,6 +31,20 @@ const LEGAL_CONTENT = {
       'This statement will be reviewed and updated as the website evolves.',
     ],
   },
+  // Keyed 'image-credits' because LegalPage resolves its content from the path.
+  // This page is the attribution the CC BY licence on the Cabinet Building
+  // photograph requires: the licence asks for credit in a manner reasonable to
+  // the medium, and a credits page reached from every footer is that, without
+  // a caption sitting under the picture.
+  'image-credits': {
+    title: 'Image Credits',
+    content: [
+      'Photographs on this website are either Crown material, public domain, or used under the licence stated below.',
+      'Cabinet Building, Hamilton — photograph by Seán Pól Ó Creachmhaoil, licensed CC BY 2.5, via Wikimedia Commons.',
+      'Satellite and Earth imagery — NASA. NASA still images are in the public domain and are used here for informational purposes; their use does not imply NASA endorsement.',
+      'To report an image used in error, or to request a credit or removal, contact energy@gov.bm.',
+    ],
+  },
   cookies: {
     title: 'Cookie Policy',
     content: [

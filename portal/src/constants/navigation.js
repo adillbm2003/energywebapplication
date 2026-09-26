@@ -70,6 +70,7 @@ export const FOOTER_LINKS = {
     { label: 'Terms of Use', to: ROUTES.terms },
     { label: 'Accessibility', to: ROUTES.accessibility },
     { label: 'Cookie Policy', to: ROUTES.cookies },
+    { label: 'Image Credits', to: ROUTES.imageCredits },
   ],
 }
 

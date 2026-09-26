@@ -22,9 +22,13 @@ individuals, neither of which appears in these two.
 
 | `cabinet-building-hamilton.jpg` | The Cabinet Building, Front Street, Hamilton. Cropped to 4:3 from `Bermuda-Cabinet Office and Senate-1.jpg` on Wikimedia Commons, by Seán Pól Ó Creachmhaoil. | **CC BY 2.5 — attribution required and shown on the page** |
 
-CC BY 2.5 is the one licence here that obliges us to credit the photographer
-where the image appears, which is why the About page carries a caption under
-it. Remove the caption only if the image is replaced.
+CC BY 2.5 is the one licence here that obliges us to credit the photographer.
+That credit lives on the public **Image Credits** page at `/image-credits`,
+linked from the legal row in the footer of every page — the licence asks for
+attribution in a manner reasonable to the medium, and a site-wide credits page
+is that. It was briefly a caption under the photograph on the About page; the
+Department asked for the name off the image, so it moved rather than went away.
+If that photograph is replaced, take its line off the credits page too.
 
 This is also the only freely-licensed photograph of the Cabinet Building that
 exists on Commons or Openverse, and it is 659×459 — below what the page wants.

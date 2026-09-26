@@ -28,4 +28,5 @@ export const ROUTES = {
   terms: '/terms',
   accessibility: '/accessibility',
   cookies: '/cookies',
+  imageCredits: '/image-credits',
 }

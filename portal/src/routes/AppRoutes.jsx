@@ -70,6 +70,7 @@ export default function AppRoutes() {
           <Route path="terms" element={<LegalPage />} />
           <Route path="accessibility" element={<LegalPage />} />
           <Route path="cookies" element={<LegalPage />} />
+          <Route path="image-credits" element={<LegalPage />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
