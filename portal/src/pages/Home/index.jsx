@@ -240,7 +240,7 @@ export default function Home() {
           />
           <div className="relative mt-10">
             <div className="absolute left-0 right-0 top-8 hidden h-0.5 bg-gradient-to-r from-teal-600 to-navy-900 md:block" aria-hidden="true" />
-            <div className="grid gap-6 md:grid-cols-4 lg:grid-cols-8">
+            <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-9">
               {[
                 { year: '2010', title: 'Solar Energy Rebate', desc: 'Incentives introduced to encourage solar energy adoption.', icon: '☀️', tag: 'Lower Emissions' },
                 { year: '2015', title: 'National Electricity Policy', desc: 'Long-term vision for a reliable, affordable and sustainable energy sector.', icon: '📋', tag: 'Greater Savings' },
@@ -250,6 +250,7 @@ export default function Home() {
                 { year: '2022', title: 'Fuels Act 2022', desc: 'Modernised legislation for the safe, sustainable management of fuels.', icon: '📜', tag: 'Healthier Communities' },
                 { year: '2023', title: '70 Electric Buses', desc: 'A significant step towards cleaner public transport and reduced emissions.', icon: '🚌', tag: 'Sustainable Future' },
                 { year: '2025', title: '14.3 MW Distributed Gen.', desc: 'Growing local clean energy generation for a resilient, sustainable Bermuda.', icon: '⚡', tag: 'Clean Energy' },
+                { year: '2026', title: '20 New Electric Buses', desc: 'A further 20 electric buses added to the public transport fleet.', icon: '🚍', tag: 'Cleaner Transport' },
               ].map((milestone, i) => (
                 <motion.div
                   key={milestone.year}
