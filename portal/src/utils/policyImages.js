@@ -16,8 +16,7 @@ const TAG_IMAGES = [
   ['space', PAGE_IMAGES.spaceSatellites],
   ['telecommunications', PAGE_IMAGES.telecom],
   ['broadcasting', PAGE_IMAGES.telecom],
-  // 'hydrogen' used to resolve to a SailGP event sign. Falls back until
-  // there is an image that has something to do with hydrogen.
+  ['hydrogen', PAGE_IMAGES.hydrogen],
   ['efficiency', PAGE_IMAGES.balconySolar],
   ['solar', PAGE_IMAGES.solarFieldBermuda],
   ['renewable', PAGE_IMAGES.govSolarField],

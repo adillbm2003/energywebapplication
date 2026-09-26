@@ -16,9 +16,7 @@ function pickProjectImage(p) {
   if (text.includes('balcony')) return PAGE_IMAGES.balconySolar
   if (text.includes('bhc') || text.includes('housing corporation') || text.includes('community solar')) return PAGE_IMAGES.bhcHousing
   if (text.includes('efficiency') || text.includes('retrofit') || text.includes('hvac') || text.includes('led lighting')) return PAGE_IMAGES.efficiency
-  // No wind photograph exists in the library. This used to answer a wind or
-  // turbine project with a picture of a SailGP sign; falling through to the
-  // generic renewable image is less wrong than asserting one.
+  if (text.includes('wind') || text.includes('turbine')) return PAGE_IMAGES.windTurbine
   if (text.includes('battery') || text.includes('storage')) return PAGE_IMAGES.batteryRooms
   if (text.includes('gis') || text.includes('geospatial') || text.includes('mapping')) return PAGE_IMAGES.gisHeatmap
   if (text.includes('space') || text.includes('satellite')) return PAGE_IMAGES.spaceSatellites

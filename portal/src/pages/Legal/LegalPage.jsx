@@ -42,6 +42,8 @@ const LEGAL_CONTENT = {
       'Photographs on this website are either Crown material, public domain, or used under the licence stated below.',
       'Cabinet Building, Hamilton — photograph by Seán Pól Ó Creachmhaoil, licensed CC BY 2.5, via Wikimedia Commons.',
       'Satellite and Earth imagery — NASA. NASA still images are in the public domain and are used here for informational purposes; their use does not imply NASA endorsement.',
+      'Hydrogen refuelling station, Fukuoka — photograph by Hirho, licensed CC BY-SA 4.0, via Wikimedia Commons.',
+      'Sessions House, Hamilton, and the wind farm photograph are public domain (CC0 and US federal government respectively) and require no attribution.',
       'To report an image used in error, or to request a credit or removal, contact energy@gov.bm.',
     ],
   },

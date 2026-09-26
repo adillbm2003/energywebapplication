@@ -73,6 +73,25 @@ neither is a real view of it.
 displayed anywhere; it is kept in the repository in case the supplied
 render is withdrawn.
 
+## Sourced to fill gaps, September 2026
+
+| File | Source | Licence |
+|------|--------|---------|
+| `sessions-house-20260926.jpg` | The Sessions House, Hamilton — Parliament and the Supreme Court. Wikimedia Commons, `Bermuda (UK) image number 281`, by Tomwsulcer. Cropped to a banner strip. | **CC0 — no attribution required** |
+| `wind-farm-20260926.jpg` | Power County wind farm, Idaho. US Department of Energy. | **Public domain — no attribution required** |
+| `hydrogen-station-20260926.jpg` | Fukuoka City hydrogen refuelling station, producing hydrogen from sewage biogas. By Hirho, Wikimedia Commons. | **CC BY-SA 4.0 — credited on /image-credits** |
+| `earth-station-dish-20260926.jpg` | A 16:9 crop of `satellite.jpg`, already in the library. | as the original |
+
+These three close the last gaps where a slot had nothing accurate to show.
+Before them, `government` was a boatshed in Perth, wind and hydrogen both
+resolved to a photograph of a SailGP event sign, and Earth Stations showed
+someone soldering.
+
+Two candidates were rejected on the same grounds as the images they would have
+replaced: a US national laboratory's hydrogen car carries the laboratory's
+branding and an identifiable person, and a hydrogen fuel-cell bus carries its
+operator's livery.
+
 ## Known problems, not yet resolved
 
 - `space-launch.jpg` and the former `space-insurance.jpg` are photographs of a

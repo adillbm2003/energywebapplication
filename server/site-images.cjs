@@ -36,7 +36,7 @@ const GROUPS = {
   'About page': [
     ['home', 'About — “Our Mission” photo', 'About page, beside the “Our Mission” text. Currently the only freely-licensed photo of the Cabinet Building, at 612×459 — replace it with a Department photograph when one is available.', 'cabinet-building-hamilton.jpg', '1200×900 (4:3)'],
     ['bermudaVision', 'About — “The Department Overview” photo', 'About page, the photo beside the “The Department Overview” text', 'bermuda-vision.webp', '1600×900'],
-    ['government', 'Government building banner', 'Banner for About, Contact, Policies and the legal pages, plus the Policy and Legislation card images. Was the Crawley Edge Boatshed in Perth, Australia. Only 612x459 - a Department photograph would be better.', 'cabinet-building-hamilton.jpg', '612x459'],
+    ['government', 'Government building banner', 'Banner for About, Contact, Policies and the legal pages, plus the Policy and Legislation card images. The Sessions House in Hamilton - Parliament and the Supreme Court. Was a boatshed in Perth, Australia.', 'sessions-house-20260926.jpg', '1800x692'],
     ['floatingSolar', 'Floating solar', 'Bursary categories, an education resource, and any project about floating solar', 'floating-solar.jpg', '800×600'],
     // This slot feeds FIVE places, not just the Transparency card: the About
     // value card, the Installers page, installer content images, and the project
@@ -112,12 +112,7 @@ const GROUPS = {
     ['bmw3', 'EV model photo', 'Vehicle model card', 'bmw-3.jpg', '800×600'],
     ['batteryRooms', 'Grid-scale storage', 'Battery Storage KPI, and any project matching “battery” or “storage”', 'innovation-vpp-20260926.jpg', '1024×640 (16:10)'],
     ['batteryStorage', 'Battery storage (alt)', 'Not currently displayed — duplicate of the Battery storage image', 'innovation-battery-20260926.jpg', '1024×640 (16:10)'],
-    // Not displayed anywhere since 26 September 2026. The file is a photograph
-    // of a SAILGP event sign, with the wordmark filling most of the frame and a
-    // turbine small behind it; it was standing in for wind generation, hydrogen
-    // policy and climate resilience. Upload a real wind photograph before
-    // putting this slot back into use.
-    ['windTurbine', 'Wind turbine — NOT IN USE', 'Not displayed. The stock file is a SailGP event sign, not a turbine; replace it before reusing.', 'wind-turbine.jpg', '800×600'],
+    ['windTurbine', 'Wind generation', 'Any project matching wind or turbine. A wind farm. Was a photograph of a SailGP event sign.', 'wind-farm-20260926.jpg', '1800x1012 (16:9)'],
     ['dockyardSolar', 'Dockyard solar', 'Registry page banner and project card', 'dockyard-solar.jpg', '1200×800'],
   ],
 
@@ -134,6 +129,7 @@ const GROUPS = {
 
   'Innovation': [
     ['innovation', 'Innovation banner', 'Innovation landing banner and Electronic Communications', 'innovation.jpg', '1600×900'],
+    ['hydrogen', 'Hydrogen', 'Policy cards tagged “hydrogen”. A municipal hydrogen refuelling station. There was no hydrogen image before; the tag resolved to a SailGP event sign.', 'hydrogen-station-20260926.jpg', '1800x1012 (16:9)'],
     ['blockchain', 'Blockchain / digital', 'Digital currency and blockchain topic card', 'blockchain.jpg', '800×600'],
     ['innovAnalytics', 'Advanced Energy Analytics', 'Innovation → Emerging Technologies, the “Advanced Energy Analytics” card', 'innovation-analytics-20260926.jpg', '1024×640 (16:10)'],
     ['innovDigitalTwins', 'Digital Twins', 'Innovation → Emerging Technologies, the “Digital Twins” card', 'innovation-digital-twins-20260926.jpg', '1024×640 (16:10)'],
