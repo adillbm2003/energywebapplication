@@ -6,7 +6,7 @@ import SafeImage from '../../common/SafeImage'
 
 import { formatDate } from '../../../utils/format'
 
-import { downloadMockDocument, isExternalUrl } from '../../../utils/mockDownload'
+import { isExternalUrl } from '../../../utils/mockDownload'
 
 import { resolveContentImage } from '../../../utils/contentImages'
 
@@ -16,6 +16,13 @@ export default function PolicyCard({ policy }) {
 
   const hasRealFile = policy.downloadUrl && policy.downloadUrl !== '#' && !policy.downloadUrl.startsWith('blob:')
   const external = isExternalUrl(policy.downloadUrl)
+
+  // A policy with nothing attached is not a published document. It used to
+  // render its full text under a "Download PDF" button that built a PDF out of
+  // that same text -- a document the Department never wrote. An entry in that
+  // state now shows as a placeholder: the image, the category and the title,
+  // and nothing claiming to be the policy itself.
+  const comingSoon = !external && !hasRealFile
 
 
 
@@ -37,11 +44,15 @@ export default function PolicyCard({ policy }) {
 
         <Badge variant="gold">{policy.category}</Badge>
 
-        <Badge status={policy.status}>{policy.status}</Badge>
+        <Badge status={comingSoon ? 'Coming Soon' : policy.status}>{comingSoon ? 'Coming Soon' : policy.status}</Badge>
 
       </div>
 
       <h3 className="mb-1.5">{policy.title}</h3>
+
+      {!comingSoon && (
+
+        <>
 
       <p className="mb-3 flex-1 text-body-small text-slate-600">{policy.summary}</p>
 
@@ -55,43 +66,17 @@ export default function PolicyCard({ policy }) {
 
         </div>
 
-        {external ? (
+        <Button href={policy.downloadUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer" aria-label={`Open ${policy.title}`}>
 
-          <Button href={policy.downloadUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer" aria-label={`Open ${policy.title}`}>
+          View
 
-            View
-
-          </Button>
-
-        ) : hasRealFile ? (
-
-          <Button href={policy.downloadUrl} variant="outline" size="sm" target="_blank" rel="noopener noreferrer" aria-label={`Open ${policy.title}`}>
-
-            View
-
-          </Button>
-
-        ) : (
-
-          <Button
-
-            variant="outline"
-
-            size="sm"
-
-            aria-label={`Download ${policy.title}`}
-
-            onClick={() => downloadMockDocument({ title: policy.title, summary: policy.summary, category: policy.category, content: policy.content })}
-
-          >
-
-            Download PDF
-
-          </Button>
-
-        )}
+        </Button>
 
       </div>
+
+        </>
+
+      )}
 
       </div>
 

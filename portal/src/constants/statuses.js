@@ -28,6 +28,8 @@ export const STATUS_COLORS = {
   'Implementation in Progress': 'bg-teal-100 text-teal-800',
   Completed: 'bg-slate-200 text-slate-800',
   Superseded: 'bg-slate-100 text-slate-500',
+  // An entry with no document attached yet.
+  'Coming Soon': 'bg-gold-100 text-gold-600',
   active: 'bg-teal-100 text-teal-800',
   upcoming: 'bg-blue-100 text-blue-800',
   completed: 'bg-slate-200 text-slate-700',
