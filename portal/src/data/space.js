@@ -8,7 +8,7 @@ export const spacePages = {
     image: PAGE_IMAGES.spaceOrbit,
     content: [
       'Bermuda has developed a distinctive and growing role in the global space economy, building on decades of experience in satellite communications, space insurance, and international regulatory affairs. The island\'s mid-Atlantic location, business-friendly environment, and deep financial services expertise position it as a natural hub for space industry activity.',
-      'The global space economy is valued at over USD 500 billion and growing rapidly, driven by the proliferation of satellite constellations, the commercialisation of launch services, and the expansion of space-based data and connectivity applications. Bermuda is well positioned to capture a growing share of this opportunity across multiple segments.',
+          'The space and satellite industries are growing quickly, and Bermuda is positioned as a hub for them. As a globally recognised leader in regulatory innovation, the island offers opportunities for businesses seeking to establish earth stations, satellite operations and space insurance companies.',
     ],
     sections: [
       {
@@ -79,6 +79,8 @@ export const spacePages = {
           'Common law legal system with strong investor protections',
           'Transparent and internationally aligned regulatory framework',
           'Active government support for space sector development',
+          'Extension of the UK Outer Space Act, enabling Bermuda-registered companies to conduct outer space activities in full compliance',
+          'Limited Liability Company Act, offering flexibility for structuring space and satellite ventures',
           'Experienced regulatory bodies with international engagement',
         ],
       },
@@ -89,10 +91,11 @@ export const spacePages = {
           'Bermuda\'s tax-neutral environment — with no corporate income tax, capital gains tax, or withholding tax — combined with an extensive network of information exchange agreements, makes it a highly efficient jurisdiction for structuring space industry investments and operations.',
         ],
         bullets: [
-          'Tax-neutral jurisdiction with no corporate income or capital gains tax',
+          'A 0% corporate tax rate, with no capital gains or withholding tax',
           'World-class insurance and reinsurance market for space risk management',
           'Sophisticated capital markets and structured finance expertise',
           'Extensive international tax information exchange agreements',
+          'Longstanding partnership with NASA and the European Space Agency in support of international space missions',
         ],
       },
       {
@@ -210,14 +213,15 @@ export const spacePages = {
       {
         heading: 'Fees and Requirements',
         paragraphs: [
-          'Satellite filing services are subject to administrative fees payable to the Government of Bermuda, in addition to any applicable ITU cost recovery fees. Fee schedules are available from the Department of Energy on request. Operators must provide detailed technical information about their proposed satellite network, including orbital parameters, frequency bands, coverage areas, and power flux density specifications.',
+          'Bermuda\'s ITU filing process is low-cost and efficient, with a flat administrative fee of $12,000, in addition to any applicable ITU cost recovery fees. Operators must provide detailed technical information about the proposed satellite network, including orbital parameters, frequency bands, coverage areas and power flux density specifications.',
           'All filings must comply with the ITU Radio Regulations and applicable international coordination requirements. The Department of Energy provides guidance on documentation requirements and technical standards applicable to each filing stage.',
         ],
         bullets: [
-          'Administrative fees payable to the Government of Bermuda',
+          'Flat administrative fee of $12,000 payable to the Government of Bermuda',
           'ITU cost recovery fees as applicable',
           'Technical network data required at each filing stage',
           'Compliance with ITU Radio Regulations and relevant Appendices',
+          'Collaboration with Ofcom, ensuring compliance with global regulatory standards',
         ],
       },
     ],
@@ -303,15 +307,14 @@ export const spacePages = {
       {
         heading: 'National Space Strategy 2020–2025',
         paragraphs: [
-          'The National Space Strategy 2020–2025 establishes a comprehensive framework for the development of Bermuda\'s space sector across four key pillars: regulatory and policy development, earth station and infrastructure investment, space insurance and financial services, and international engagement and partnerships.',
-          'The strategy sets clear objectives for each pillar, including the modernisation of the legislative and regulatory framework for space activities, the promotion of Bermuda as a destination for earth station investment, the continued development of the island\'s space insurance market, and the strengthening of Bermuda\'s engagement with the ITU and other international space governance bodies.',
+          'Bermuda\'s National Space Strategy 2020–2025 sets out an ambitious plan built on four aims: to build a reputation as a leading jurisdiction for space and satellite businesses; to enhance domestic space-related capabilities through education and training initiatives; to foster international partnerships that advance Bermuda\'s role in the global space community; and to commercialise Bermuda\'s orbital allotments to generate public revenue and economic growth.',
+          'Delivery runs through the Department of Energy, which holds the policy, legislative and regulatory framework for the sector, and through Bermuda\'s engagement with the International Telecommunication Union and other international space governance bodies.',
         ],
         bullets: [
-          'Regulatory and policy modernisation for the space sector',
-          'Earth station infrastructure investment and promotion',
-          'Space insurance and financial services development',
-          'International engagement with ITU and space governance bodies',
-          'Human capital development and space education initiatives',
+          'Build a reputation as a leading jurisdiction for space and satellite businesses',
+          'Enhance domestic space-related capabilities through education and training',
+          'Foster international partnerships advancing Bermuda\'s role in the space community',
+          'Commercialise Bermuda\'s orbital allotments to generate public revenue and growth',
         ],
       },
       {
@@ -321,13 +324,29 @@ export const spacePages = {
           'All active and archived consultation documents relating to the space and satellite sector are available through the Government\'s consultation portal. Interested parties are encouraged to participate in consultations to help shape the future policy environment for space activities in Bermuda.',
         ],
       },
+      {
+        heading: 'Space Camps and STEM Education',
+        paragraphs: [
+          'Bermuda is committed to nurturing the next generation of space leaders and innovators through its STEM education programmes, which support the second aim of the National Space Strategy: enhancing domestic space-related capabilities through education and training.',
+          'In partnership with NASA and the Challenger Learning Center of Alaska, the island hosts summer space camps for students aged 11 to 14. Camps include hands-on activities in satellite building, coding, climate science and alternative power sources, encouraging young Bermudians to consider careers in the space industry.',
+          'High school students take part in small satellite programmes and microgravity experiments. Exchange programmes and collaborations with international space education organisations broaden that experience, and partnerships with industry leaders provide opportunities for advanced workforce training in space-related fields.',
+        ],
+        bullets: [
+          'Annual summer space camps with NASA and the Challenger Learning Center of Alaska, for ages 11 to 14',
+          'Hands-on satellite building, coding, climate science and alternative power sources',
+          'Small satellite programmes and microgravity experiments for high school students',
+          'Exchange programmes with international space education organisations',
+          'Advanced workforce training through partnerships with industry leaders',
+        ],
+      },
     ],
     highlights: [
       'National Space Strategy 2020–2025',
-      'Four strategic pillars: regulation, infrastructure, insurance, international engagement',
+      'Four aims: reputation, domestic capability, partnerships, orbital allotments',
       'Transparent policy development process',
       'Open stakeholder consultations',
       'ITU and international space body engagement',
+      'Space camps and STEM education with NASA and the Challenger Learning Center',
     ],
     documents: [
       { title: 'National Space Strategy 2020–2025', url: '#', size: '3.4 MB' },
