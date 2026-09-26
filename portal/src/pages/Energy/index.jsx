@@ -43,13 +43,13 @@ const TOPICS = [
     title: 'Fuels Policy',
     description: 'National fuels policy framework and the Fuels Act 2022 guiding sustainable fuels management.',
     to: ROUTES.policies,
-    image: PAGE_IMAGES.consultation,
+    image: PAGE_IMAGES.fuelsPolicy,
   },
   {
     title: 'GIS Solar PV Map',
     description: 'Interactive map of solar installations, renewable sites, and energy infrastructure island-wide.',
     to: ROUTES.gis,
-    image: PAGE_IMAGES.grid,
+    image: PAGE_IMAGES.energyGisMap,
   },
   {
     title: 'Registered Solar Installers',
@@ -61,7 +61,7 @@ const TOPICS = [
     title: 'Energy Simulator',
     description: 'Interactive Bermuda home model with live usage estimates and BELCO bill projections.',
     href: 'https://simulator.energy.bm/',
-    image: PAGE_IMAGES.analytics,
+    image: PAGE_IMAGES.simulator,
   },
 ]
 

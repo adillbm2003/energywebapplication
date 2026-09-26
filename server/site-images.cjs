@@ -24,7 +24,7 @@ const GROUPS = {
   ],
 
   'Home page': [
-    ['solar', 'Solar — primary', 'Home, Energy and Dashboard — lead solar image', 'solar.jpg', '1200×800 landscape'],
+    ['solar', 'Renewable energy', 'Energy hub - Renewable Energy card, plus the Renewable Dashboard panel, the Dashboards tile and installer cards.', 'renewable-energy-20260926.jpg', '1024x640 (16:10)'],
     ['solarRooftop', 'Rooftop solar', 'Home — residential rooftop card', 'solar-rooftop.jpg', '800×600'],
     ['wind', 'Wind energy', 'Home and Renewable Dashboard — wind card', 'wind.jpg', '800×600'],
     ['battery', 'Battery storage', 'Renewable Dashboard storage panel and an education resource', 'innovation-battery-20260926.jpg', '1024×640 (16:10)'],
@@ -54,11 +54,13 @@ const GROUPS = {
 
   'Energy section': [
     ['energy', 'Energy banner', 'Energy landing banner and News page cards', 'energy.jpg', '1600×900'],
-    ['solarCommercial', 'Commercial solar', 'Commercial installations card', 'solar-commercial.jpg', '800×600'],
+    ['solarCommercial', 'Registered solar installers', 'Energy hub - Registered Solar Installers card, and installer cards.', 'registered-solar-installers-20260926.jpg', '1024x640 (16:10)'],
     ['grid', 'Electricity grid', 'Energy and Electronic Communications — infrastructure card', 'grid.jpg', '800×600'],
-    ['efficiency', 'Energy efficiency', 'Efficiency programmes card', 'efficiency.jpg', '800×600'],
-    ['transport', 'Energy transition', 'Energy page - Energy Transition Dashboard card and the Energy Transition callout. Was a snow-covered mountain.', 'dpt-electrification.jpg', '1200x800'],
-    ['ev', 'Electric vehicles', 'Electric Vehicles card, Vehicles page banner, Transition Dashboard panel and EV projects. Was a 3D rendering of the letters AI.', 'ev-fleet-bermuda.jpg', '1200x800'],
+    ['energyGisMap', 'GIS Solar PV Map card', 'Energy hub - the GIS Solar PV Map card only. Kept off the grid slot, which also drives the Regulation policy category.', 'gis-solar-pv-map-20260926.jpg', '1024x640 (16:10)'],
+    ['fuelsPolicy', 'Fuels policy', 'Energy hub - Fuels Policy card, and policy cards in the Fuels sector or tagged fuels. Those used to show a bus at a Hamilton bus stop.', 'fuels-policy-20260926.jpg', '1024x640 (16:10)'],
+    ['efficiency', 'Energy efficiency', 'Energy hub - Energy Efficiency card, plus an education resource, a project and every project matching efficiency, retrofit, HVAC or LED.', 'energy-efficiency-20260926.jpg', '1024x640 (16:10)'],
+    ['transport', 'Energy transition', 'Energy hub - Energy Transition Dashboard card and the Energy Transition callout on the same page.', 'energy-transition-dashboard-20260926.jpg', '1024x640 (16:10)'],
+    ['ev', 'Electric vehicles', 'Energy hub - Electric Vehicles card, plus the Vehicles page banner, the Transition Dashboard panel, an education resource and EV projects.', 'electric-vehicles-20260926.jpg', '1024x640 (16:10)'],
     ['charging', 'EV charging', 'Charging infrastructure — Vehicles page', 'charging.jpg', '800×600'],
     ['van', 'Electric van', 'Not currently displayed — spare vehicle image', 'van.jpg', '800×600'],
     ['bus', 'Buses and fleet', 'Transition Dashboard - the Buses & Fleet vehicle category. Was an aerial of a motorway interchange.', 'electric-bus.jpg', '1200x800'],
@@ -102,7 +104,7 @@ const GROUPS = {
   'Dashboards': [
     ['renewableDashboard', 'Renewable Dashboard tile', 'Dashboards page → Quick Access, the “Renewable Dashboard” tile', 'bermuda-energy-dashboard.png', '1200×900 (4:3 — the tile crops to 4:3)'],
     ['transitionDashboard', 'Transition Dashboard tile', 'Dashboards page → Quick Access, the “Transition Dashboard” tile', 'bermuda-energy-dashboard.png', '1200×900 (4:3 — the tile crops to 4:3)'],
-    ['simulator', 'Energy Simulator tile', 'Dashboards page - the Energy Simulator tile. Was a North American suburban house.', 'balcony-solar.jpg', '1200x900'],
+    ['simulator', 'Energy Simulator', 'Energy hub - Energy Simulator card, and the Energy Simulator tile on the Dashboards page.', 'energy-simulator-20260926.jpg', '1024x640 (16:10)'],
     ['registry', 'Registry tile', 'Energy registry tile on the dashboard', 'registry.jpg', '800×600'],
     ['analytics', 'Analytics', 'Analytics / data imagery on transition dashboard', 'analytics.jpg', '800×600'],
     ['electricBus', 'Electric bus', 'Transition dashboard — bus electrification', 'electric-bus.jpg', '800×600'],

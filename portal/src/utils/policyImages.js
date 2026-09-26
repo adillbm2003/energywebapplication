@@ -21,14 +21,14 @@ const TAG_IMAGES = [
   ['solar', PAGE_IMAGES.solarFieldBermuda],
   ['renewable', PAGE_IMAGES.govSolarField],
   ['EV', PAGE_IMAGES.electricBuses],
-  ['fuels', PAGE_IMAGES.hamiltonStreet],
+  ['fuels', PAGE_IMAGES.fuelsPolicy],
 ]
 
 export function policyImage({ category, tags = [], sector }) {
   if (sector === 'Space and Satellite') return PAGE_IMAGES.spaceSatellites
   if (sector === 'Telecommunications') return PAGE_IMAGES.telecom
   if (sector === 'Renewable Energy') return PAGE_IMAGES.solarFieldBermuda
-  if (sector === 'Fuels') return PAGE_IMAGES.hamiltonStreet
+  if (sector === 'Fuels') return PAGE_IMAGES.fuelsPolicy
 
   for (const [tag, image] of TAG_IMAGES) {
     if (tags.includes(tag)) return image
