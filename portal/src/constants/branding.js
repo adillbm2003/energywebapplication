@@ -72,7 +72,7 @@ export const PAGE_IMAGES = {
   spaceLaunch: base + 'images/space-launch.jpg',
   spaceInsurance: base + 'images/space-insurance-20260926.jpg',
   spaceStrategy: base + 'images/space-strategy-20260926.jpg',
-  spaceAstronaut: base + 'images/space-astronaut.jpg',
+  spaceAstronaut: base + 'images/space-enquiries-20260926.jpg',
   spaceNightsky: base + 'images/space-filing-20260926.jpg',
   // Its own slot rather than reusing `bermuda`, which is the 404 page's
   // image -- replacing the card would otherwise have changed that too.

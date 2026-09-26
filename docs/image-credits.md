@@ -48,6 +48,7 @@ replaces this one without a deploy.
 | `space-filing-20260926.jpg` | Supplied 26 September 2026, for Satellite Filing & Guidance. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
 | `space-insurance-20260926.jpg` | Supplied 26 September 2026, for Space Insurance. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated; replaced the NASA Blue Marble composition |
 | `space-strategy-20260926.jpg` | Supplied 26 September 2026, for National Space Strategy. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
+| `space-enquiries-20260926.jpg` | Supplied 26 September 2026, for Sector Enquiries. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
 
 The 1024×1024 square, the absence of any camera metadata and the rendering of
 the cable drums and flowers all point to an image that was generated rather

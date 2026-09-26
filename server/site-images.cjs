@@ -77,7 +77,9 @@ const GROUPS = {
     ['spaceEarth', 'Earth from space', 'Not currently displayed — spare space image', 'space-earth.jpg', '1200×800'],
     ['spaceInsurance', 'Space insurance', 'Space insurance sub-page and its card', 'space-insurance-20260926.jpg', '1024×576 (16:9)'],
     ['spaceStrategy', 'National space strategy', 'National Space Strategy sub-page and its card', 'space-strategy-20260926.jpg', '1024×576 (16:9)'],
-    ['spaceAstronaut', 'Astronaut', 'Human spaceflight sub-page', 'space-astronaut.jpg', '1200×800'],
+    // Key kept as spaceAstronaut so existing CMS overrides keep working; the
+    // slot serves Sector Enquiries, and never served a human spaceflight page.
+    ['spaceAstronaut', 'Sector enquiries', 'Sector Enquiries sub-page and its card', 'space-enquiries-20260926.jpg', '1024×576 (16:9)'],
     // Key kept as spaceNightsky so existing CMS overrides keep working; it has
     // held the Satellite Filing & Guidance image since September 2026.
     ['spaceNightsky', 'Satellite filing & guidance', 'Satellite Filing & Guidance sub-page and its card', 'space-filing-20260926.jpg', '1024×576 (16:9)'],
