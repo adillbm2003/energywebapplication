@@ -77,6 +77,23 @@ export const PAGE_IMAGES = {
   // Its own slot rather than reusing `bermuda`, which is the 404 page's
   // image -- replacing the card would otherwise have changed that too.
   spaceWhyBermuda: base + 'images/space-why-bermuda-20260926.jpg',
+
+  // Emerging Technologies cards on the Innovation page. Each card gets its own
+  // slot rather than borrowing a shared one: the images these replaced were
+  // `gisHeatmap`, `battery`, `dockyardSolar` and the like, which between them
+  // appear on About, the dashboards, GIS, Registry, Installers, news and policy
+  // cards -- changing a card here would have changed all of those. One of them,
+  // `solarWorkers`, also carries a CMS override, which would have won over any
+  // new default and left that card unchanged.
+  innovAnalytics: base + 'images/innovation-analytics-20260926.jpg',
+  innovDigitalTwins: base + 'images/innovation-digital-twins-20260926.jpg',
+  innovDemandResponse: base + 'images/innovation-demand-response-20260926.jpg',
+  innovVpp: base + 'images/innovation-vpp-20260926.jpg',
+  innovDer: base + 'images/innovation-der-20260926.jpg',
+  innovAi: base + 'images/innovation-ai-20260926.jpg',
+  innovBattery: base + 'images/innovation-battery-20260926.jpg',
+  innovDigitalCurrency: base + 'images/innovation-digital-currency-20260926.jpg',
+  innovSmartGrids: base + 'images/innovation-smart-grids-20260926.jpg',
   hamiltonStreet: base + 'images/hamilton-street.jpg',
   educationOutreach: base + 'images/education-outreach.jpg',
   electricBus: base + 'images/electric-bus.jpg',

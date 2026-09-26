@@ -126,6 +126,15 @@ const GROUPS = {
   'Innovation': [
     ['innovation', 'Innovation banner', 'Innovation landing banner and Electronic Communications', 'innovation.jpg', '1600×900'],
     ['blockchain', 'Blockchain / digital', 'Digital currency and blockchain topic card', 'blockchain.jpg', '800×600'],
+    ['innovAnalytics', 'Advanced Energy Analytics', 'Innovation → Emerging Technologies, the “Advanced Energy Analytics” card', 'innovation-analytics-20260926.jpg', '1024×640 (16:10)'],
+    ['innovDigitalTwins', 'Digital Twins', 'Innovation → Emerging Technologies, the “Digital Twins” card', 'innovation-digital-twins-20260926.jpg', '1024×640 (16:10)'],
+    ['innovDemandResponse', 'Demand Response', 'Innovation → Emerging Technologies, the “Demand Response” card', 'innovation-demand-response-20260926.jpg', '1024×640 (16:10)'],
+    ['innovVpp', 'Virtual Power Plants', 'Innovation → Emerging Technologies, the “Virtual Power Plants” card', 'innovation-vpp-20260926.jpg', '1024×640 (16:10)'],
+    ['innovDer', 'Distributed Energy Resources', 'Innovation → Emerging Technologies, the “Distributed Energy Resources” card', 'innovation-der-20260926.jpg', '1024×640 (16:10)'],
+    ['innovAi', 'Artificial Intelligence', 'Innovation → Emerging Technologies, the “Artificial Intelligence” card', 'innovation-ai-20260926.jpg', '1024×640 (16:10)'],
+    ['innovBattery', 'Battery Energy Storage', 'Innovation → Emerging Technologies, the “Battery Energy Storage” card', 'innovation-battery-20260926.jpg', '1024×640 (16:10)'],
+    ['innovDigitalCurrency', 'Digital Currency & Energy', 'Innovation → Emerging Technologies, the “Digital Currency & Energy” card', 'innovation-digital-currency-20260926.jpg', '1024×640 (16:10)'],
+    ['innovSmartGrids', 'Smart Grids', 'Innovation → Emerging Technologies, the “Smart Grids” card', 'innovation-smart-grids-20260926.jpg', '1024×640 (16:10)'],
   ],
 
   'Contact & Errors': [

@@ -49,6 +49,7 @@ replaces this one without a deploy.
 | `space-insurance-20260926.jpg` | Supplied 26 September 2026, for Space Insurance. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated; replaced the NASA Blue Marble composition |
 | `space-strategy-20260926.jpg` | Supplied 26 September 2026, for National Space Strategy. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
 | `space-enquiries-20260926.jpg` | Supplied 26 September 2026, for Sector Enquiries. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
+| `innovation-*-20260926.jpg` (9 files) | Supplied 26 September 2026, one per Emerging Technologies card on the Innovation page. Each cropped to 16:10 from 1024×1024. | Appear to be AI-generated |
 
 The 1024×1024 square, the absence of any camera metadata and the rendering of
 the cable drums and flowers all point to an image that was generated rather
@@ -59,8 +60,11 @@ confirmed" placeholder — this slot held that placeholder. It was supplied
 deliberately, so it is in use; the note is here so nobody later mistakes it
 for documentary evidence of works that took place.
 
-The same applies to the five Space & Satellite card images supplied on
-26 September 2026, which share the signature exactly. Two depict Bermuda
+The same applies to the five Space & Satellite card images, the Sector
+Enquiries image and the nine Innovation card images supplied on
+26 September 2026, which share the signature exactly. Several depict
+Bermuda specifically — pastel houses, a coastline, palm trees behind
+battery cabinets — and none is a photograph of anywhere on the island. Two depict Bermuda
 itself — an island seen from orbit, and a harbour of pastel houses — and
 neither is a real view of it.
 

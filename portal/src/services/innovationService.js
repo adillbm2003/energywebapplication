@@ -7,15 +7,20 @@ export const innovationService = {
     try {
       const items = await fetchFromAPI('/api/innovation', innovationTopics);
       
+      // Titles come from the database, so this map is what gives each card its
+      // picture. Three of them used to share gisHeatmap, which is why Advanced
+      // Energy Analytics, Digital Twins and Artificial Intelligence all showed
+      // the same solar-locations poster.
       const imageMap = {
-        'Smart Grids': PAGE_IMAGES.solarFieldBermuda,
-        'Battery Energy Storage': PAGE_IMAGES.battery,
-        'Artificial Intelligence': PAGE_IMAGES.gisHeatmap,
-        'Distributed Energy Resources': PAGE_IMAGES.dockyardSolar,
-        'Virtual Power Plants': PAGE_IMAGES.solarWorkers,
-        'Demand Response': PAGE_IMAGES.electricBuses,
-        'Digital Twins': PAGE_IMAGES.gisHeatmap,
-        'Advanced Energy Analytics': PAGE_IMAGES.gisHeatmap,
+        'Advanced Energy Analytics': PAGE_IMAGES.innovAnalytics,
+        'Digital Twins': PAGE_IMAGES.innovDigitalTwins,
+        'Demand Response': PAGE_IMAGES.innovDemandResponse,
+        'Virtual Power Plants': PAGE_IMAGES.innovVpp,
+        'Distributed Energy Resources': PAGE_IMAGES.innovDer,
+        'Artificial Intelligence': PAGE_IMAGES.innovAi,
+        'Battery Energy Storage': PAGE_IMAGES.innovBattery,
+        'Digital Currency & Energy': PAGE_IMAGES.innovDigitalCurrency,
+        'Smart Grids': PAGE_IMAGES.innovSmartGrids,
         'Blockchain & Energy Systems': PAGE_IMAGES.satellite
       };
 
