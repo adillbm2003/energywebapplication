@@ -71,16 +71,24 @@ export default function RenewableDashboard() {
           <div className="overflow-hidden rounded-lg border border-slate-200 bg-white card-shadow">
             <DashboardPanelImage src={PAGE_IMAGES.registry} />
             <div className="card-padding">
-              <SectionHeading title="Capacity by Type" subtitle="Distribution of installed renewable capacity" className="mb-4" />
-              <div className="h-72" role="img" aria-label="Capacity by type pie chart">
+              <SectionHeading title="Capacity by Type" subtitle="Distribution of installed renewable capacity, in kW" className="mb-4" />
+              <div className="h-72" role="img" aria-label="Capacity by installation type, in kilowatts">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={capacityByType || []} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} label>
+                    <Pie
+                      data={capacityByType || []}
+                      dataKey="value"
+                      nameKey="name"
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={100}
+                      label={({ value }) => `${Number(value).toLocaleString()} kW`}
+                    >
                       {capacityByType?.map((entry) => (
                         <Cell key={entry.name} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip formatter={(value, name) => [`${Number(value).toLocaleString()} kW`, name]} />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
