@@ -110,10 +110,15 @@ operator's livery.
 | `energy-simulator-tool-20260929.jpg` | Screenshot of simulator.energy.bm, captured at a 1600x1000 viewport so the card needs no crop. |
 | `gis-solar-pv-map-tool-20260929.jpg` | Screenshot of the GIS Solar PV Map, padded top and bottom to 16:10 on the sea colour already at every edge, so the whole island survives the card crop. |
 
-The GIS screenshot includes Esri World Street Map basemap tiles. Esri requires
-attribution where its basemap is displayed; the live map carries it, and this
-thumbnail is of the Department's own tool. If the image is ever used at a size
-where an attribution line would be legible, add one.
+The GIS screenshot includes Esri World Street Map basemap tiles. The live map
+attributes both tile layers in its Leaflet control, and Esri is now credited on
+the public Image Credits page as well, which covers the screenshots of the map
+used as card images.
+
+It is built at 4:3 rather than at either shape it appears in. The Energy hub
+card is 16:10 and the Dashboards tile is 4:3; a 4:3 file loses only padding to
+the 16:10 crop, so one file serves both without clipping Sandys off one end of
+the island or St George's off the other.
 
 ## Known problems, not yet resolved
 

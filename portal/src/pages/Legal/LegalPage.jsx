@@ -44,6 +44,7 @@ const LEGAL_CONTENT = {
       'Satellite and Earth imagery — NASA. NASA still images are in the public domain and are used here for informational purposes; their use does not imply NASA endorsement.',
       'Hydrogen refuelling station, Fukuoka — photograph by Hirho, licensed CC BY-SA 4.0, via Wikimedia Commons.',
       'Sessions House, Hamilton, and the wind farm photograph are public domain (CC0 and US federal government respectively) and require no attribution.',
+      'The GIS Solar PV Map, and the screenshots of it used on this site, are drawn on basemap tiles © Esri — Esri, DeLorme, NAVTEQ, TomTom, Intermap and USGS for the street map, and Esri, Maxar and Earthstar Geographics for the satellite view.',
       'To report an image used in error, or to request a credit or removal, contact energy@gov.bm.',
     ],
   },

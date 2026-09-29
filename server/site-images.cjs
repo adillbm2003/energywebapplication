@@ -56,7 +56,7 @@ const GROUPS = {
     ['energy', 'Energy banner', 'Energy landing banner and News page cards', 'energy.jpg', '1600×900'],
     ['solarCommercial', 'Registered solar installers', 'Energy hub - Registered Solar Installers card, and installer cards.', 'registered-solar-installers-20260926.jpg', '1024x640 (16:10)'],
     ['grid', 'Electricity grid', 'Energy and Electronic Communications — infrastructure card', 'grid.jpg', '800×600'],
-    ['energyGisMap', 'GIS Solar PV Map card', 'Energy hub - the GIS Solar PV Map card. A screenshot of the map itself, padded to 16:10 on the same sea colour so no part of the island is cropped.', 'gis-solar-pv-map-tool-20260929.jpg', '982x614 (16:10)'],
+    ['energyGisMap', 'GIS Solar PV Map card', 'Energy hub GIS Solar PV Map card, and the GIS tile on the Dashboards page. A screenshot of the map itself, built at 4:3 on the sea colour so neither the 16:10 card nor the 4:3 tile crops any part of the island. Basemap tiles are Esri, credited on the Image Credits page.', 'gis-solar-pv-map-tool-20260929.jpg', '982x736 (4:3)'],
     ['fuelsPolicy', 'Fuels policy', 'Energy hub - Fuels Policy card, and policy cards in the Fuels sector or tagged fuels. Those used to show a bus at a Hamilton bus stop.', 'fuels-policy-20260926.jpg', '1024x640 (16:10)'],
     ['efficiency', 'Energy efficiency', 'Energy hub - Energy Efficiency card, plus an education resource, a project and every project matching efficiency, retrofit, HVAC or LED.', 'energy-efficiency-20260926.jpg', '1024x640 (16:10)'],
     ['transport', 'Energy transition', 'Energy hub - Energy Transition Dashboard card and the Energy Transition callout on the same page.', 'energy-transition-dashboard-20260926.jpg', '1024x640 (16:10)'],
