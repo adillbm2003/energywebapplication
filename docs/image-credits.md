@@ -44,7 +44,8 @@ replaces this one without a deploy.
 |------|--------|------|
 | `broadband-expansion-2026.jpg` | Supplied by the Department, September 2026, for the Broadband Expansion card. Cropped to 2:1 from a 1024×1024 original. | Appears to be AI-generated, not a photograph |
 | `space-economy-20260926.jpg` | Supplied 26 September 2026, for Bermuda & Global Space Economy. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
-| `space-why-bermuda-20260926.jpg` | Supplied 26 September 2026, for Why Choose Bermuda. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
+| ~~`space-why-bermuda-20260926.jpg`~~ | Replaced 29 September 2026 — see below. | Appears to be AI-generated |
+| `space-why-bermuda-20260929.jpg` | Supplied 29 September 2026 for Why Choose Bermuda. An aerial photograph of Bermuda, delivered at 2992×1683 and resized to 1800 wide. | **A real photograph**, unlike the render it replaces |
 | `space-filing-20260926.jpg` | Supplied 26 September 2026, for Satellite Filing & Guidance. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |
 | `space-insurance-20260926.jpg` | Supplied 26 September 2026, for Space Insurance. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated; replaced the NASA Blue Marble composition |
 | `space-strategy-20260926.jpg` | Supplied 26 September 2026, for National Space Strategy. Cropped to 16:9 from 1024×1024. | Appears to be AI-generated |

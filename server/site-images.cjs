@@ -77,7 +77,7 @@ const GROUPS = {
     ['spaceSatellites', 'Satellites in orbit', 'Space & Satellite banner, home card, space policy and project cards — used at several shapes, so keep the subject central', 'space-satellites-2026.jpg', '1600×900'],
     ['space', 'Space — generic', 'Not currently displayed — spare space image', 'space.jpg', '1200×800'],
     ['spaceOrbit', 'Bermuda & global space economy', 'Bermuda & Global Space Economy sub-page and its card', 'space-economy-20260926.jpg', '1024×576 (16:9)'],
-    ['spaceWhyBermuda', 'Why choose Bermuda', 'Why Choose Bermuda sub-page and its card', 'space-why-bermuda-20260926.jpg', '1024×576 (16:9)'],
+    ['spaceWhyBermuda', 'Why choose Bermuda', 'Why Choose Bermuda sub-page and its card. An aerial photograph of Bermuda, supplied by the Department.', 'space-why-bermuda-20260929.jpg', '1800x1013 (16:9)'],
     ['spaceDish', 'Ground station dish', 'Earth Stations & Operations sub-page and its card. Was a close-up of someone soldering a circuit board.', 'earth-station-dish-20260926.jpg', '900x506 (16:9)'],
     ['spaceLaunch', 'Launch', 'Not displayed — the stock photo carries a launch company’s branding, replace before use', 'space-launch.jpg', '1280×720'],
     ['spaceEarth', 'Earth from space', 'Not currently displayed — spare space image', 'space-earth.jpg', '1200×800'],

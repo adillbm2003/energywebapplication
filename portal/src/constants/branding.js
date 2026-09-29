@@ -83,7 +83,7 @@ export const PAGE_IMAGES = {
   spaceNightsky: base + 'images/space-filing-20260926.jpg',
   // Its own slot rather than reusing `bermuda`, which is the 404 page's
   // image -- replacing the card would otherwise have changed that too.
-  spaceWhyBermuda: base + 'images/space-why-bermuda-20260926.jpg',
+  spaceWhyBermuda: base + 'images/space-why-bermuda-20260929.jpg',
 
   // Emerging Technologies cards on the Innovation page. Each card gets its own
   // slot rather than borrowing a shared one: the images these replaced were
