@@ -49,6 +49,16 @@ function fetchSolarInstallations() {
   return _installationsPromise
 }
 
+// Figures the Department has confirmed directly, where the CMS row is behind.
+//
+// The CMS is normally authoritative: the kpis table exists precisely so staff
+// can move a number without a deploy, and every other KPI still works that way.
+// Anything listed here is a deliberate, temporary exception. Renewable
+// Penetration was given as 13% on 29 September 2026 while the kpis table still
+// read 12.8, and the stale row was winning. Remove the entry once that row is
+// corrected, and the CMS takes the figure back.
+const CMS_OVERRIDE_SUSPENDED = new Set(['renewable penetration'])
+
 export const dashboardService = {
   /**
    * Home page "Key Statistics".
@@ -72,6 +82,7 @@ export const dashboardService = {
         const name = String(kpi.name || '').toLowerCase()
         const target = stats.find(s => s.label.toLowerCase() === name)
         if (!target) continue
+        if (CMS_OVERRIDE_SUSPENDED.has(name)) continue
         const numeric = parseFloat(kpi.value)
         target.value = Number.isFinite(numeric) && numeric >= 1000
           ? numeric.toLocaleString()
@@ -107,6 +118,7 @@ export const dashboardService = {
       for (const row of cmsKpis) {
         const target = kpis.find(k => k.label.toLowerCase() === String(row.name || '').toLowerCase())
         if (!target) continue
+        if (CMS_OVERRIDE_SUSPENDED.has(target.label.toLowerCase())) continue
         const numeric = parseFloat(row.value)
         if (Number.isFinite(numeric)) target.value = numeric
         if (row.unit) target.unit = row.unit
