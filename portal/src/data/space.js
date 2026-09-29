@@ -82,20 +82,17 @@ export const spacePages = {
           'Extension of the UK Outer Space Act, enabling Bermuda-registered companies to conduct outer space activities in full compliance',
           'Limited Liability Company Act, offering flexibility for structuring space and satellite ventures',
           'Experienced regulatory bodies with international engagement',
+          'Longstanding partnership with NASA and the European Space Agency in support of international space missions',
         ],
       },
       {
-        heading: 'Financial Services and Tax Advantages',
+        heading: 'Financial Services and Insurance Market',
         paragraphs: [
           'Bermuda is home to one of the world\'s most sophisticated financial services ecosystems, with deep expertise in insurance, reinsurance, capital markets, and structured finance. This ecosystem is directly relevant to the space industry, which has complex risk management, financing, and structured product needs.',
-          'Bermuda\'s tax-neutral environment — with no corporate income tax, capital gains tax, or withholding tax — combined with an extensive network of information exchange agreements, makes it a highly efficient jurisdiction for structuring space industry investments and operations.',
         ],
         bullets: [
-          'A 0% corporate tax rate, with no capital gains or withholding tax',
           'World-class insurance and reinsurance market for space risk management',
           'Sophisticated capital markets and structured finance expertise',
-          'Extensive international tax information exchange agreements',
-          'Longstanding partnership with NASA and the European Space Agency in support of international space missions',
         ],
       },
       {
@@ -114,7 +111,7 @@ export const spacePages = {
     highlights: [
       'Strategic mid-Atlantic location',
       'Common law legal system',
-      'Tax-neutral environment',
+      'Extension of the UK Outer Space Act',
       'World-leading insurance market',
       'Transparent regulatory framework',
       'Political and economic stability',
