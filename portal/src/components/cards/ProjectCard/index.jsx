@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import Badge from '../../ui/Badge'
-import ProgressBar from '../../ui/ProgressBar'
 import SafeImage from '../../common/SafeImage'
 import { ROUTES } from '../../../constants/routes'
 import { resolveProjectImage } from '../../../utils/contentImages'
@@ -22,9 +21,6 @@ export default function ProjectCard({ project }) {
         <div className="absolute inset-0 bg-gradient-to-t from-navy-900/40 to-transparent opacity-60" aria-hidden="true" />
         <div className="absolute bottom-3 left-3 flex gap-1.5">
           <Badge variant="gold">{project.category}</Badge>
-          <Badge status={project.status === 'Completed' ? 'Completed' : 'In Development'}>
-            {project.status}
-          </Badge>
         </div>
       </div>
 
@@ -36,8 +32,6 @@ export default function ProjectCard({ project }) {
         </h3>
 
         <p className="mb-4 text-body-small text-slate-500 line-clamp-2 leading-relaxed">{project.summary}</p>
-
-        <ProgressBar value={project.progress} label="Progress" />
 
         <div className="mt-4 border-t border-slate-100 pt-3">
           <Link

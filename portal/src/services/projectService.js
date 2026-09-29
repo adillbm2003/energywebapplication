@@ -76,6 +76,9 @@ export const projectService = {
   },
   getFeatured: async () => {
     const all = await projectService.getAll();
-    return all.filter((p) => p.progress < 100).slice(0, 3);
+    // Was filtered on progress < 100. Nothing displays progress any more, and
+    // the value was invented when a record had none, so select on the status
+    // the Department actually sets.
+    return all.filter((p) => p.status !== 'Completed').slice(0, 3);
   },
 }

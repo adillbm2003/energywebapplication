@@ -1,7 +1,6 @@
 import { useParams, Navigate } from 'react-router-dom'
 import PageBanner from '../../components/common/PageBanner'
 import Badge from '../../components/ui/Badge'
-import ProgressBar from '../../components/ui/ProgressBar'
 import Button from '../../components/ui/Button'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
@@ -66,11 +65,7 @@ export default function ProjectDetail() {
               <div className="rounded-lg border border-slate-200 bg-white card-padding card-shadow">
                 <div className="flex flex-wrap gap-2">
                   <Badge variant="gold">{project.category}</Badge>
-                  <Badge status={project.status === 'Completed' ? 'Completed' : 'In Development'}>
-                    {project.status}
-                  </Badge>
                 </div>
-                <ProgressBar value={project.progress} label="Overall Progress" className="mt-4" />
                 <dl className="mt-4 space-y-3 text-sm">
                   <div><dt className="text-slate-500">Location</dt><dd className="font-medium">{project.location}</dd></div>
                   <div><dt className="text-slate-500">Start Date</dt><dd>{formatDate(project.startDate)}</dd></div>
