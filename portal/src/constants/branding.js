@@ -44,13 +44,15 @@ export const PAGE_IMAGES = {
   // placeholder until the Department supplies a photograph, and is replaceable
   // without a deploy from CMS -> Site Images -> About -> "Our Mission" photo.
   home: base + 'images/cabinet-building-hamilton.jpg',
-  simulator: base + 'images/energy-simulator-20260926.jpg',
+  simulator: base + 'images/energy-simulator-tool-20260929.jpg',
   battery: base + 'images/innovation-battery-20260926.jpg',
   van: base + 'images/van.jpg',
   bus: base + 'images/electric-bus.jpg',
   motorcycle: base + 'images/motorcycle.jpg',
   grid: base + 'images/grid.jpg',
-  energyGisMap: base + 'images/gis-solar-pv-map-20260926.jpg',
+  // Screenshots of the real tools rather than an illustration of one, so the
+  // card shows what opens when it is clicked.
+  energyGisMap: base + 'images/gis-solar-pv-map-tool-20260929.jpg',
   fuelsPolicy: base + 'images/fuels-policy-20260926.jpg',
   wind: base + 'images/wind.jpg',
   innovation: base + 'images/innovation.jpg',

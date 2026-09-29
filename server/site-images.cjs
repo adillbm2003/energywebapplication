@@ -56,7 +56,7 @@ const GROUPS = {
     ['energy', 'Energy banner', 'Energy landing banner and News page cards', 'energy.jpg', '1600×900'],
     ['solarCommercial', 'Registered solar installers', 'Energy hub - Registered Solar Installers card, and installer cards.', 'registered-solar-installers-20260926.jpg', '1024x640 (16:10)'],
     ['grid', 'Electricity grid', 'Energy and Electronic Communications — infrastructure card', 'grid.jpg', '800×600'],
-    ['energyGisMap', 'GIS Solar PV Map card', 'Energy hub - the GIS Solar PV Map card only. Kept off the grid slot, which also drives the Regulation policy category.', 'gis-solar-pv-map-20260926.jpg', '1024x640 (16:10)'],
+    ['energyGisMap', 'GIS Solar PV Map card', 'Energy hub - the GIS Solar PV Map card. A screenshot of the map itself, padded to 16:10 on the same sea colour so no part of the island is cropped.', 'gis-solar-pv-map-tool-20260929.jpg', '982x614 (16:10)'],
     ['fuelsPolicy', 'Fuels policy', 'Energy hub - Fuels Policy card, and policy cards in the Fuels sector or tagged fuels. Those used to show a bus at a Hamilton bus stop.', 'fuels-policy-20260926.jpg', '1024x640 (16:10)'],
     ['efficiency', 'Energy efficiency', 'Energy hub - Energy Efficiency card, plus an education resource, a project and every project matching efficiency, retrofit, HVAC or LED.', 'energy-efficiency-20260926.jpg', '1024x640 (16:10)'],
     ['transport', 'Energy transition', 'Energy hub - Energy Transition Dashboard card and the Energy Transition callout on the same page.', 'energy-transition-dashboard-20260926.jpg', '1024x640 (16:10)'],
@@ -104,7 +104,7 @@ const GROUPS = {
   'Dashboards': [
     ['renewableDashboard', 'Renewable Dashboard tile', 'Dashboards page → Quick Access, the “Renewable Dashboard” tile', 'bermuda-energy-dashboard.png', '1200×900 (4:3 — the tile crops to 4:3)'],
     ['transitionDashboard', 'Transition Dashboard tile', 'Dashboards page → Quick Access, the “Transition Dashboard” tile', 'bermuda-energy-dashboard.png', '1200×900 (4:3 — the tile crops to 4:3)'],
-    ['simulator', 'Energy Simulator', 'Energy hub - Energy Simulator card, and the Energy Simulator tile on the Dashboards page.', 'energy-simulator-20260926.jpg', '1024x640 (16:10)'],
+    ['simulator', 'Energy Simulator', 'Energy hub Energy Simulator card, and the Energy Simulator tile on the Dashboards page. A screenshot of the simulator captured at a 16:10 viewport.', 'energy-simulator-tool-20260929.jpg', '1600x1000 (16:10)'],
     ['registry', 'Registry tile', 'Energy registry tile on the dashboard', 'registry.jpg', '800×600'],
     ['analytics', 'Analytics', 'Analytics / data imagery on transition dashboard', 'analytics.jpg', '800×600'],
     ['electricBus', 'Electric bus', 'Transition dashboard — bus electrification', 'electric-bus.jpg', '800×600'],

@@ -103,6 +103,18 @@ replaced: a US national laboratory's hydrogen car carries the laboratory's
 branding and an identifiable person, and a hydrogen fuel-cell bus carries its
 operator's livery.
 
+## Screenshots of the tools themselves
+
+| File | Source |
+|------|--------|
+| `energy-simulator-tool-20260929.jpg` | Screenshot of simulator.energy.bm, captured at a 1600x1000 viewport so the card needs no crop. |
+| `gis-solar-pv-map-tool-20260929.jpg` | Screenshot of the GIS Solar PV Map, padded top and bottom to 16:10 on the sea colour already at every edge, so the whole island survives the card crop. |
+
+The GIS screenshot includes Esri World Street Map basemap tiles. Esri requires
+attribution where its basemap is displayed; the live map carries it, and this
+thumbnail is of the Department's own tool. If the image is ever used at a size
+where an attribution line would be legible, add one.
+
 ## Known problems, not yet resolved
 
 - `space-launch.jpg` and the former `space-insurance.jpg` are photographs of a
