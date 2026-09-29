@@ -65,54 +65,65 @@ const TOPICS = [
   },
 ]
 
+// Every card here says "View guide", so every card has to open one. They used
+// to point at pages instead -- Solar Photovoltaic at the installer directory,
+// Electric Vehicles at the Vehicles page, Micro-Wind Turbines at the policy
+// repository, and the other five at the Education Centre landing page, which
+// left the reader to find the guide themselves. Each now opens its own
+// infographic, the same file the Education Centre serves.
+const GUIDES_BASE = import.meta.env.BASE_URL || '/'
+
 const CONSUMER_GUIDES = [
   {
     icon: '☀️',
     title: 'Solar Photovoltaic',
     description: 'Net metering rules, certified installers, and ROI calculations for rooftop solar PV systems.',
-    to: ROUTES.installers,
+    href: GUIDES_BASE + 'guides/solar-pv-guide.png',
   },
   {
     icon: '🌡️',
     title: 'Solar Water Heaters',
     description: 'Guidance on selecting, sizing, and installing solar thermal water heating for homes.',
-    to: ROUTES.education,
+    href: GUIDES_BASE + 'guides/solar-water-heater-guide.png',
   },
   {
     icon: '❄️',
     title: 'Air Conditioners',
     description: 'SEER ratings, optimal thermostat settings, and efficient cooling for Bermuda\'s climate.',
-    to: ROUTES.education,
+    href: GUIDES_BASE + 'guides/ac-energy-guide.png',
   },
   {
+    // The one card that is a set rather than a single guide: fridges, washing
+    // machines, televisions, computers and space heaters each have their own.
     icon: '💡',
     title: 'Energy-Efficient Appliances',
     description: 'Energy Star-rated washing machines, dryers, refrigerators, and water heaters.',
-    to: ROUTES.education,
+    to: ROUTES.education + '?category=Appliance+Guides',
+    cta: 'Browse appliance guides →',
   },
   {
     icon: '🚗',
     title: 'Electric Vehicles',
     description: 'EV charging standards, residential socket upgrades, and public charging network locations.',
-    to: ROUTES.vehicles,
+    href: GUIDES_BASE + 'guides/vehicle-energy-guide.png',
   },
   {
     icon: '💧',
     title: 'Water Heaters',
     description: 'Heat pump and solar water heater options to reduce hot water energy costs.',
-    to: ROUTES.education,
+    href: GUIDES_BASE + 'guides/water-heater-energy-guide.png',
   },
   {
     icon: '💨',
     title: 'Micro-Wind Turbines',
     description: 'Permitting requirements, siting guidance, and grid interconnection for small wind systems.',
-    to: ROUTES.policies,
+    href: GUIDES_BASE + 'guides/micro-wind-energy-guide.png',
   },
   {
     icon: '🔆',
     title: 'LED Lighting',
     description: 'Retrofit guidance, lumen output comparison, and rebate eligibility for LED upgrades.',
-    to: ROUTES.education,
+    href: GUIDES_BASE + 'guides/lighting-energy-guide.png',
   },
 ]
 
@@ -207,10 +218,18 @@ export default function Energy() {
             align="center"
           />
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {CONSUMER_GUIDES.map((guide) => (
-              <Link
+            {CONSUMER_GUIDES.map((guide) => {
+              // A guide is a file, so it opens in a new tab through a plain anchor, the
+              // same way the Education Centre serves the very same file. The one card
+              // that points at a filtered list stays a router link.
+              const Wrapper = guide.href ? 'a' : Link
+              const linkProps = guide.href
+                ? { href: guide.href, target: '_blank', rel: 'noopener noreferrer' }
+                : { to: guide.to }
+              return (
+              <Wrapper
                 key={guide.title}
-                to={guide.to}
+                {...linkProps}
                 className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow transition-all hover:-translate-y-1 hover:border-teal-300 hover:card-shadow-hover"
               >
                 <div className="flex items-center gap-3 border-b border-slate-100 bg-slate-50 px-4 py-3">
@@ -222,11 +241,12 @@ export default function Energy() {
                 <div className="flex flex-1 flex-col card-padding">
                   <p className="flex-1 text-body-small text-slate-600 leading-relaxed">{guide.description}</p>
                   <span className="mt-3 text-body-small font-semibold text-teal-600 group-hover:underline">
-                    View guide →
+                    {guide.cta || 'View guide →'}
                   </span>
                 </div>
-              </Link>
-            ))}
+              </Wrapper>
+              )
+            })}
           </div>
         </div>
       </section>

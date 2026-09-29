@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import PageBanner from '../../components/common/PageBanner'
 import { PAGE_IMAGES } from '../../constants/branding'
 import Button from '../../components/ui/Button'
@@ -73,7 +74,13 @@ function ResourceCard({ resource }) {
 export default function Education() {
   useDocumentTitle('Education Centre')
 
-  const [category, setCategory] = useState('all')
+  // A ?category= in the URL preselects the filter, so the Energy page can send
+  // the Energy-Efficient Appliances card straight to the appliance guides
+  // rather than to an unfiltered list the reader has to search themselves.
+  const [searchParams] = useSearchParams()
+  const requested = searchParams.get('category')
+  const initialCategory = CATEGORIES.some((c) => c.value === requested) ? requested : 'all'
+  const [category, setCategory] = useState(initialCategory)
   const { data: resources, loading } = useAsyncData(() => educationService.getAll(), [])
 
   const filtered = useMemo(() => {
