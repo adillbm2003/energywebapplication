@@ -1,13 +1,10 @@
 import { useParams, Navigate } from 'react-router-dom'
 import PageBanner from '../../components/common/PageBanner'
-import Badge from '../../components/ui/Badge'
 import Button from '../../components/ui/Button'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { projectService } from '../../services'
 import { ROUTES } from '../../constants/routes'
-import { formatDate } from '../../utils/format'
-import { downloadMockDocument } from '../../utils/mockDownload'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import SafeImage from '../../components/common/SafeImage'
 import { resolveProjectImage } from '../../utils/contentImages'
@@ -35,8 +32,8 @@ export default function ProjectDetail() {
 
       <section className="section-padding">
         <div className="container-page">
-          <div className="grid gap-12 lg:grid-cols-3">
-            <div className="lg:col-span-2 space-y-5">
+          <div className="space-y-8">
+            <div className="space-y-5">
               <SafeImage
                 src={resolveProjectImage(project)}
                 alt=""
@@ -61,41 +58,15 @@ export default function ProjectDetail() {
               )}
             </div>
 
-            <aside className="space-y-6">
-              <div className="rounded-lg border border-slate-200 bg-white card-padding card-shadow">
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="gold">{project.category}</Badge>
-                </div>
-                <dl className="mt-4 space-y-3 text-sm">
-                  <div><dt className="text-slate-500">Location</dt><dd className="font-medium">{project.location}</dd></div>
-                  <div><dt className="text-slate-500">Start Date</dt><dd>{formatDate(project.startDate)}</dd></div>
-                  <div><dt className="text-slate-500">Expected Completion</dt><dd>{formatDate(project.expectedCompletion)}</dd></div>
-                </dl>
-              </div>
-
-              {project.documents?.length > 0 && (
-                <div className="rounded-lg border border-slate-200 bg-white card-padding card-shadow">
-                  <h3 className="font-semibold text-navy-900">Documents</h3>
-                  <ul className="mt-3 space-y-2">
-                    {project.documents.map((doc) => (
-                      <li key={doc.title}>
-                        <button
-                          type="button"
-                          onClick={() => downloadMockDocument({ title: doc.title, summary: project.summary, category: 'Project Document' })}
-                          className="text-sm text-teal-600 hover:underline"
-                        >
-                          {doc.title} ({doc.size})
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <Button to={ROUTES.projects} variant="outline" className="w-full">
-                ← Back to Projects
-              </Button>
-            </aside>
+            {/* The sidebar held a metadata card and a Documents list. Its two dates
+                came from nowhere: every record has a null timeline, so the service
+                fell back to a literal 2026-01-01 and 2028-12-31, identical on every
+                project. The documents all carried url "#" and were handed to
+                downloadMockDocument, which built a PDF out of the summary text --
+                files the Department never wrote. Only the back link survives. */}
+            <Button to={ROUTES.projects} variant="outline">
+              ← Back to Projects
+            </Button>
           </div>
         </div>
       </section>
