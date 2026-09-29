@@ -10,7 +10,7 @@ import { PAGE_IMAGES } from '../constants/branding'
 // wants real year-on-year movement it has to come from the data, not a literal.
 export const homeStats = [
   { label: 'Installed Solar Capacity', value: '15.6', unit: 'MW' },
-  { label: 'Renewable Penetration', value: '8.4', unit: '%' },
+  { label: 'Renewable Penetration', value: '13', unit: '%' },
   { label: 'Registered EVs', value: '842', unit: '' },
   { label: 'Solar Installations', value: '720', unit: '' },
 ]
@@ -18,11 +18,11 @@ export const homeStats = [
 export const renewableKPIs = [
   { label: 'Installed Capacity', value: 15.6, unit: 'MW', change: 9.0, image: PAGE_IMAGES.solarFieldBermuda },
   { label: 'Solar Installations', value: 720, unit: 'Systems', change: 12.0, image: PAGE_IMAGES.dockyardSolar },
-  { label: 'Battery Storage', value: 3.2, unit: 'MWh', change: 45.0, image: PAGE_IMAGES.batteryRooms },
+  { label: 'Battery Storage', value: 10.2, unit: 'MWh', change: 45.0, image: PAGE_IMAGES.batteryRooms },
   // Was PAGE_IMAGES.windTurbine, a photograph of a SailGP event sign with a
   // turbine behind it. Bermuda's renewable share comes from solar, so the tile
   // shows the government solar field.
-  { label: 'Renewable Penetration', value: 8.4, unit: '%', change: 1.2, image: PAGE_IMAGES.govSolarField },
+  { label: 'Renewable Penetration', value: 13, unit: '%', change: 1.2, image: PAGE_IMAGES.govSolarField },
 ]
 
 export const solarGrowthData = [
@@ -40,24 +40,6 @@ export const capacityByType = [
   { name: 'Commercial', value: 35, color: '#0B1F3A' },
   { name: 'Utility', value: 18, color: '#C9A227' },
   { name: 'Community', value: 5, color: '#33B0E0' },
-]
-
-export const batteryStorageData = [
-  { quarter: 'Q1 2025', capacity: 1.2 },
-  { quarter: 'Q2 2025', capacity: 1.8 },
-  { quarter: 'Q3 2025', capacity: 2.4 },
-  { quarter: 'Q4 2025', capacity: 2.8 },
-  { quarter: 'Q1 2026', capacity: 3.2 },
-]
-
-export const penetrationData = [
-  { year: '2020', penetration: 4.2 },
-  { year: '2021', penetration: 5.8 },
-  { year: '2022', penetration: 7.1 },
-  { year: '2023', penetration: 9.0 },
-  { year: '2024', penetration: 10.5 },
-  { year: '2025', penetration: 11.6 },
-  { year: '2026', penetration: 12.8 },
 ]
 
 export const transitionKPIs = [

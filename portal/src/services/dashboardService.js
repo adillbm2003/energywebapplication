@@ -3,8 +3,6 @@ import {
   renewableKPIs,
   solarGrowthData,
   capacityByType,
-  batteryStorageData,
-  penetrationData,
   transitionKPIs,
   evAdoptionData,
   evByCategory,
@@ -225,8 +223,6 @@ export const dashboardService = {
       return capacityByType
     }
   },
-  getBatteryStorage: () => Promise.resolve(batteryStorageData),
-  getPenetration: () => Promise.resolve(penetrationData),
   getEVByCategory: () => Promise.resolve(evByCategory),
   getChargingInfrastructure: () => Promise.resolve(chargingInfrastructure),
   getPublicTransport: () => Promise.resolve(publicTransportElectrification),
