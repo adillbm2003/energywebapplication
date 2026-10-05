@@ -58,6 +58,25 @@ function fetchSolarInstallations() {
 // corrected, and the CMS takes the figure back.
 const CMS_OVERRIDE_SUSPENDED = new Set(['renewable penetration'])
 
+let _fleetPromise = null
+
+/**
+ * The vehicle register, as the backend parses it from the Department's
+ * "Vehicles by Fuel Type" spreadsheet. The parser reports fuelType ELECTRIC,
+ * so its total is the registered-EV count and byCategory is the real split.
+ *
+ * This dashboard used to ignore the endpoint and render literals instead:
+ * 842 registered EVs against a register holding 1,767, and four categories
+ * where the register has seven.
+ */
+function fetchFleet() {
+  if (_fleetPromise) return _fleetPromise
+  _fleetPromise = fetch('/api/vehicles/fleet')
+    .then(res => { if (!res.ok) throw new Error('API error'); return res.json() })
+    .catch(err => { _fleetPromise = null; throw err })
+  return _fleetPromise
+}
+
 export const dashboardService = {
   /**
    * Home page "Key Statistics".
@@ -179,15 +198,24 @@ export const dashboardService = {
   },
 
   getTransitionKPIs: async () => {
+    const kpis = JSON.parse(JSON.stringify(transitionKPIs))
+
     try {
-      const kpis = await fetchKPIs()
-      const newTransition = JSON.parse(JSON.stringify(transitionKPIs))
-      const evKpi = kpis.find(k => k.id === 'kpi-2')
-      if (evKpi) newTransition[0].value = parseInt(evKpi.value)
-      return newTransition
-    } catch {
-      return transitionKPIs
-    }
+      const cms = await fetchKPIs()
+      const evKpi = cms.find(k => k.id === 'kpi-2')
+      if (evKpi) kpis[0].value = parseInt(evKpi.value)
+    } catch { /* keep the bundled values */ }
+
+    // The vehicle register beats the CMS for the EV count, the same rule the
+    // solar registry already applies to installed capacity and installations.
+    // The CMS row said 842 while the register held 1,767.
+    try {
+      const fleet = await fetchFleet()
+      const evs = kpis.find(k => k.label.toLowerCase().includes('registered ev'))
+      if (evs && fleet.total > 0) evs.value = fleet.total
+    } catch { /* register unreachable -- keep whatever the CMS gave */ }
+
+    return kpis
   },
 
 
@@ -223,7 +251,25 @@ export const dashboardService = {
       return capacityByType
     }
   },
-  getEVByCategory: () => Promise.resolve(evByCategory),
+  getEVByCategory: async () => {
+    try {
+      const fleet = await fetchFleet()
+      const entries = Object.entries(fleet.byCategory || {}).filter(([, n]) => n > 0)
+      if (entries.length === 0 || !fleet.total) return evByCategory
+      // each category keeps the image the bundled list gave it
+      const imageFor = (name) => evByCategory.find(c => c.category === name)?.image
+      return entries
+        .sort((a, b) => b[1] - a[1])
+        .map(([category, count]) => ({
+          category,
+          count,
+          percent: Math.round((count / fleet.total) * 100),
+          image: imageFor(category),
+        }))
+    } catch {
+      return evByCategory
+    }
+  },
   getChargingInfrastructure: () => Promise.resolve(chargingInfrastructure),
   getPublicTransport: () => Promise.resolve(publicTransportElectrification),
   getEfficiencyMetrics: () => Promise.resolve(energyEfficiencyMetrics),

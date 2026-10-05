@@ -43,17 +43,23 @@ export const capacityByType = [
 ]
 
 export const transitionKPIs = [
-  { label: 'Registered EVs', value: 842, unit: '', change: 28.0, image: PAGE_IMAGES.bmw3 },
+  { label: 'Registered EVs', value: 1787, unit: '', change: 28.0, image: PAGE_IMAGES.bmw3 },
   { label: 'Public Chargers', value: 48, unit: '', change: 26.3, image: PAGE_IMAGES.charging },
   { label: 'EV Market Share', value: 4.1, unit: '%', change: 1.2, image: PAGE_IMAGES.evExpo },
   { label: 'Fleet Electrification', value: 18, unit: '%', change: 6.0, image: PAGE_IMAGES.dptElectrification },
 ]
 
+// Fallback only. The live figures come from the vehicle register the backend
+// parses at /api/vehicles/fleet; these values mirror it so an outage shows
+// something close rather than a different fleet entirely.
 export const evByCategory = [
-  { category: 'Passenger Cars', count: 648, percent: 77, image: PAGE_IMAGES.bmw3 },
-  { category: 'Commercial Vans', count: 126, percent: 15, image: PAGE_IMAGES.evFleetBermuda },
-  { category: 'Motorcycles', count: 42, percent: 5, image: PAGE_IMAGES.motorcycle },
-  { category: 'Buses & Fleet', count: 26, percent: 3, image: PAGE_IMAGES.bus },
+  { category: 'Private Cars', count: 987, percent: 55, image: PAGE_IMAGES.ev },
+  { category: 'Rental Mini-Cars', count: 421, percent: 24, image: PAGE_IMAGES.evFleetBermuda },
+  { category: 'Motorcycles & Cycles', count: 154, percent: 9, image: PAGE_IMAGES.motorcycle },
+  { category: 'Trucks', count: 100, percent: 6, image: PAGE_IMAGES.van },
+  { category: 'Buses (Omnibus)', count: 88, percent: 5, image: PAGE_IMAGES.bus },
+  { category: 'Government Vehicles', count: 31, percent: 2, image: PAGE_IMAGES.govSolarField },
+  { category: 'Taxis & Other', count: 6, percent: 0, image: PAGE_IMAGES.evExpo },
 ]
 
 export const chargingInfrastructure = [
