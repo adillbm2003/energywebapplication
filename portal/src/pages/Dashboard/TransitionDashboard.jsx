@@ -2,7 +2,6 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import PageBanner from '../../components/common/PageBanner'
 import Button from '../../components/ui/Button'
 import KPIWidget from '../../components/dashboard/KPIWidget'
-import EVChart from '../../components/dashboard/EVChart'
 import DashboardPanelImage from '../../components/dashboard/DashboardPanelImage'
 import SafeImage from '../../components/common/SafeImage'
 import SectionHeading from '../../components/ui/SectionHeading'
@@ -12,13 +11,12 @@ import { dashboardService } from '../../services'
 import { formatNumber } from '../../utils/format'
 import { PAGE_IMAGES } from '../../constants/branding'
 import { ROUTES } from '../../constants/routes'
-import { transitionKPIs, evAdoptionData, evByCategory } from '../../data/dashboard'
+import { transitionKPIs, evByCategory } from '../../data/dashboard'
 
 export default function TransitionDashboard() {
   useDocumentTitle('Energy Transition Dashboard')
 
   const { data: kpis } = useAsyncData(() => dashboardService.getTransitionKPIs(), [], transitionKPIs)
-  const { data: evData } = useAsyncData(() => dashboardService.getEVAdoption(), [], evAdoptionData)
   const { data: evCategories } = useAsyncData(() => dashboardService.getEVByCategory(), [], evByCategory)
 
   return (
@@ -68,14 +66,7 @@ export default function TransitionDashboard() {
           </div>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
-            <DashboardPanelImage src={PAGE_IMAGES.ev} />
-            <div className="card-padding">
-              <SectionHeading title="EV Adoption Over Time" className="mb-4" />
-              <EVChart data={evData ?? []} />
-            </div>
-          </div>
+        <div>
           <div className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
             <DashboardPanelImage src={PAGE_IMAGES.analytics} />
             <div className="card-padding">

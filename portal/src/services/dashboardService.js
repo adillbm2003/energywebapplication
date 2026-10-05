@@ -4,7 +4,6 @@ import {
   solarGrowthData,
   capacityByType,
   transitionKPIs,
-  evAdoptionData,
   evByCategory,
   chargingInfrastructure,
   publicTransportElectrification,
@@ -191,17 +190,6 @@ export const dashboardService = {
     }
   },
 
-  getEVAdoption: async () => {
-    try {
-      const kpis = await fetchKPIs()
-      const newEv = JSON.parse(JSON.stringify(evAdoptionData))
-      const evKpi = kpis.find(k => k.id === 'kpi-2')
-      if (newEv.length > 0 && evKpi) newEv[newEv.length - 1].evs = parseInt(evKpi.value)
-      return newEv
-    } catch {
-      return evAdoptionData
-    }
-  },
 
   /**
    * Capacity by Type, in kW, summed from the registry.

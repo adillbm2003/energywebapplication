@@ -49,16 +49,6 @@ export const transitionKPIs = [
   { label: 'Fleet Electrification', value: 18, unit: '%', change: 6.0, image: PAGE_IMAGES.dptElectrification },
 ]
 
-export const evAdoptionData = [
-  { year: '2020', evs: 140, hybrids: 420 },
-  { year: '2021', evs: 210, hybrids: 510 },
-  { year: '2022', evs: 320, hybrids: 590 },
-  { year: '2023', evs: 470, hybrids: 650 },
-  { year: '2024', evs: 620, hybrids: 710 },
-  { year: '2025', evs: 740, hybrids: 760 },
-  { year: '2026', evs: 842, hybrids: 800 },
-]
-
 export const evByCategory = [
   { category: 'Passenger Cars', count: 648, percent: 77, image: PAGE_IMAGES.bmw3 },
   { category: 'Commercial Vans', count: 126, percent: 15, image: PAGE_IMAGES.evFleetBermuda },
