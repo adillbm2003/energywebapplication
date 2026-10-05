@@ -21,7 +21,6 @@ export const bursaryProgramme = {
     'Minimum GPA of 3.0 (or equivalent)',
     'Demonstrated commitment to Bermuda\'s energy transition',
   ],
-  applicationDeadline: '2026-04-30',
   scholarshipLink: EXTERNAL_LINKS.scholarships,
   careerPathways: [
     'Renewable Energy', 'Electrical Engineering', 'Mechanical Engineering', 'Energy Policy',
@@ -44,10 +43,6 @@ export const bursaryFAQs = [
   {
     question: 'What does the bursary cover?',
     answer: 'Awards cover tuition, books, and related academic expenses, renewable for up to four years subject to academic performance.',
-  },
-  {
-    question: 'When is the application deadline?',
-    answer: 'Applications for the 2026–2027 academic year close on 30 April 2026.',
   },
 ]
 
