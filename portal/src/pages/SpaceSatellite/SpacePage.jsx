@@ -1,7 +1,6 @@
 import { useParams, Navigate, Link } from 'react-router-dom'
 import PageBanner from '../../components/common/PageBanner'
 import { PAGE_IMAGES } from '../../constants/branding'
-import Button from '../../components/ui/Button'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { spaceService } from '../../services'
@@ -169,14 +168,6 @@ export default function SpacePage() {
                   </ul>
                 </div>
               )}
-
-              <div className="mt-6 rounded-lg border border-teal-100 bg-teal-50 p-4">
-                <p className="text-sm font-semibold text-teal-800 mb-1">Space Sector Enquiries</p>
-                <p className="text-xs text-teal-700 mb-3">Contact the Department of Energy for space and satellite matters.</p>
-                <Button to={`${ROUTES.spaceSatellite}/sector-enquiries`} variant="outline" className="w-full text-sm">
-                  Get in Touch
-                </Button>
-              </div>
             </aside>
           </div>
         </div>
