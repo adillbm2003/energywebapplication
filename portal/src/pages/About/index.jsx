@@ -55,7 +55,7 @@ export default function About() {
           <ContentBlock
             title="Our Mission"
             image={PAGE_IMAGES.home}
-            imageAlt="The Cabinet Building on Front Street, Hamilton, seat of the Bermuda Cabinet and Senate"
+            imageAlt="Front Street, Hamilton, with its painted shopfronts and palm trees"
           >
             <p className="text-lg font-medium text-navy-900">
               To support the development of policy and legislation for the space, energy, and

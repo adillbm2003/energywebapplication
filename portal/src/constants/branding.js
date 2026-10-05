@@ -43,7 +43,7 @@ export const PAGE_IMAGES = {
   // suburban house -- nothing to do with Bermuda or the Department. It is a
   // placeholder until the Department supplies a photograph, and is replaceable
   // without a deploy from CMS -> Site Images -> About -> "Our Mission" photo.
-  home: base + 'images/cabinet-building-hamilton.jpg',
+  home: base + 'images/front-street-hamilton-20261005.jpg',
   simulator: base + 'images/energy-simulator-tool-20260929.jpg',
   battery: base + 'images/innovation-battery-20260926.jpg',
   van: base + 'images/van.jpg',

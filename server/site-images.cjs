@@ -34,7 +34,7 @@ const GROUPS = {
   ],
 
   'About page': [
-    ['home', 'About — “Our Mission” photo', 'About page, beside the “Our Mission” text. Currently the only freely-licensed photo of the Cabinet Building, at 612×459 — replace it with a Department photograph when one is available.', 'cabinet-building-hamilton.jpg', '1200×900 (4:3)'],
+    ['home', 'About — “Our Mission” photo', 'About page, beside the “Our Mission” text. A Front Street street scene supplied by the Department. Shown at 4:3.', 'front-street-hamilton-20261005.jpg', '640×480 (4:3)'],
     ['bermudaVision', 'About — “The Department Overview” photo', 'About page, the photo beside the “The Department Overview” text', 'bermuda-vision.webp', '1600×900'],
     ['government', 'Government building banner', 'Banner for About, Contact, Policies and the legal pages, plus the Policy and Legislation card images. The Sessions House in Hamilton - Parliament and the Supreme Court. Was a boatshed in Perth, Australia.', 'sessions-house-20260926.jpg', '1800x692'],
     ['floatingSolar', 'Floating solar', 'Bursary categories, an education resource, and any project about floating solar', 'floating-solar.jpg', '800×600'],

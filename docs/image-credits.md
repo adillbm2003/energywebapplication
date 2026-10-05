@@ -20,7 +20,8 @@ NASA still images are generally not copyrighted and may be used without
 requesting permission. The exceptions are the NASA insignia and identifiable
 individuals, neither of which appears in these two.
 
-| `cabinet-building-hamilton.jpg` | The Cabinet Building, Front Street, Hamilton. Cropped to 4:3 from `Bermuda-Cabinet Office and Senate-1.jpg` on Wikimedia Commons, by Seán Pól Ó Creachmhaoil. | **CC BY 2.5 — attribution required and shown on the page** |
+| ~~`cabinet-building-hamilton.jpg`~~ | The Cabinet Building, Hamilton, by Seán Pól Ó Creachmhaoil via Wikimedia Commons. **No longer displayed** — replaced 5 October 2026 by a Department photograph. Kept in the repository, unused. | CC BY 2.5 — the credit has come off the public page, since the licence only binds while the image is shown |
+| `front-street-hamilton-20261005.jpg` | Front Street, Hamilton. Supplied by the Department, 5 October 2026, at 640×480. | Supplied; provenance not independently verified |
 
 CC BY 2.5 is the one licence here that obliges us to credit the photographer.
 That credit lives on the public **Image Credits** page at `/image-credits`,
