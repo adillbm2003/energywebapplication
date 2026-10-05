@@ -6,7 +6,6 @@ import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { bursaryService } from '../../services'
 import { bursaryProgramme, bursaryFAQs, bursaryPathwayImages } from '../../data/bursary'
-import { formatDate } from '../../utils/format'
 
 export default function Bursary() {
   useDocumentTitle('Energy Bursary Programme')
@@ -32,13 +31,7 @@ export default function Bursary() {
               </div>
               <SectionHeading title="Programme Overview" className="mb-4" />
               <p className="text-slate-600 leading-relaxed">{programme?.overview}</p>
-              <p className="mt-4 text-sm text-slate-500">
-                Application deadline: <strong>{formatDate(programme?.applicationDeadline)}</strong>
-              </p>
-              <div className="mt-6 rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm text-teal-800">
-                Applications are submitted through the official Bermuda Scholarships portal - not on this website.
-              </div>
-              <Button href={programme?.scholarshipLink} variant="primary" className="mt-4" target="_blank" rel="noopener noreferrer">
+              <Button href={programme?.scholarshipLink} variant="primary" className="mt-6" target="_blank" rel="noopener noreferrer">
                 Apply at bermudascholarships.bm
               </Button>
             </div>
