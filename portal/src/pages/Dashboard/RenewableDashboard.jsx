@@ -14,16 +14,6 @@ import { PAGE_IMAGES } from '../../constants/branding'
 import { ROUTES } from '../../constants/routes'
 import { renewableKPIs, solarGrowthData, capacityByType as defaultCapacity } from '../../data/dashboard'
 
-function DashboardFigure({ kpi }) {
-  if (!kpi) return null
-  return (
-    <p className="py-6 text-center">
-      <span className="text-5xl font-bold tracking-tight text-navy-900">{kpi.value}</span>
-      {kpi.unit && <span className="ml-2 text-2xl font-semibold text-slate-500">{kpi.unit}</span>}
-    </p>
-  )
-}
-
 export default function RenewableDashboard({ embedded = false }) {
   // Rendered inside the Renewable Energy Resource page, this supplies the
   // charts only -- that page owns the banner and the document title.
@@ -34,11 +24,6 @@ export default function RenewableDashboard({ embedded = false }) {
   const { data: solarGrowth } = useAsyncData(() => dashboardService.getSolarGrowth(), [], solarGrowthData)
   const { data: capacityByType } = useAsyncData(() => dashboardService.getCapacityByType(), [], defaultCapacity)
 
-  // Both panels used to plot a quarterly and an annual series that existed
-  // nowhere but a literal in data/dashboard.js. The Department has given the
-  // current figures instead, so each panel shows the figure, taken from the
-  // same resolved KPI list the tiles above use so the two cannot drift apart.
-  const kpi = (needle) => kpis?.find((k) => k.label.toLowerCase().includes(needle))
 
   const years = solarGrowth?.map((d) => d.year) ?? []
   const filteredSolar = year === 'all' ? solarGrowth : solarGrowth?.filter((d) => String(d.year) === year)
@@ -114,24 +99,6 @@ export default function RenewableDashboard({ embedded = false }) {
           </div>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white card-shadow">
-            <DashboardPanelImage src={PAGE_IMAGES.battery} />
-            <div className="card-padding">
-              <SectionHeading title="Battery Storage" subtitle="Grid-connected storage capacity" className="mb-4" />
-              <DashboardFigure kpi={kpi('battery storage')} />
-            </div>
-          </div>
-          <div className="overflow-hidden rounded-lg border border-slate-200 bg-white card-shadow">
-            {/* Was PAGE_IMAGES.wind: an aircraft propeller, above a chart of
-                Bermuda's renewable share. */}
-            <DashboardPanelImage src={PAGE_IMAGES.govSolarField} />
-            <div className="card-padding">
-              <SectionHeading title="Renewable Penetration" subtitle="Share of total electricity generation" className="mb-4" />
-              <DashboardFigure kpi={kpi('renewable penetration')} />
-            </div>
-          </div>
-        </div>
       </div>
     </section>
 
