@@ -99,43 +99,6 @@ export default function Education() {
         image={PAGE_IMAGES.educationOutreach}
       />
 
-      <section className="section-padding">
-        <div className="container-page">
-          {/* Category filter pills */}
-          <div className="mb-8 flex flex-wrap gap-2">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.value}
-                onClick={() => setCategory(cat.value)}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                  category === cat.value
-                    ? 'bg-teal-700 text-white'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Count */}
-          <p className="mb-4 text-sm text-slate-500">
-            Showing {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
-            {category !== 'all' && ` in "${CATEGORIES.find(c => c.value === category)?.label}"`}
-          </p>
-
-          {filtered.length === 0 ? (
-            <EmptyState title="No resources found" />
-          ) : (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {filtered.map((resource) => (
-                <ResourceCard key={resource.id} resource={resource} />
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
       {/* Energy Guide highlight banner */}
       <section className="section-padding bg-gradient-to-br from-navy-900 to-teal-900 text-white">
         <div className="container-page">
@@ -173,6 +136,43 @@ export default function Education() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="section-padding">
+        <div className="container-page">
+          {/* Category filter pills */}
+          <div className="mb-8 flex flex-wrap gap-2">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.value}
+                onClick={() => setCategory(cat.value)}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                  category === cat.value
+                    ? 'bg-teal-700 text-white'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Count */}
+          <p className="mb-4 text-sm text-slate-500">
+            Showing {filtered.length} resource{filtered.length !== 1 ? 's' : ''}
+            {category !== 'all' && ` in "${CATEGORIES.find(c => c.value === category)?.label}"`}
+          </p>
+
+          {filtered.length === 0 ? (
+            <EmptyState title="No resources found" />
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {filtered.map((resource) => (
+                <ResourceCard key={resource.id} resource={resource} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </>
