@@ -146,7 +146,7 @@ export default function Vehicles() {
               <SectionHeading title="Transport & Energy" className="mb-4" />
               <p className="text-slate-600 leading-relaxed">
                 Transport is a significant part of Bermuda's energy use. The Department of Energy monitors vehicle
-                registration trends, fuel types, and the shift toward electric and hybrid options as part of the
+                registration trends, fuel types, and the shift toward electric vehicles as part of the
                 island's broader energy strategy.
               </p>
               <ul className="mt-6 space-y-3">

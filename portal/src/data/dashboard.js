@@ -72,13 +72,6 @@ export const chargingInfrastructure = [
   { parish: "St. George's", level2: 4, fast: 2 },
 ]
 
-export const publicTransportElectrification = [
-  { year: '2023', electric: 2, hybrid: 8, diesel: 42 },
-  { year: '2024', electric: 5, hybrid: 12, diesel: 38 },
-  { year: '2025', electric: 10, hybrid: 15, diesel: 32 },
-  { year: '2026', electric: 14, hybrid: 18, diesel: 28 },
-]
-
 export const energyEfficiencyMetrics = [
   { metric: 'Govt. Building Energy Use', baseline: 100, current: 78, target: 65 },
   { metric: 'Street Lighting Efficiency', baseline: 100, current: 85, target: 70 },

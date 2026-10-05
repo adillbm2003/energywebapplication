@@ -6,7 +6,6 @@ import {
   transitionKPIs,
   evByCategory,
   chargingInfrastructure,
-  publicTransportElectrification,
   energyEfficiencyMetrics,
 } from '../data/dashboard'
 
@@ -271,6 +270,5 @@ export const dashboardService = {
     }
   },
   getChargingInfrastructure: () => Promise.resolve(chargingInfrastructure),
-  getPublicTransport: () => Promise.resolve(publicTransportElectrification),
   getEfficiencyMetrics: () => Promise.resolve(energyEfficiencyMetrics),
 }

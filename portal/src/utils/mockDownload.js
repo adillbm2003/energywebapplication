@@ -314,7 +314,7 @@ const RICH = {
           '   Install solar PV system (meet 70-100% of home electricity needs)',
           '   Consider micro-wind if your property has good wind exposure',
           '',
-          '2. CHOOSE ELECTRIC OR HYBRID TRANSPORT',
+          '2. CHOOSE ELECTRIC TRANSPORT',
           '   EVs qualify for duty concessions on import',
           '   Annual operating costs 60-70% lower than petrol vehicles',
           '   Zero local emissions contribute to cleaner air quality',

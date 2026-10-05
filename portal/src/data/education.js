@@ -133,7 +133,7 @@ export const educationResources = [
     title: 'Vehicle Energy Guide',
     category: 'EVs',
     type: 'Infographic',
-    description: 'Vehicles last 15–20 years. Electric vehicles in Bermuda receive duty concessions, have lower operating costs ($800–$1,500/year in energy), and save thousands over their lifetime. Covers EVs, PHEVs, hybrids, and efficient vehicles.',
+    description: 'Vehicles last 15–20 years. Electric vehicles in Bermuda receive duty concessions, have lower operating costs ($800–$1,500/year in energy), and save thousands over their lifetime. Covers electric vehicles and efficient vehicle choices.',
     downloadUrl: base + 'guides/vehicle-energy-guide.png',
     fileSize: '1.8 MB',
     image: base + 'guides/vehicle-energy-guide.png',
