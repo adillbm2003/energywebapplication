@@ -1,37 +1,20 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import PageBanner from '../../components/common/PageBanner'
 import { PAGE_IMAGES } from '../../constants/branding'
-import SectionHeading from '../../components/ui/SectionHeading'
 import Button from '../../components/ui/Button'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
-import { innovationService } from '../../services'
-import { digitalCurrencyPlaceholder } from '../../data/innovation'
 import { ROUTES } from '../../constants/routes'
-import LoadingSpinner from '../../components/ui/LoadingSpinner'
 
-const RELATED_LINKS = [
-  { label: 'Space & Satellite', to: ROUTES.spaceSatellite },
-  { label: 'GIS Solar PV Map', to: ROUTES.gis },
-  { label: 'Education Centre', to: ROUTES.education },
-]
-
+// The page held an Emerging Technologies grid of nine cards read from
+// /api/innovation, a standalone Digital Currency & Energy block that repeated
+// one of them, and a row of cross-links. All of it is withdrawn at the
+// Department's request pending review; the page stays reachable and says so.
+//
+// Nothing is deleted to achieve this. The topics are still in the CMS, the
+// service that reads them is untouched, and data/innovation.js still carries
+// the fallback and the card images. Restoring the section is a matter of
+// putting the grid back, not of re-entering the content.
 export default function Innovation() {
   useDocumentTitle('Energy Innovation')
-  const [topics, setTopics] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    innovationService.getAll()
-      .then(data => {
-        setTopics(data)
-        setLoading(false)
-      })
-      .catch(err => {
-        console.error("Error loading innovation topics:", err)
-        setLoading(false)
-      })
-  }, [])
 
   return (
     <>
@@ -44,65 +27,19 @@ export default function Innovation() {
 
       <section className="section-padding">
         <div className="container-page">
-          <p className="max-w-3xl text-body-small text-slate-600">
-            The Department of Energy fosters innovation in clean energy technologies. This section provides educational
-            content on emerging technologies - for policy awareness and research purposes, not financial advice.
-          </p>
-
-          {loading ? (
-            <div className="flex justify-center py-12">
-              <LoadingSpinner size="lg" />
-            </div>
-          ) : (
-            <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {topics.map((item) => (
-                <article key={item.title} className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow transition-all hover:-translate-y-1 hover:card-shadow-hover">
-                  {item.image && (
-                    <div className="aspect-[16/10] overflow-hidden">
-                      <img src={item.image} alt="" className="h-full w-full object-cover" loading="lazy" />
-                    </div>
-                  )}
-                  <div className="card-padding">
-                    <span className="inline-block rounded-full bg-teal-50 px-2.5 py-0.5 text-caption font-semibold text-teal-700">{item.status}</span>
-                    <h3 className="mt-2">{item.title}</h3>
-                    <p className="mt-1.5 text-body-small text-slate-600">{item.description}</p>
-                    {item.linkTo && (
-                      <Button to={item.linkTo} variant="outline" size="sm" className="mt-3">
-                        {item.linkLabel || 'Learn more'}
-                      </Button>
-                    )}
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-
-          <div className="mt-8 overflow-hidden rounded-xl border-2 border-dashed border-gold-300 bg-gold-50/50">
-            {digitalCurrencyPlaceholder.image && (
-              <img src={digitalCurrencyPlaceholder.image} alt="" className="h-48 w-full object-cover opacity-90" loading="lazy" />
-            )}
-            <div className="card-padding">
-              <span className="rounded-lg bg-gold-500 px-3 py-1 text-caption font-semibold uppercase text-navy-900">{digitalCurrencyPlaceholder.status}</span>
-              <h3 className="mt-3">{digitalCurrencyPlaceholder.title}</h3>
-              <p className="mt-2 text-body-small text-slate-600">{digitalCurrencyPlaceholder.description}</p>
-              <p className="mt-2 text-body-small italic text-slate-500">{digitalCurrencyPlaceholder.note}</p>
-            </div>
+          <div className="mx-auto max-w-2xl rounded-xl border-2 border-dashed border-gold-300 bg-gold-50/50 px-6 py-16 text-center">
+            <span className="inline-block rounded-lg bg-gold-500 px-3 py-1 text-caption font-semibold uppercase tracking-wide text-navy-900">
+              Coming Soon
+            </span>
+            <h2 className="mt-4">Energy Innovation &amp; Emerging Technologies</h2>
+            <p className="mx-auto mt-3 max-w-xl text-body-small text-slate-600 leading-relaxed">
+              This section is being prepared and will be published once the content has been
+              reviewed by the Department.
+            </p>
+            <Button to={ROUTES.contact} variant="outline" className="mt-6">
+              Contact the Department
+            </Button>
           </div>
-
-          <div className="mt-8 flex flex-wrap gap-4">
-            {RELATED_LINKS.map((link) => (
-              <Link key={link.to} to={link.to} className="text-sm font-medium text-teal-600 hover:underline">
-                {link.label} &rarr;
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="section-padding bg-navy-900 text-white">
-        <div className="container-page text-center">
-          <SectionHeading title="Partner With Us" subtitle="Interested in energy innovation in Bermuda?" align="center" className="[&_h2]:text-white [&_p]:text-slate-300" />
-          <Button to={ROUTES.contact} variant="gold">Contact the Department</Button>
         </div>
       </section>
     </>
