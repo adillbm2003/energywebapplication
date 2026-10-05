@@ -43,7 +43,7 @@ export const bursaryFAQs = [
   },
   {
     question: 'What does the bursary cover?',
-    answer: 'Awards cover tuition, books, and related academic expenses up to a maximum of $15,000 per academic year, renewable for up to four years subject to academic performance.',
+    answer: 'Awards cover tuition, books, and related academic expenses, renewable for up to four years subject to academic performance.',
   },
   {
     question: 'When is the application deadline?',
