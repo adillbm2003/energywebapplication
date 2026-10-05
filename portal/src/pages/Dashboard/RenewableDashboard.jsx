@@ -24,8 +24,10 @@ function DashboardFigure({ kpi }) {
   )
 }
 
-export default function RenewableDashboard() {
-  useDocumentTitle('Renewable Energy Dashboard')
+export default function RenewableDashboard({ embedded = false }) {
+  // Rendered inside the Renewable Energy Resource page, this supplies the
+  // charts only -- that page owns the banner and the document title.
+  useDocumentTitle(embedded ? null : 'Renewable Energy Dashboard')
   const [year, setYear] = useState('all')
 
   const { data: kpis } = useAsyncData(() => dashboardService.getRenewableKPIs(), [], renewableKPIs)
@@ -47,15 +49,17 @@ export default function RenewableDashboard() {
           shell, so the page began with a wide strip image under someone else's
           heading. The banner carries that image now, which also removes the two
           stacked hero images the page used to open with. */}
-      <PageBanner
-        title="Renewable Energy Dashboard"
-        subtitle="Installed solar capacity, battery storage and renewable penetration across Bermuda."
-        breadcrumbs={[
-          { label: 'Data & GIS', to: ROUTES.dashboard },
-          { label: 'Renewable Energy', to: ROUTES.renewableDashboard },
-        ]}
-        image={PAGE_IMAGES.solarFieldBermuda}
-      />
+      {!embedded && (
+        <PageBanner
+          title="Renewable Energy Dashboard"
+          subtitle="Installed solar capacity, battery storage and renewable penetration across Bermuda."
+          breadcrumbs={[
+            { label: 'Data & GIS', to: ROUTES.dashboard },
+            { label: 'Renewable Energy', to: ROUTES.renewableDashboard },
+          ]}
+          image={PAGE_IMAGES.solarFieldBermuda}
+        />
+      )}
 
       <section className="section-padding">
       <div className="container-page space-y-10">
@@ -131,17 +135,22 @@ export default function RenewableDashboard() {
       </div>
     </section>
 
-      <section className="section-padding bg-slate-50 pt-0">
-        <div className="container-page">
-          <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white card-padding card-shadow">
-            <div>
-              <p className="text-body-small font-semibold text-navy-900">Looking for electric vehicles and public transport?</p>
-              <p className="text-caption text-slate-600">Those figures live on the Energy Transition Dashboard.</p>
+      {/* Embedded, this would land in the middle of the Renewable Energy
+          Resource page, between the charts and the register. That page
+          renders it at the foot instead. */}
+      {!embedded && (
+        <section className="section-padding bg-slate-50 pt-0">
+          <div className="container-page">
+            <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-slate-200 bg-white card-padding card-shadow">
+              <div>
+                <p className="text-body-small font-semibold text-navy-900">Looking for electric vehicles and public transport?</p>
+                <p className="text-caption text-slate-600">Those figures live on the Energy Transition Dashboard.</p>
+              </div>
+              <Button to={ROUTES.transitionDashboard} variant="outline">Energy Transition Dashboard</Button>
             </div>
-            <Button to={ROUTES.transitionDashboard} variant="outline">Energy Transition Dashboard</Button>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </>
   )
 }

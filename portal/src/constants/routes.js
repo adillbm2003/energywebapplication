@@ -13,6 +13,10 @@ export const ROUTES = {
   projects: '/projects',
   projectDetail: (id) => `/projects/${id}`,
   dashboard: '/dashboard',
+  // The Renewable Dashboard and the Renewable Energy Registry are one page.
+  // The two paths below are kept so existing links and bookmarks still land
+  // somewhere: both redirect here.
+  renewableResource: '/renewable-energy-resource',
   renewableDashboard: '/dashboard/renewable',
   transitionDashboard: '/dashboard/transition',
   registry: '/registry',

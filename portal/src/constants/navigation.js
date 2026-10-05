@@ -26,9 +26,8 @@ export const MAIN_NAV = [
     label: 'Data & GIS',
     to: ROUTES.dashboard,
     children: [
-      { label: 'Renewable Dashboard', to: ROUTES.renewableDashboard },
+      { label: 'Renewable Energy Resource', to: ROUTES.renewableResource },
       { label: 'Energy Transition Dashboard', to: ROUTES.transitionDashboard },
-      { label: 'Renewable Energy Registry', to: ROUTES.registry },
       { label: 'GIS Solar PV Map', to: ROUTES.gis },
       { label: 'Energy Simulator', href: 'https://simulator.energy.bm/' },
     ],
@@ -59,8 +58,7 @@ export const FOOTER_LINKS = {
     { label: 'Consultations', to: ROUTES.consultations },
   ],
   resources: [
-    { label: 'Renewable Dashboard', to: ROUTES.renewableDashboard },
-    { label: 'Energy Registry', to: ROUTES.registry },
+    { label: 'Renewable Energy Resource', to: ROUTES.renewableResource },
     { label: 'GIS Solar PV Map', to: ROUTES.gis },
     { label: 'Education Centre', to: ROUTES.education },
     { label: 'Energy Bursary', to: ROUTES.bursary },

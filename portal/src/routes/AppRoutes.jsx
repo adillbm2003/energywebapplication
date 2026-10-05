@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react'
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import MainLayout from '../layouts/MainLayout'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 
@@ -17,9 +17,8 @@ const Consultations = lazy(() => import('../pages/Consultations'))
 const Projects = lazy(() => import('../pages/Projects'))
 const ProjectDetail = lazy(() => import('../pages/Projects/ProjectDetail'))
 const Dashboard = lazy(() => import('../pages/Dashboard'))
-const RenewableDashboard = lazy(() => import('../pages/Dashboard/RenewableDashboard'))
 const TransitionDashboard = lazy(() => import('../pages/Dashboard/TransitionDashboard'))
-const Registry = lazy(() => import('../pages/Registry'))
+const RenewableResource = lazy(() => import('../pages/RenewableResource'))
 const GIS = lazy(() => import('../pages/GIS'))
 const Education = lazy(() => import('../pages/Education'))
 const Bursary = lazy(() => import('../pages/Bursary'))
@@ -56,9 +55,13 @@ export default function AppRoutes() {
               carry their own banner now, and /dashboard is a hub that links to
               them. The URLs are unchanged, so every existing link still works. */}
           <Route path="dashboard" element={<Dashboard />} />
-          <Route path="dashboard/renewable" element={<RenewableDashboard />} />
+          <Route path="renewable-energy-resource" element={<RenewableResource />} />
+          {/* The two pages this replaced. Redirected rather than removed so
+              existing links, bookmarks and anything already indexed still
+              arrive somewhere. */}
+          <Route path="dashboard/renewable" element={<Navigate to="/renewable-energy-resource" replace />} />
           <Route path="dashboard/transition" element={<TransitionDashboard />} />
-          <Route path="registry" element={<Registry />} />
+          <Route path="registry" element={<Navigate to="/renewable-energy-resource" replace />} />
           <Route path="gis" element={<GIS />} />
           <Route path="education" element={<Education />} />
           <Route path="bursary" element={<Bursary />} />

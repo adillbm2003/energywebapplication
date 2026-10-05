@@ -361,7 +361,7 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
                 <Button variant="outline" size="sm" onClick={() => setActive(null)}>
                   Close
                 </Button>
-                <Button to={ROUTES.registry} variant="primary" size="sm">
+                <Button to={ROUTES.renewableResource} variant="primary" size="sm">
                   View registry
                 </Button>
               </div>
@@ -373,7 +373,7 @@ export default function HeatMap({ installations = [], selectedParish, selectedTy
       {!active && filtered.length > 0 && (
         <p className="border-t border-slate-100 px-4 py-2 text-center text-caption text-slate-500">
           Click a marker on the map for details ·{' '}
-          <Link to={ROUTES.registry} className="font-semibold text-teal-600 hover:text-teal-700">
+          <Link to={ROUTES.renewableResource} className="font-semibold text-teal-600 hover:text-teal-700">
             Open full registry
           </Link>
         </p>

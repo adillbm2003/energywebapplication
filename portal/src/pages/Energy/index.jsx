@@ -18,7 +18,7 @@ const TOPICS = [
   {
     title: 'Renewable Energy',
     description: 'Solar PV, battery storage, net metering, and community energy programmes across Bermuda.',
-    to: ROUTES.renewableDashboard,
+    to: ROUTES.renewableResource,
     image: PAGE_IMAGES.solar,
   },
   {
@@ -163,7 +163,7 @@ export default function Energy() {
                   Explore our dashboards, registry, and GIS tools to track live progress.
                 </p>
                 <div className="mt-4 flex flex-wrap gap-2">
-                  <Button to={ROUTES.renewableDashboard} variant="gold">Renewable Dashboard</Button>
+                  <Button to={ROUTES.renewableResource} variant="gold">Renewable Energy Resource</Button>
                   <Button to={ROUTES.transitionDashboard} variant="outline" className="border-white/60 text-white hover:bg-white/10">
                     Transition Dashboard
                   </Button>

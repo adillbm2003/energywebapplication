@@ -103,7 +103,7 @@ export const educationResources = [
     downloadUrl: base + 'guides/solar-water-heater-guide.png',
     fileSize: '2.1 MB',
     image: base + 'guides/solar-water-heater-guide.png',
-    relatedRoute: ROUTES.renewableDashboard,
+    relatedRoute: ROUTES.renewableResource,
   },
   {
     id: 'guide-solar-pv',
@@ -114,7 +114,7 @@ export const educationResources = [
     downloadUrl: base + 'guides/solar-pv-guide.png',
     fileSize: '2.0 MB',
     image: base + 'guides/solar-pv-guide.png',
-    relatedRoute: ROUTES.renewableDashboard,
+    relatedRoute: ROUTES.renewableResource,
   },
   {
     id: 'guide-micro-wind',
@@ -125,7 +125,7 @@ export const educationResources = [
     downloadUrl: base + 'guides/micro-wind-energy-guide.png',
     fileSize: '2.2 MB',
     image: base + 'guides/micro-wind-energy-guide.png',
-    relatedRoute: ROUTES.renewableDashboard,
+    relatedRoute: ROUTES.renewableResource,
   },
   // ── EV Guides ────────────────────────────────────────────────────────
   {
@@ -160,7 +160,7 @@ export const educationResources = [
     downloadUrl: base + 'guides/solar-pv-guide.png',
     fileSize: '2.0 MB',
     image: base + 'guides/solar-pv-guide.png',
-    relatedRoute: ROUTES.renewableDashboard,
+    relatedRoute: ROUTES.renewableResource,
   },
   {
     id: 'edu-002',
@@ -226,7 +226,7 @@ export const educationResources = [
     downloadUrl: '#',
     fileSize: '1.3 MB',
     image: PAGE_IMAGES.battery,
-    relatedRoute: ROUTES.renewableDashboard,
+    relatedRoute: ROUTES.renewableResource,
   },
   {
     id: 'edu-008',

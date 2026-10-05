@@ -7,6 +7,7 @@ import Pagination from '../../components/ui/Pagination'
 import EmptyState from '../../components/ui/EmptyState'
 import Badge from '../../components/ui/Badge'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
+import { ROUTES } from '../../constants/routes'
 import { useAsyncData } from '../../hooks/useAsyncData'
 import { useDebounce } from '../../hooks/useDebounce'
 import { usePagination } from '../../hooks/usePagination'
@@ -130,8 +131,10 @@ function SolarStats() {
   )
 }
 
-export default function Registry() {
-  useDocumentTitle('Renewable Energy Registry')
+export default function Registry({ embedded = false }) {
+  // Embedded in the Renewable Energy Resource page, which owns the banner and
+  // the document title.
+  useDocumentTitle(embedded ? null : 'Renewable Energy Registry')
 
   const [search, setSearch] = useState('')
   const [parish, setParish] = useState('all')
@@ -173,12 +176,14 @@ export default function Registry() {
 
   return (
     <>
-      <PageBanner
-        title="Renewable Energy Registry"
-        subtitle="Official register of renewable energy installations across Bermuda."
-        breadcrumbs={[{ label: 'Registry', to: '/registry' }]}
-        image={PAGE_IMAGES.dockyardSolar}
-      />
+      {!embedded && (
+        <PageBanner
+          title="Renewable Energy Registry"
+          subtitle="Official register of renewable energy installations across Bermuda."
+          breadcrumbs={[{ label: 'Registry', to: ROUTES.renewableResource }]}
+          image={PAGE_IMAGES.dockyardSolar}
+        />
+      )}
 
       <SolarStats />
 

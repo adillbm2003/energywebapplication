@@ -7,7 +7,7 @@ export const homePriorities = [
     description:
       'Track installed solar capacity, battery storage, and renewable penetration across Bermuda through live dashboards and the national registry.',
     image: PAGE_IMAGES.solarFieldBermuda,
-    to: ROUTES.renewableDashboard,
+    to: ROUTES.renewableResource,
     cta: 'View Renewable Dashboard',
   },
   {

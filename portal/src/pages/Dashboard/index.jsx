@@ -7,9 +7,8 @@ import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { ROUTES } from '../../constants/routes'
 
 const QUICK_ACCESS = [
-  { label: 'Renewable Dashboard', to: ROUTES.renewableDashboard, image: PAGE_IMAGES.renewableDashboard },
+  { label: 'Renewable Energy Resource', to: ROUTES.renewableResource, image: PAGE_IMAGES.renewableDashboard },
   { label: 'Transition Dashboard', to: ROUTES.transitionDashboard, image: PAGE_IMAGES.transitionDashboard },
-  { label: 'Energy Registry', to: ROUTES.registry, image: PAGE_IMAGES.registry },
   { label: 'GIS Solar PV Map', to: ROUTES.gis, image: PAGE_IMAGES.energyGisMap },
   { label: 'Education Centre', to: ROUTES.education, image: PAGE_IMAGES.education },
   { label: 'Energy Simulator', href: 'https://simulator.energy.bm/', image: PAGE_IMAGES.simulator },

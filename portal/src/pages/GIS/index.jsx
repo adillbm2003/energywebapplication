@@ -134,8 +134,7 @@ export default function GIS() {
                   View full installation records, filter by parish, and export registry data.
                 </p>
                 <div className="mt-3 flex flex-col gap-2">
-                  <Button to={ROUTES.registry} variant="primary" size="sm">Energy Registry</Button>
-                  <Button to={ROUTES.renewableDashboard} variant="outline" size="sm">Renewable Dashboard</Button>
+                  <Button to={ROUTES.renewableResource} variant="primary" size="sm">Renewable Energy Resource</Button>
                 </div>
               </div>
             </div>

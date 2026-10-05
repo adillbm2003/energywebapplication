@@ -105,7 +105,7 @@ export default function TransitionDashboard() {
               <p className="text-body-small font-semibold text-navy-900">Looking for solar capacity and battery storage?</p>
               <p className="text-caption text-slate-600">Those figures live on the Renewable Energy Dashboard.</p>
             </div>
-            <Button to={ROUTES.renewableDashboard} variant="outline">Renewable Energy Dashboard</Button>
+            <Button to={ROUTES.renewableResource} variant="outline">Renewable Energy Dashboard</Button>
           </div>
         </div>
       </section>
