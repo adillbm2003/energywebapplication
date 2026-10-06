@@ -5,7 +5,6 @@ import { PAGE_IMAGES } from '../../constants/branding'
 
 import SectionHeading from '../../components/ui/SectionHeading'
 
-import Button from '../../components/ui/Button'
 
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 
@@ -62,12 +61,6 @@ export default function SpaceSatellite() {
                 a strategic mid-Atlantic location.
 
               </p>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-
-                <Button to={`${ROUTES.spaceSatellite}/why-choose-bermuda`} variant="primary">Why Choose Bermuda</Button>
-
-              </div>
 
             </div>
 

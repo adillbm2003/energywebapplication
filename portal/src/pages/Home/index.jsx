@@ -271,9 +271,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <div className="mt-8 text-center">
-            <Button to={ROUTES.transitionDashboard} variant="primary">View Full Transition Dashboard</Button>
-          </div>
         </div>
       </section>
     </>
