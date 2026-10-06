@@ -4,6 +4,7 @@ import SectionHeading from '../../components/ui/SectionHeading'
 import Button from '../../components/ui/Button'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { ROUTES } from '../../constants/routes'
+import Disclaimer from '../../components/common/Disclaimer'
 
 const FRAMEWORK = [
   {
@@ -71,10 +72,11 @@ export default function ElectronicCommunications() {
             <div>
               <SectionHeading title="Overview" className="mb-4" />
               <p className="text-slate-600 leading-relaxed">
-                The Department of Energy is responsible for developing and maintaining Bermuda&apos;s policy, legislative,
-                and strategic frameworks for the electronic communications sector. Through policy development and legislative
-                reform, the Department supports a resilient, innovative, and future-ready communications environment that
-                advances Bermuda&apos;s digital economy and connectivity goals.
+                The Department of Energy is responsible for the development and maintenance of Bermuda&apos;s policy,
+                legislative, and strategic frameworks for the electronic communications sector. Through policy development
+                and legislative review, the Department supports the effective operation of Bermuda&apos;s electronic
+                communications framework and responds to developments in technology, telecommunications services, and
+                industry practices.
               </p>
               <p className="mt-4 text-slate-600 leading-relaxed">
                 The Department works closely with the{' '}
@@ -87,12 +89,13 @@ export default function ElectronicCommunications() {
                   Regulatory Authority of Bermuda (RA)
                 </a>
                 , which is responsible for regulating the sector, including the licensing of telecommunications providers,
-                spectrum management, and consumer protection functions.
+                management of radio frequency spectrum, and other regulatory functions established under applicable
+                legislation.
               </p>
               <p className="mt-4 text-slate-600 leading-relaxed">
-                The Department also collaborates with government stakeholders, industry participants, and international
-                organisations to ensure Bermuda&apos;s electronic communications framework aligns with international best
-                practices and meets the evolving needs of residents and businesses.
+                The Department also collaborates with government agencies, industry participants, and international
+                organizations on matters relating to electronic communications policy and regulation to help ensure
+                Bermuda&apos;s framework remains effective and responsive to evolving sector requirements.
               </p>
             </div>
             <div className="space-y-4">
@@ -103,7 +106,8 @@ export default function ElectronicCommunications() {
                 <h3 className="text-base font-semibold text-navy-900">Regulatory Authority of Bermuda</h3>
                 <p className="mt-2 text-sm text-slate-600 leading-relaxed">
                   The RA is Bermuda&apos;s independent regulator for the electronic communications sector, responsible
-                  for licensing, spectrum management, and consumer protection.
+                  for the licensing of telecommunications providers, management of radio frequency spectrum, and other
+                  regulatory functions established under applicable legislation.
                 </p>
                 <a
                   href="https://www.ra.bm"
@@ -117,6 +121,13 @@ export default function ElectronicCommunications() {
               </div>
             </div>
           </div>
+
+          <Disclaimer className="mt-10">
+            Information provided on this page is for general informational purposes only and does not constitute
+            legal, regulatory, technical, or professional advice. Electronic communications activities are subject to
+            applicable legislation, regulations, policies, and licensing requirements, which may change from time to
+            time. Interested parties should consult the relevant authorities regarding current requirements.
+          </Disclaimer>
         </div>
       </section>
 

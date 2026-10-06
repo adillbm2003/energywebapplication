@@ -4,6 +4,7 @@ import PageBanner from '../../components/common/PageBanner'
 import SectionHeading from '../../components/ui/SectionHeading'
 import { PAGE_IMAGES } from '../../constants/branding'
 import { ROUTES } from '../../constants/routes'
+import Disclaimer from '../../components/common/Disclaimer'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 
@@ -67,7 +68,7 @@ function EvFleetChart({ fleet }) {
       </div>
 
       <p className="mt-4 text-xs text-slate-400">
-        Source: Department of Energy — Vehicles by Fuel Type Registry.
+        Source: Transport Control Department
       </p>
     </div>
   )
@@ -103,14 +104,6 @@ function StatCard({ label, value, icon, sub }) {
   )
 }
 
-const PRIORITIES = [
-  'Supporting electric vehicle adoption across Bermuda',
-  "Tracking the island's vehicle fleet composition by fuel type",
-  'Promoting efficient transport choices for residents and businesses',
-  "Aligning transport policy with Bermuda's wider energy transition goals",
-  'Public EV charging infrastructure — coming soon',
-]
-
 export default function Vehicles() {
   useDocumentTitle('Vehicles')
 
@@ -130,7 +123,7 @@ export default function Vehicles() {
     <>
       <PageBanner
         title="Vehicles & Transport Energy"
-        subtitle="Live data on Bermuda's registered electric vehicle fleet, fuel types, and the Department's work to support cleaner transport."
+        subtitle="Live data on Bermuda's registered electric vehicle fleet and transport energy trends"
         breadcrumbs={[
           { label: 'Sector', to: ROUTES.energy },
           { label: 'Vehicles', to: ROUTES.vehicles },
@@ -145,30 +138,38 @@ export default function Vehicles() {
             <div>
               <SectionHeading title="Transport & Energy" className="mb-4" />
               <p className="text-slate-600 leading-relaxed">
-                Transport is a significant part of Bermuda's energy use. The Department of Energy monitors vehicle
-                registration trends, fuel types, and the shift toward electric vehicles as part of the
-                island's broader energy strategy.
+                Transportation represents a significant component of Bermuda's overall energy consumption. The
+                Department of Energy monitors vehicle registration data, fuel types, and transport-related energy
+                trends to support policy development, planning, and analysis.
               </p>
-              <ul className="mt-6 space-y-3">
-                {PRIORITIES.map((item) => (
-                  <li key={item} className="flex items-start gap-2 text-slate-600">
-                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-teal-600" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
+              <p className="mt-4 text-slate-600 leading-relaxed">
+                Information relating to Bermuda's vehicle fleet may be used to assess changes in transport energy
+                use, including trends in electric vehicles and other vehicle technologies.
+              </p>
+              <p className="mt-4 text-slate-600 leading-relaxed">
+                This section provides access to data and information relating to vehicle registrations, fuel types,
+                and transport energy trends in Bermuda.
+              </p>
             </div>
 
             <div className="overflow-hidden rounded-xl border border-slate-200 bg-gradient-to-br from-navy-900 to-teal-900 text-white card-shadow">
               <img src={PAGE_IMAGES.charging} alt="" className="h-44 w-full object-cover opacity-90" loading="lazy" />
               <div className="card-padding">
-                <h3>Cleaner Transport for Bermuda</h3>
+                <h3>Vehicle Registration Data</h3>
                 <p className="mt-3 text-sm leading-relaxed text-slate-300">
-                  The Department of Energy tracks Bermuda's vehicle fleet to support transport policy, EV incentive programmes, and infrastructure planning for a sustainable island.
+                  The figures on this page are drawn from the Transport Control Department's register of vehicles by
+                  fuel type, and are refreshed when the Department supplies a new extract.
                 </p>
               </div>
             </div>
           </div>
+
+          <Disclaimer className="mt-10">
+            Information provided on this page is for general informational purposes only. Vehicle registration
+            statistics, transport data, and related information may be updated periodically and should not be relied
+            upon as legal, regulatory, or technical advice. Users should refer to the relevant Government departments
+            and authorities for official records and current requirements.
+          </Disclaimer>
         </div>
       </section>
 

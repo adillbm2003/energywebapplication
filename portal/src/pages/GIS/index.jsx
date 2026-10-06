@@ -141,8 +141,7 @@ export default function GIS() {
           </div>
 
           <p className="text-caption text-slate-500">
-            Installation locations are approximate, based on Department of Planning spreadsheet data.
-            Future phases will add battery storage, EV charging, and additional GIS layers.
+            Installation locations are approximate. Source: Department of Planning
           </p>
         </div>
       </section>

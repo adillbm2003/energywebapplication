@@ -78,7 +78,6 @@ export const SPACE_NAV = [
   { label: 'Why Choose Bermuda', to: `${ROUTES.spaceSatellite}/why-choose-bermuda`, slug: 'why-choose-bermuda' },
   { label: 'Earth Stations & Operations', to: `${ROUTES.spaceSatellite}/earth-stations-operations`, slug: 'earth-stations-operations' },
   { label: 'Satellite Filing & Guidance', to: `${ROUTES.spaceSatellite}/satellite-filing-guidance`, slug: 'satellite-filing-guidance' },
-  { label: 'Space Insurance', to: `${ROUTES.spaceSatellite}/space-insurance`, slug: 'space-insurance' },
   { label: 'National Space Strategy', to: `${ROUTES.spaceSatellite}/national-space-strategy`, slug: 'national-space-strategy' },
   { label: 'Sector Enquiries', to: `${ROUTES.spaceSatellite}/sector-enquiries`, slug: 'sector-enquiries' },
 ]

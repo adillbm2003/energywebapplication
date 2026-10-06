@@ -9,6 +9,7 @@ import { ROUTES } from '../../constants/routes'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import { useSiteSettings } from '../../contexts/SiteSettingsContext'
 import { downloadMockDocument, isExternalUrl } from '../../utils/mockDownload'
+import Disclaimer from '../../components/common/Disclaimer'
 
 export default function SpacePage() {
   const { slug } = useParams()
@@ -68,6 +69,8 @@ export default function SpacePage() {
                   )}
                 </div>
               ))}
+
+              {page.disclaimer && <Disclaimer className="mt-10">{page.disclaimer}</Disclaimer>}
 
               {/* Documents */}
               {page.documents && (

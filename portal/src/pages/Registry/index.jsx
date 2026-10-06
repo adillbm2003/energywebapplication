@@ -44,7 +44,6 @@ function SolarStats() {
           <div>
             <span className="inline-block rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase tracking-widest text-amber-800 mb-2">Live Data</span>
             <h2 className="text-xl font-bold text-navy-900">Solar Panel Applications — {solar.byYear[0]?.year} to Present</h2>
-            <p className="text-sm text-slate-500 mt-1">Planning permits for solar PV installations island-wide · Last updated: {new Date(solar.fileLastModified).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'})}</p>
           </div>
           {SHOW_DATA_EXPORTS && (
             <a
@@ -279,6 +278,7 @@ export default function Registry({ embedded = false }) {
               <Pagination page={page} totalPages={totalPages} onPageChange={setPage} className="mt-6" />
             </>
           )}
+          <p className="mt-6 text-sm text-slate-500">Source: Department of Planning</p>
         </div>
       </section>
     </>

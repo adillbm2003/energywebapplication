@@ -1,233 +1,167 @@
 import { EXTERNAL_LINKS } from '../constants/externalLinks'
 import { PAGE_IMAGES } from '../constants/branding'
 
+// Content supplied by the Department of Energy ("Bermuda Space & Satellite
+// Website Content", October 2026). It replaces the previous copy wholesale.
+//
+// The previous text described Bermuda as "the world's leading centre for space
+// insurance and reinsurance", claimed an extension of the UK Outer Space Act and
+// a "longstanding partnership with NASA and the European Space Agency", and
+// listed investment and space-tourism opportunities. None of that appears in the
+// supplied document, which describes the sector in terms of what the framework
+// does rather than what the jurisdiction offers. The Space Insurance page was
+// removed on the same instruction.
+//
+// Each page carries its own `disclaimer`, as the supplied document attaches one
+// to every section.
+const DISCLAIMER =
+  'Information is provided for general informational purposes only and does not constitute legal, regulatory, technical, investment, or professional advice. Applicable requirements may change and users should consult relevant authorities regarding current requirements.'
+
 export const spacePages = {
   'bermuda-global-space-economy': {
     title: 'Bermuda and the Global Space Economy',
-    subtitle: 'A strategic mid-Atlantic jurisdiction at the centre of the global space and satellite industry',
+    subtitle: 'Experience in satellite communications, satellite network filings, regulatory administration, and international business services',
     image: PAGE_IMAGES.spaceOrbit,
     content: [
-      'Bermuda has developed a distinctive and growing role in the global space economy, building on decades of experience in satellite communications, space insurance, and international regulatory affairs. The island\'s mid-Atlantic location, business-friendly environment, and deep financial services expertise position it as a natural hub for space industry activity.',
-          'The space and satellite industries are growing quickly, and Bermuda is positioned as a hub for them. As a globally recognised leader in regulatory innovation, the island offers opportunities for businesses seeking to establish earth stations, satellite operations and space insurance companies.',
+      'Bermuda has developed a distinctive role within the global space economy through its experience in satellite communications, satellite network filings, regulatory administration, and international business services.',
+      'As space and satellite activities continue to evolve, Bermuda supports the sector through a stable regulatory environment, international engagement, and policies that encourage responsible development and innovation.',
     ],
     sections: [
       {
         heading: 'Bermuda\'s Role in Satellite Communications',
         paragraphs: [
-          'Since the early era of commercial satellite communications, Bermuda has served as an important node in the global satellite ecosystem. The island\'s geographic position provides excellent line-of-sight coverage to both the Americas and Europe, making it ideally suited for satellite tracking, telemetry, and control operations, as well as for hosting earth station infrastructure serving transatlantic communications routes.',
-          'Bermuda has a long-established track record in satellite filing and regulatory administration, working within the international framework established by the International Telecommunication Union (ITU). The Government of Bermuda, through the Department of Energy, oversees the policy and legislative framework that enables operators to register satellite networks and access spectrum rights through the jurisdiction.',
+          'Bermuda has a long-standing association with the international satellite sector and has developed experience in satellite network filing and regulatory administration.',
+          'Operating within the framework established by the International Telecommunication Union (ITU), Bermuda participates in international processes relating to satellite networks and associated spectrum resources. The Department of Energy is responsible for policy matters relating to the space and satellite sector and supports activities associated with satellite network filings through Bermuda.',
+          'Bermuda\'s location in the North Atlantic and established telecommunications infrastructure contribute to its role in supporting international communications services and related satellite activities.',
         ],
       },
       {
-        heading: 'Space Insurance: A Global Leader',
+        heading: 'International Engagement',
         paragraphs: [
-          'Bermuda is widely recognised as the world\'s leading centre for space insurance and reinsurance. The island\'s specialist insurance market — home to some of the world\'s largest re/insurers — has been underwriting space risks for decades, covering everything from launch and in-orbit operations to third-party liability and emerging new-space ventures.',
-          'The depth and breadth of space underwriting expertise concentrated in Bermuda is unmatched globally, providing operators with access to significant capacity, sophisticated risk structuring, and efficient claims handling in a single jurisdiction.',
+          'The Government of Bermuda engages with international organizations, industry participants, and other stakeholders on matters relating to the space and satellite sector.',
+          'Through participation in international regulatory processes and ongoing stakeholder engagement, Bermuda seeks to maintain a policy framework that reflects evolving industry developments and international best practices.',
         ],
       },
       {
-        heading: 'Investment and Commercial Opportunities',
+        heading: 'Sector Development',
         paragraphs: [
-          'The Government of Bermuda actively supports the development of the space economy as a strategic economic pillar. Investment opportunities span earth station development, satellite filing services, space insurance and financial products, data analytics, and the emerging sector of space tourism and commercial launch support services.',
-          'Bermuda\'s international business ecosystem — including legal, financial, regulatory, and professional services — provides investors and operators with the full support infrastructure required to establish and grow space-related ventures in the jurisdiction.',
+          'The Government of Bermuda supports the responsible development of space and satellite-related activities within the jurisdiction through policy development, stakeholder engagement, and participation in relevant international regulatory processes.',
+          'Bermuda\'s regulatory and professional services environment supports organizations seeking information about the space and satellite sector and applicable regulatory requirements.',
         ],
       },
     ],
+    disclaimer: DISCLAIMER,
     highlights: [
-      'Mid-Atlantic strategic location',
-      'World-leading space insurance market',
-      'ITU satellite filing jurisdiction',
-      'Earth station infrastructure',
-      'Strong international business ecosystem',
-      'Government-backed space strategy',
+      'Satellite communications experience',
+      'Satellite network filings',
+      'ITU regulatory framework',
+      'Regulatory administration',
+      'International engagement',
     ],
     crossLinks: [
       { label: 'Why Choose Bermuda', to: '/space-satellite/why-choose-bermuda' },
       { label: 'Earth Stations & Operations', to: '/space-satellite/earth-stations-operations' },
-      { label: 'Space Insurance', to: '/space-satellite/space-insurance' },
+      { label: 'Satellite Filing & Guidance', to: '/space-satellite/satellite-filing-guidance' },
     ],
   },
 
   'why-choose-bermuda': {
     title: 'Why Choose Bermuda',
-    subtitle: 'Competitive advantages for space industry investment and operations',
+    subtitle: 'Strategic location, regulatory expertise, and political stability supporting space and satellite sector activities',
     image: PAGE_IMAGES.spaceWhyBermuda,
     content: [
-      'Bermuda offers a unique combination of strategic geography, regulatory sophistication, financial depth, and political stability that makes it one of the world\'s most attractive jurisdictions for space and satellite industry investment, operations, and risk management.',
+      'Bermuda offers a combination of strategic location, regulatory expertise, and political stability that supports space and satellite sector activities. Supported by a framework for satellite network filings and spectrum administration, Bermuda provides a stable regulatory and legal environment relevant to space and satellite activities.',
     ],
     sections: [
       {
         heading: 'Strategic Geographic Location',
         paragraphs: [
-          'Situated in the western North Atlantic, approximately 1,070 kilometres east of the United States coastline, Bermuda occupies a uniquely advantageous position for satellite and space operations. The island provides excellent elevation angles to geostationary orbital slots covering both North and South America, Europe, and Africa, making it ideal for earth station operations and satellite tracking, telemetry, and control (TT&C) services.',
-          'Bermuda\'s mid-Atlantic position also provides strategic redundancy value for operators requiring geographically diverse ground segment infrastructure, particularly those serving transatlantic communications routes and maritime operations in the North Atlantic.',
-        ],
-        bullets: [
-          'Clear sightlines to geostationary orbital arc covering Americas and Europe',
-          'Strategic redundancy location for transatlantic ground segment diversity',
-          'Low atmospheric interference supporting high-reliability earth station operations',
-          'Proximity to major North American satellite operator headquarters',
+          'Situated in the western North Atlantic, approximately 1,070 kilometres east of the United States coastline, Bermuda occupies a strategic position between North America and Europe. The island\'s location provides visibility to a broad portion of the geostationary orbital arc, supporting satellite communications and related ground infrastructure serving international markets.',
+          'Bermuda\'s mid-Atlantic position also offers value for operators seeking geographic diversity within their communications networks and ground infrastructure.',
         ],
       },
       {
         heading: 'Business and Regulatory Environment',
         paragraphs: [
-          'As a British Overseas Territory, Bermuda offers a common law legal system, political stability, and strong international relationships that underpin investor confidence. The regulatory environment is transparent and internationally aligned, with a government that actively supports the development of the space and satellite sector.',
-          'The Regulatory Authority of Bermuda (RA) oversees electronic communications, including spectrum licensing, while the Department of Energy coordinates space and satellite policy and ITU filing matters. Both bodies operate to international standards and engage regularly with industry stakeholders.',
-        ],
-        bullets: [
-          'Common law legal system with strong investor protections',
-          'Transparent and internationally aligned regulatory framework',
-          'Active government support for space sector development',
-          'Extension of the UK Outer Space Act, enabling Bermuda-registered companies to conduct outer space activities in full compliance',
-          'Limited Liability Company Act, offering flexibility for structuring space and satellite ventures',
-          'Experienced regulatory bodies with international engagement',
-          'Longstanding partnership with NASA and the European Space Agency in support of international space missions',
-        ],
-      },
-      {
-        heading: 'Financial Services and Insurance Market',
-        paragraphs: [
-          'Bermuda is home to one of the world\'s most sophisticated financial services ecosystems, with deep expertise in insurance, reinsurance, capital markets, and structured finance. This ecosystem is directly relevant to the space industry, which has complex risk management, financing, and structured product needs.',
-        ],
-        bullets: [
-          'World-class insurance and reinsurance market for space risk management',
-          'Sophisticated capital markets and structured finance expertise',
-        ],
-      },
-      {
-        heading: 'Professional Services Infrastructure',
-        paragraphs: [
-          'Bermuda\'s professional services sector includes leading international law firms, accountancy practices, management consultants, and specialist advisors with direct experience supporting space industry clients. The island\'s talent pool, while compact, is internationally trained and connected, providing high-quality support for complex space industry transactions and operations.',
-        ],
-        bullets: [
-          'International law firms with space and satellite sector expertise',
-          'Big Four accountancy practices and specialist consultants',
-          'Streamlined company formation and licensing processes',
-          'Strong connectivity to London, New York, and global financial centres',
+          'As a British Overseas Territory, Bermuda offers a common law legal system, political stability, and a transparent regulatory environment.',
+          'The Regulatory Authority of Bermuda oversees electronic communications, including spectrum licensing, while the Department of Energy coordinates space and satellite policy and matters relating to satellite network filings under the framework of the International Telecommunication Union (ITU).',
+          'Bermuda has developed established experience in satellite network filing administration and continues to engage with international stakeholders on matters relating to space and satellite activities.',
         ],
       },
     ],
+    disclaimer: DISCLAIMER,
     highlights: [
-      'Strategic mid-Atlantic location',
+      'Western North Atlantic location',
+      'Visibility to a broad portion of the geostationary arc',
+      'British Overseas Territory',
       'Common law legal system',
-      'Extension of the UK Outer Space Act',
-      'World-leading insurance market',
-      'Transparent regulatory framework',
-      'Political and economic stability',
+      'Transparent regulatory environment',
     ],
     crossLinks: [
       { label: 'Earth Stations & Operations', to: '/space-satellite/earth-stations-operations' },
       { label: 'Satellite Filing & Guidance', to: '/space-satellite/satellite-filing-guidance' },
-      { label: 'Space Insurance', to: '/space-satellite/space-insurance' },
+      { label: 'Sector Enquiries', to: '/space-satellite/sector-enquiries' },
     ],
   },
 
   'earth-stations-operations': {
     title: 'Earth Stations and Satellite Operations',
-    subtitle: 'Ground segment infrastructure and satellite operations in Bermuda',
+    subtitle: 'Telecommunications infrastructure and the regulatory framework for earth station licensing',
     image: PAGE_IMAGES.spaceDish,
     content: [
-      'Bermuda hosts earth station infrastructure that supports a range of satellite communications, tracking, and control operations. The island\'s geographic position and stable atmospheric conditions make it well suited for high-reliability ground segment facilities serving both commercial and government satellite operators.',
+      'Bermuda supports satellite communications through its telecommunications infrastructure and regulatory framework for earth station licensing.',
     ],
     sections: [
       {
-        heading: 'Earth Station Capabilities',
-        paragraphs: [
-          'Earth stations operating in Bermuda provide a range of ground segment services including telemetry, tracking, and control (TT&C) for satellites in geostationary and other orbital regimes, satellite communications uplinks and downlinks for commercial broadcasting and data services, and maritime and aeronautical satellite communications support for vessels and aircraft operating in the North Atlantic region.',
-          'The geographic location of Bermuda provides earth stations with favourable elevation angles to geostationary satellites positioned over the Atlantic Ocean, enabling high-quality, reliable links with minimal interference from the horizon. The island\'s position also makes it valuable for monitoring and controlling satellites during critical orbital manoeuvres.',
-        ],
-        bullets: [
-          'Telemetry, tracking & control (TT&C) for geostationary and other satellites',
-          'Commercial satellite uplinks and downlinks for broadcasting and data',
-          'Maritime and aeronautical satellite communications support',
-          'Satellite monitoring and orbital anomaly response',
-        ],
-      },
-      {
         heading: 'Licensing Earth Stations in Bermuda',
         paragraphs: [
-          'Earth station licensing in Bermuda is administered by the Regulatory Authority of Bermuda (RA), which is responsible for managing the use of radio frequency spectrum in accordance with national legislation and relevant ITU regulations. Prospective earth station operators are required to submit an application for a station licence that includes technical specifications, proposed frequency use, and evidence of coordination with other spectrum users where applicable.',
-          'The licensing process is designed to be transparent and efficient, with the RA working with applicants to ensure compliance with applicable technical and regulatory requirements. The Department of Energy coordinates with the RA on any aspects of earth station licensing that relate to broader space policy or international filing obligations.',
-        ],
-        bullets: [
-          'Licensing by the Regulatory Authority of Bermuda (RA)',
-          'Frequency coordination conducted in accordance with ITU Radio Regulations',
-          'Technical review of station parameters and interference assessment',
-          'Ongoing compliance monitoring and licence renewal processes',
+          'The Regulatory Authority of Bermuda (RA) is responsible for the licensing of earth stations and the management of radio frequency spectrum in Bermuda in accordance with applicable legislation and regulatory requirements.',
+          'Applicants may be required to submit technical, operational, and other information to support regulatory review. Additional approvals or coordination processes may apply depending on the nature of the proposed operation.',
+          'The Department of Energy is responsible for policy matters relating to the space and satellite sector and may engage, where appropriate, on matters relating to international obligations and satellite network filings.',
         ],
       },
       {
-        heading: 'Investment Opportunities',
+        heading: 'Enquiries Regarding Earth Station Development',
         paragraphs: [
-          'Bermuda presents compelling opportunities for earth station investment, particularly for operators seeking Atlantic-region ground segment diversity, TT&C backup facilities, or new earth station deployments to support growing satellite constellation services. The Government of Bermuda welcomes enquiries from operators and investors interested in establishing or expanding earth station infrastructure on the island.',
-          'Suitable land and facilities may be available for earth station development through government or private arrangements. Interested parties should contact the Department of Energy to discuss requirements and the applicable regulatory and planning processes.',
+          'Organizations interested in establishing or operating earth station facilities in Bermuda are encouraged to contact the Department of Energy and the Regulatory Authority of Bermuda to discuss applicable regulatory, policy, and licensing considerations.',
         ],
       },
     ],
+    disclaimer: DISCLAIMER,
     highlights: [
-      'TT&C services for multiple orbital regimes',
-      'Favourable Atlantic geostationary arc visibility',
-      'Satellite broadcasting and data support',
-      'Maritime & aeronautical communications',
-      'Government-supported investment environment',
+      'Earth station licensing by the Regulatory Authority',
+      'Radio frequency spectrum management',
+      'Technical and operational information for review',
+      'Department of Energy policy engagement',
     ],
     crossLinks: [
       { label: 'Satellite Filing & Guidance', to: '/space-satellite/satellite-filing-guidance' },
-      { label: 'Why Choose Bermuda', to: '/space-satellite/why-choose-bermuda' },
       { label: 'Sector Enquiries', to: '/space-satellite/sector-enquiries' },
     ],
   },
 
   'satellite-filing-guidance': {
     title: 'Satellite Filing and Regulatory Guidance',
-    subtitle: 'ITU satellite network filing and coordination services through Bermuda',
+    subtitle: 'Participation in international satellite regulatory processes through the ITU framework',
     image: PAGE_IMAGES.spaceNightsky,
     content: [
-      'The Government of Bermuda provides satellite filing services through its administration with the International Telecommunication Union (ITU), enabling operators to register satellite networks and access spectrum and orbital resources under the Bermuda filing jurisdiction. The Department of Energy coordinates these filings and supports operators through the ITU regulatory process.',
+      'Bermuda participates in international satellite regulatory processes through the framework of the International Telecommunication Union (ITU).',
     ],
     sections: [
       {
-        heading: 'Overview of ITU Satellite Filing',
+        heading: 'Overview of ITU Satellite Filings',
         paragraphs: [
-          'The ITU Radio Regulations provide the international framework for the coordination, notification, and registration of satellite networks. All satellite operators accessing spectrum and orbital resources must comply with these procedures to establish internationally recognised rights to operate their satellite systems. Bermuda, as a British Overseas Territory, participates in ITU processes and can file satellite networks on behalf of operators seeking to use Bermuda as their filing administration.',
-          'Filing a satellite network through Bermuda provides operators with access to ITU-recognised spectrum and orbital rights, which are essential for commercially operating satellites and protecting them from interference by other networks. The Department of Energy works closely with operators to navigate the ITU process and ensure filings are submitted accurately and in accordance with applicable deadlines and technical requirements.',
-        ],
-      },
-      {
-        heading: 'The Filing Process',
-        paragraphs: [
-          'The ITU satellite filing process involves several distinct regulatory steps, each with specific technical and procedural requirements. The key stages typically include advance publication of satellite network information in the ITU Special Section, coordination with other administrations and satellite networks potentially affected by radio frequency interference, and notification and registration of the network once coordination is complete.',
-          'The Department of Energy assists operators in preparing the technical filings required at each stage, engaging with the ITU Radiocommunication Bureau and with other administrations as required. Operators should engage with the Department at the earliest stage of their project planning to ensure the filing timeline is appropriately built into project schedules, as the ITU process can take several years to complete.',
-        ],
-        bullets: [
-          'Advance Publication (AP) — initial notice to ITU of planned satellite network',
-          'Coordination — bilateral and multilateral coordination with potentially affected networks',
-          'Notification and Registration — formal registration of ITU filing rights',
-          'Ongoing maintenance — modifications, extensions, and renewals as required',
-        ],
-      },
-      {
-        heading: 'Fees and Requirements',
-        paragraphs: [
-          'Bermuda\'s ITU filing process is low-cost and efficient, with a flat administrative fee of $12,000, in addition to any applicable ITU cost recovery fees. Operators must provide detailed technical information about the proposed satellite network, including orbital parameters, frequency bands, coverage areas and power flux density specifications.',
-          'All filings must comply with the ITU Radio Regulations and applicable international coordination requirements. The Department of Energy provides guidance on documentation requirements and technical standards applicable to each filing stage.',
-        ],
-        bullets: [
-          'Flat administrative fee of $12,000 payable to the Government of Bermuda',
-          'ITU cost recovery fees as applicable',
-          'Technical network data required at each filing stage',
-          'Compliance with ITU Radio Regulations and relevant Appendices',
-          'Collaboration with Ofcom, ensuring compliance with global regulatory standards',
+          'The ITU Radio Regulations establish the international framework for the coordination, notification, and registration of satellite networks and associated frequency assignments.',
+          'Satellite operators seeking to deploy satellite networks may be required to follow applicable ITU procedures and coordination processes. Bermuda may facilitate satellite network filings in accordance with applicable legislation, policies, and international obligations.',
         ],
       },
     ],
+    disclaimer: DISCLAIMER,
     highlights: [
-      'ITU-compliant filing administration',
-      'Advance publication & coordination support',
-      'Notification and registration services',
-      'Technical guidance and documentation',
-      'Experienced regulatory coordination team',
+      'ITU Radio Regulations',
+      'Coordination, notification, and registration',
+      'Frequency assignments',
+      'Filings under applicable legislation and policy',
     ],
     crossLinks: [
       { label: 'Earth Stations & Operations', to: '/space-satellite/earth-stations-operations' },
@@ -236,118 +170,45 @@ export const spacePages = {
     ],
   },
 
-  'space-insurance': {
-    title: 'Space Insurance',
-    subtitle: 'Bermuda — the world\'s leading centre for space insurance and reinsurance',
-    image: PAGE_IMAGES.spaceInsurance,
-    content: [
-      'Bermuda occupies a unique and globally pre-eminent position in the space insurance market. The island\'s specialist insurance and reinsurance sector has been underwriting space risks for decades, providing operators worldwide with access to world-class capacity, expertise, and financial security for all phases of satellite and launch operations.',
-    ],
-    sections: [
-      {
-        heading: 'Bermuda\'s Space Insurance Market',
-        paragraphs: [
-          'The Bermuda insurance market is widely acknowledged as the global leader in space risk underwriting. Several of the world\'s largest and most experienced space insurers and reinsurers are domiciled in or maintain significant operations in Bermuda, providing unparalleled depth of capacity and expertise in a single jurisdiction.',
-          'Bermuda underwriters have participated in the insurance of satellite launches, in-orbit operations, and major commercial space programmes for operators across North America, Europe, Asia, and the Middle East. The island\'s market has the financial strength, technical knowledge, and appetite to cover risks across the full spectrum of space activities — from conventional geostationary communications satellites to innovative new-space ventures.',
-        ],
-        bullets: [
-          'Home to leading global space insurers and reinsurers',
-          'Significant underwriting capacity for all classes of space risk',
-          'Deep technical expertise in satellite and launch risk assessment',
-          'Track record covering major commercial and government space programmes',
-        ],
-      },
-      {
-        heading: 'Classes of Space Insurance',
-        paragraphs: [
-          'The Bermuda market provides coverage across all major classes of space insurance. Pre-launch and launch insurance covers satellites and launch vehicles during the build, testing, integration, and launch phases, including partial and total loss resulting from launch failure. In-orbit insurance protects operating satellites against total loss, partial loss, and third-party liability during the operational life of the spacecraft.',
-          'Emerging areas of space risk — including small satellites, constellation deployments, on-orbit servicing, and commercial human spaceflight — are also areas in which Bermuda underwriters are actively developing capacity and expertise, reflecting the evolving nature of the global space economy.',
-        ],
-        bullets: [
-          'Pre-launch and launch insurance (including launch failure coverage)',
-          'In-orbit total and partial loss coverage',
-          'Third-party liability insurance for satellite operations',
-          'Small satellite and new-space constellation programmes',
-          'Emerging risks: on-orbit servicing, commercial human spaceflight',
-        ],
-      },
-      {
-        heading: 'Regulatory Framework',
-        paragraphs: [
-          'Space insurers operating in Bermuda are regulated by the Bermuda Monetary Authority (BMA), which provides a robust, internationally recognised regulatory framework. The BMA\'s oversight ensures that Bermuda-based insurers maintain appropriate capital reserves, risk management frameworks, and governance standards, providing policyholders with confidence in the financial security of their space insurance programmes.',
-          'Bermuda\'s equivalence with major international regulatory standards, including Solvency II, makes it an efficient and credible jurisdiction for global space insurance transactions and reinsurance arrangements.',
-        ],
-      },
-    ],
-    highlights: [
-      'Global leader in space risk underwriting',
-      'Launch & in-orbit coverage expertise',
-      'Third-party liability programmes',
-      'BMA-regulated market with Solvency II equivalence',
-      'Coverage for new-space and emerging risks',
-    ],
-    crossLinks: [
-      { label: 'Why Choose Bermuda', to: '/space-satellite/why-choose-bermuda' },
-      { label: 'Bermuda & Global Space Economy', to: '/space-satellite/bermuda-global-space-economy' },
-      { label: 'Sector Enquiries', to: '/space-satellite/sector-enquiries' },
-    ],
-  },
-
   'national-space-strategy': {
     title: 'National Space Strategy and Policy Documents',
-    subtitle: 'Bermuda\'s strategic framework for the space and satellite sector',
+    subtitle: 'Policies and initiatives supporting the responsible development of space-related activities',
     image: PAGE_IMAGES.spaceStrategy,
     content: [
-      'The Government of Bermuda has developed a National Space Strategy that sets out the island\'s vision, priorities, and objectives for the development of the space and satellite sector. The strategy reflects the Government\'s commitment to growing Bermuda\'s role in the global space economy and positioning the jurisdiction as a leading destination for space industry investment, operations, and expertise.',
+      'Bermuda\'s space and satellite sector is guided by policies and initiatives intended to support the responsible development of space-related activities within the jurisdiction.',
     ],
     sections: [
       {
-        heading: 'National Space Strategy 2020–2025',
+        heading: 'National Space Strategy',
         paragraphs: [
-          'Bermuda\'s National Space Strategy 2020–2025 sets out an ambitious plan built on four aims: to build a reputation as a leading jurisdiction for space and satellite businesses; to enhance domestic space-related capabilities through education and training initiatives; to foster international partnerships that advance Bermuda\'s role in the global space community; and to commercialise Bermuda\'s orbital allotments to generate public revenue and economic growth.',
-          'Delivery runs through the Department of Energy, which holds the policy, legislative and regulatory framework for the sector, and through Bermuda\'s engagement with the International Telecommunication Union and other international space governance bodies.',
-        ],
-        bullets: [
-          'Build a reputation as a leading jurisdiction for space and satellite businesses',
-          'Enhance domestic space-related capabilities through education and training',
-          'Foster international partnerships advancing Bermuda\'s role in the space community',
-          'Commercialise Bermuda\'s orbital allotments to generate public revenue and growth',
+          'The National Space Strategy sets out the Government\'s objectives for the development of Bermuda\'s space and satellite sector.',
         ],
       },
       {
         heading: 'Policy and Consultation Documents',
         paragraphs: [
-          'The Government periodically publishes consultation documents on proposed legislative and regulatory changes affecting the space and satellite sector. These consultations invite input from industry stakeholders, operators, and members of the public on proposed policy directions, and form part of the Government\'s commitment to transparent and participatory policy development.',
-          'All active and archived consultation documents relating to the space and satellite sector are available through the Government\'s consultation portal. Interested parties are encouraged to participate in consultations to help shape the future policy environment for space activities in Bermuda.',
+          'The Government may periodically publish consultation papers, policy documents, and other materials relating to the space and satellite sector.',
         ],
       },
       {
-        heading: 'Space Camps and STEM Education',
+        heading: 'Space Education and STEM Initiatives',
         paragraphs: [
-          'Bermuda is committed to nurturing the next generation of space leaders and innovators through its STEM education programmes, which support the second aim of the National Space Strategy: enhancing domestic space-related capabilities through education and training.',
-          'In partnership with NASA and the Challenger Learning Center of Alaska, the island hosts summer space camps for students aged 11 to 14. Camps include hands-on activities in satellite building, coding, climate science and alternative power sources, encouraging young Bermudians to consider careers in the space industry.',
-          'High school students take part in small satellite programmes and microgravity experiments. Exchange programmes and collaborations with international space education organisations broaden that experience, and partnerships with industry leaders provide opportunities for advanced workforce training in space-related fields.',
-        ],
-        bullets: [
-          'Annual summer space camps with NASA and the Challenger Learning Center of Alaska, for ages 11 to 14',
-          'Hands-on satellite building, coding, climate science and alternative power sources',
-          'Small satellite programmes and microgravity experiments for high school students',
-          'Exchange programmes with international space education organisations',
-          'Advanced workforce training through partnerships with industry leaders',
+          'The Government supports educational initiatives that promote interest in science, technology, engineering, and mathematics (STEM) and encourage awareness of space-related fields among students and young professionals.',
         ],
       },
     ],
-    highlights: [
-      'National Space Strategy 2020–2025',
-      'Four aims: reputation, domestic capability, partnerships, orbital allotments',
-      'Transparent policy development process',
-      'Open stakeholder consultations',
-      'ITU and international space body engagement',
-      'Space camps and STEM education with NASA and the Challenger Learning Center',
-    ],
+    disclaimer: DISCLAIMER,
+    // The "National Space Strategy 2020-2025" entry that used to sit here had
+    // url: '#' and a 3.4 MB file size, so it rendered as a downloadable PDF and
+    // produced a placeholder document when clicked. The strategy is described
+    // above; only the live consultations forum is linked.
     documents: [
-      { title: 'National Space Strategy 2020–2025', url: '#', size: '3.4 MB' },
       { title: 'Space & Satellite Consultation', url: EXTERNAL_LINKS.consultationsForum, size: 'External' },
+    ],
+    highlights: [
+      'National Space Strategy',
+      'Consultation papers and policy documents',
+      'STEM education initiatives',
     ],
     crossLinks: [
       { label: 'Bermuda & Global Space Economy', to: '/space-satellite/bermuda-global-space-economy' },
@@ -358,26 +219,12 @@ export const spacePages = {
 
   'sector-enquiries': {
     title: 'Space Sector Enquiries',
-    subtitle: 'Connect with the Department of Energy on space and satellite matters',
+    subtitle: 'A point of contact for space and satellite policy, satellite network filings, and other space-sector matters',
     image: PAGE_IMAGES.spaceAstronaut,
     content: [
-      'The Department of Energy is the primary point of contact for enquiries relating to space and satellite policy, earth station licensing, ITU satellite filing, and investment opportunities in Bermuda\'s space sector. We welcome enquiries from satellite operators, investors, insurers, and other stakeholders with an interest in Bermuda\'s space and satellite industry.',
+      'The Department of Energy serves as a point of contact for enquiries relating to space and satellite policy, satellite network filings, and other space-sector matters within Bermuda.',
     ],
-    sections: [
-      {
-        heading: 'Types of Enquiries',
-        paragraphs: [
-          'The Department handles a broad range of space and satellite sector enquiries, including questions about ITU satellite filing procedures and fees, earth station licensing and regulatory requirements, space sector investment and business development opportunities, policy and legislative matters relating to the space sector, and engagement with the National Space Strategy.',
-        ],
-        bullets: [
-          'ITU satellite filing — procedures, fees, and timelines',
-          'Earth station licensing and spectrum management',
-          'Space sector investment and business development',
-          'Space insurance regulatory questions',
-          'National Space Strategy engagement and consultation',
-        ],
-      },
-    ],
+    disclaimer: DISCLAIMER,
     contact: {
       email: 'energy@gov.bm',
       phone: '441-444-0597',
@@ -385,11 +232,13 @@ export const spacePages = {
       hours: 'Monday – Friday, 9:00 AM – 5:00 PM',
     },
     highlights: [
-      'Satellite filing enquiries',
-      'Earth station licensing',
-      'Investment opportunities',
-      'Policy and legislation',
-      'National Space Strategy',
+      'Space and satellite policy',
+      'Satellite network filings',
+      'Other space-sector matters',
+    ],
+    crossLinks: [
+      { label: 'Bermuda & Global Space Economy', to: '/space-satellite/bermuda-global-space-economy' },
+      { label: 'Earth Stations & Operations', to: '/space-satellite/earth-stations-operations' },
     ],
   },
 }

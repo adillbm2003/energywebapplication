@@ -119,14 +119,6 @@ export default function Education() {
                 <li>✅ Solar PV · Solar Water Heaters · Micro-Wind Turbines</li>
                 <li>✅ Electric Vehicles · Water Heaters</li>
               </ul>
-              <div className="mt-5">
-                <Button
-                  onClick={() => setCategory('Appliance Guides')}
-                  variant="gold"
-                >
-                  Browse Appliance Guides
-                </Button>
-              </div>
             </div>
             <div className="grid grid-cols-3 gap-3 opacity-90">
               {['☀️ Solar PV', '❄️ Air Con', '💡 Lighting', '🚗 EVs', '🌬️ Wind', '🚿 Water Heater'].map((item) => (

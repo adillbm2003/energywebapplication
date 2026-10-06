@@ -4,27 +4,23 @@ import SectionHeading from '../../components/ui/SectionHeading'
 import Button from '../../components/ui/Button'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { ROUTES } from '../../constants/routes'
+import Disclaimer from '../../components/common/Disclaimer'
 
 const PILLARS = [
   {
     icon: '📺',
     title: 'Policy & Legislative Framework',
-    description: 'The Government of Bermuda, through the Department of Energy, is responsible for developing and maintaining the policy and legislative framework governing Bermuda\'s broadcasting sector.',
+    description: 'The Government of Bermuda, through the Department of Energy, is responsible for the development and maintenance of the policy and legislative framework governing Bermuda\'s broadcasting sector.',
   },
   {
     icon: '🎙️',
     title: 'Broadcasting Commissioners',
-    description: 'Broadcasting regulation is administered through the Broadcasting Commissioners, who oversee the licensing and regulation of broadcasting services in accordance with Bermuda\'s broadcasting legislation.',
+    description: 'Broadcasting regulation is administered by the Broadcasting Commissioners, who are responsible for the licensing and regulation of broadcasting services in accordance with applicable legislation.',
   },
   {
     icon: '🤝',
     title: 'Stakeholder Collaboration',
-    description: 'The Department works closely with the Broadcasting Commissioners, industry stakeholders, and government partners to support a diverse, sustainable, and future-ready broadcasting environment.',
-  },
-  {
-    icon: '🚀',
-    title: 'Modernisation & Reform',
-    description: 'The Government is pursuing broadcasting reform initiatives to establish a contemporary regulatory framework that promotes innovation, competition, local content, and greater alignment with Bermuda\'s broader digital objectives.',
+    description: 'The Department of Energy works with the Broadcasting Commissioners, industry stakeholders, and other government agencies on matters relating to broadcasting policy, legislation, and regulatory developments affecting the sector.',
   },
 ]
 
@@ -50,40 +46,39 @@ export default function Broadcasting() {
             <div>
               <SectionHeading title="Overview" className="mb-4" />
               <p className="text-slate-600 leading-relaxed">
-                The Government of Bermuda is responsible for developing and maintaining the policy and legislative
-                framework governing Bermuda&apos;s broadcasting sector. Through the Department of Energy, the Government
-                is advancing the modernization of broadcasting legislation and policy to ensure the sector remains
-                responsive to technological change, evolving consumer preferences, and international best practices.
+                The Government of Bermuda is responsible for the development and maintenance of the policy and
+                legislative framework governing Bermuda&apos;s broadcasting sector. Through the Department of Energy,
+                the Government reviews broadcasting policies and legislation to help ensure the regulatory framework
+                remains responsive to technological developments, changes in service delivery, and evolving industry
+                practices.
               </p>
               <p className="mt-4 text-slate-600 leading-relaxed">
-                Broadcasting regulation is currently administered through the Broadcasting Commissioners, who are
-                responsible for overseeing the licensing and regulation of broadcasting services in accordance with
-                Bermuda&apos;s broadcasting legislation.
+                Broadcasting regulation is administered by the Broadcasting Commissioners, who are responsible for
+                the licensing and regulation of broadcasting services in accordance with applicable legislation.
               </p>
               <p className="mt-4 text-slate-600 leading-relaxed">
-                The Department works closely with the Broadcasting Commissioners, industry stakeholders, and government
-                partners to support a diverse, sustainable, and future-ready broadcasting environment that serves the
-                interests of residents, businesses, and the wider community.
+                The Department of Energy works with the Broadcasting Commissioners, industry stakeholders, and other
+                government agencies on matters relating to broadcasting policy, legislation, and regulatory
+                developments affecting the sector.
               </p>
             </div>
             <div className="space-y-4">
               <div className="overflow-hidden rounded-xl">
                 <img src={PAGE_IMAGES.telecom} alt="" className="aspect-[16/10] w-full object-cover" loading="lazy" />
               </div>
-              <div className="rounded-lg border border-teal-100 bg-teal-50 card-padding">
-                <h3 className="text-base font-semibold text-navy-900">Broadcasting Reform</h3>
-                <p className="mt-2 text-sm text-slate-600 leading-relaxed">
-                  As part of its ongoing modernisation efforts, the Government is pursuing broadcasting reform initiatives
-                  to establish a contemporary regulatory framework that promotes innovation, competition, local content,
-                  and greater alignment with Bermuda&apos;s broader digital and communications objectives.
-                </p>
-              </div>
             </div>
           </div>
+
+          <Disclaimer className="mt-10">
+            Information provided on this page is for general informational purposes only and does not constitute
+            legal, regulatory, technical, or professional advice. Broadcasting activities are subject to applicable
+            legislation, regulations, policies, and licensing requirements, which may change from time to time.
+            Interested parties should consult the relevant authorities regarding current requirements.
+          </Disclaimer>
         </div>
       </section>
 
-      {/* Four pillars */}
+      {/* Key areas */}
       <section className="section-padding bg-slate-50">
         <div className="container-page">
           <SectionHeading
@@ -91,7 +86,7 @@ export default function Broadcasting() {
             subtitle="The foundations of Bermuda's broadcasting governance"
             align="center"
           />
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {PILLARS.map((item) => (
               <div
                 key={item.title}

@@ -46,7 +46,7 @@ export const homePriorities = [
 export const homeExplore = [
   {
     title: 'Space & Satellite Sector',
-    description: "Bermuda's premier jurisdiction for satellite filing, earth stations, and space insurance.",
+    description: "Bermuda's framework for satellite network filings, earth station licensing, and regulatory administration.",
     image: PAGE_IMAGES.spaceSatellites,
     to: ROUTES.spaceSatellite,
     tag: 'Space Economy',

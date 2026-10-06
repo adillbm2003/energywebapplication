@@ -34,7 +34,7 @@ export default function SpaceSatellite() {
 
         title="Space & Satellite"
 
-        subtitle="Bermuda - a strategic jurisdiction for space industry investment, satellite filing, and earth station operations."
+        subtitle="Bermuda's space and satellite sector is supported by a framework for satellite network filings, earth station licensing, and regulatory administration, guided by the Department of Energy and applicable international obligations."
 
         breadcrumbs={[{ label: 'Space & Satellite', to: ROUTES.spaceSatellite }]}
         image={PAGE_IMAGES.spaceSatellites}
@@ -54,11 +54,9 @@ export default function SpaceSatellite() {
 
               <p className="text-body-small text-slate-600">
 
-                Bermuda has built a world-class reputation in satellite communications, earth station operations,
+                Bermuda supports space and satellite sector activities through its experience in satellite
 
-                ITU filing services, and space insurance - leveraging decades of regulatory expertise and
-
-                a strategic mid-Atlantic location.
+                communications, satellite network filings, and international regulatory engagement.
 
               </p>
 
@@ -92,7 +90,7 @@ export default function SpaceSatellite() {
 
         <div className="container-page">
 
-          <SectionHeading title="Explore the Space Sector" subtitle="Policy, regulation, investment, and commercial opportunities" />
+          <SectionHeading title="Explore the Space Sector" subtitle="Policy, regulation, and the framework for satellite activities" />
 
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 
