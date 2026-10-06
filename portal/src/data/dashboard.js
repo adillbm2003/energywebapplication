@@ -11,7 +11,7 @@ import { PAGE_IMAGES } from '../constants/branding'
 export const homeStats = [
   { label: 'Installed Solar Capacity', value: '15.6', unit: 'MW' },
   { label: 'Renewable Penetration', value: '15', unit: '%' },
-  { label: 'Registered EVs', value: '842', unit: '' },
+  { label: 'Registered EVs', value: '1789', unit: '' },
   { label: 'Solar Installations', value: '720', unit: '' },
 ]
 
@@ -43,7 +43,7 @@ export const capacityByType = [
 ]
 
 export const transitionKPIs = [
-  { label: 'Registered EVs', value: 1787, unit: '', change: 28.0, image: PAGE_IMAGES.bmw3 },
+  { label: 'Registered EVs', value: 1789, unit: '', change: 28.0, image: PAGE_IMAGES.bmw3 },
   { label: 'Public Chargers', value: 48, unit: '', change: 26.3, image: PAGE_IMAGES.charging },
   { label: 'EV Market Share', value: 4.1, unit: '%', change: 1.2, image: PAGE_IMAGES.evExpo },
   { label: 'Fleet Electrification', value: 18, unit: '%', change: 6.0, image: PAGE_IMAGES.dptElectrification },
@@ -57,7 +57,7 @@ export const evByCategory = [
   { category: 'Rental Mini-Cars', count: 421, percent: 24, image: PAGE_IMAGES.evFleetBermuda },
   { category: 'Motorcycles & Cycles', count: 154, percent: 9, image: PAGE_IMAGES.motorcycle },
   { category: 'Trucks', count: 100, percent: 6, image: PAGE_IMAGES.van },
-  { category: 'Buses (Omnibus)', count: 88, percent: 5, image: PAGE_IMAGES.bus },
+  { category: 'Buses (Omnibus)', count: 90, percent: 5, image: PAGE_IMAGES.bus },
   { category: 'Government Vehicles', count: 31, percent: 2, image: PAGE_IMAGES.govSolarField },
   { category: 'Taxis & Other', count: 6, percent: 0, image: PAGE_IMAGES.evExpo },
 ]

@@ -212,23 +212,23 @@ const RICH = {
     ]
   },
   'EVs': {
-    intro: 'Bermuda\'s electric vehicle programme supports the transition to cleaner, more sustainable transport. With 1,767 registered electric vehicles as of 2026, Bermuda\'s EV fleet spans all vehicle categories from private cars and rental mini-cars to buses and government vehicles.',
+    intro: 'Bermuda\'s electric vehicle programme supports the transition to cleaner, more sustainable transport. With 1,789 registered electric vehicles as of 2026, Bermuda\'s EV fleet spans all vehicle categories from private cars and rental mini-cars to buses and government vehicles.',
     sections: [
       {
         title: 'BERMUDA EV FLEET DATA (2026)',
         body: [
           'Source: Registrar of Vehicles, Bermuda',
           '',
-          'VEHICLE CATEGORY           REGISTERED EVs    % OF EV FLEET',
-          'Private Cars               987               55.9%',
-          'Rental Mini-Cars           421               23.8%',
-          'Motorcycles & Cycles       154                8.7%',
-          'Trucks                     100                5.7%',
-          'Buses (Omnibus)             68                3.8%',
-          'Government Vehicles         31                1.8%',
-          'Taxis & Other                6                0.3%',
-          '                          ----              ------',
-          'TOTAL ELECTRIC VEHICLES   1,767             100.0%',
+          'VEHICLE CATEGORY             EVs      % OF FLEET',
+          'Private Cars                 987           55.3%',
+          'Rental Mini-Cars             421           23.5%',
+          'Motorcycles & Cycles         154            8.6%',
+          'Trucks                       100            5.6%',
+          'Buses (Omnibus)               90            5.0%',
+          'Government Vehicles           31            1.7%',
+          'Taxis & Other                  6            0.3%',
+          '                           -----      ----------',
+          'TOTAL ELECTRIC VEHICLES    1,789          100.0%',
           '',
           'EV fleet growth reflects strong uptake following duty concessions',
           'and the introduction of 70 electric buses to the public transit fleet.',
@@ -303,7 +303,7 @@ const RICH = {
           '783 solar PV permit applications processed (2019-2025)',
           '772 active solar installations across all parishes',
           'Estimated 129 MW total solar PV capacity installed island-wide',
-          '1,767 electric vehicles registered across all categories',
+          '1,789 electric vehicles registered across all categories',
         ]
       },
       {
@@ -536,7 +536,7 @@ const RICH = {
           'Wind:            Small-scale installations island-wide',
           '',
           'ENERGY TRANSITION STATUS:',
-          '1,767 electric vehicles registered (all categories, 2026)',
+          '1,789 electric vehicles registered (all categories, 2026)',
           '70 electric buses operating in public transit fleet',
           '14.3 MW distributed generation target for 2025',
           '',

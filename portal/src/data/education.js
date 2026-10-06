@@ -144,7 +144,7 @@ export const educationResources = [
     title: 'Bermuda Electric Vehicle Fleet Overview',
     category: 'EVs',
     type: 'Infographic',
-    description: 'Current EV fleet composition across Bermuda showing 1,767 registered electric vehicles by category — private cars, rental mini-cars, motorcycles, buses, trucks, and government vehicles. Data from the Registrar of Vehicles.',
+    description: 'Current EV fleet composition across Bermuda showing 1,789 registered electric vehicles by category — private cars, rental mini-cars, motorcycles, buses, trucks, and government vehicles. Data from the Registrar of Vehicles.',
     downloadUrl: base + 'guides/ev-fleet-chart.png',
     fileSize: '1.2 MB',
     image: base + 'guides/ev-fleet-chart.png',
