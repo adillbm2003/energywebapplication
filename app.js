@@ -29,6 +29,7 @@ const NAV = [
   { section:'DATA & TOOLS' },
   { id:'kpis', label:'KPI Dashboard', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>' },
   { id:'solar-registry', label:'Solar Registry', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>' },
+  { id:'ev-fleet', label:'EV Fleet Data', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="6" width="15" height="11" rx="2"/><path d="M16 10h3l3 3v4h-6z"/><circle cx="5.5" cy="18.5" r="1.5"/><circle cx="17.5" cy="18.5" r="1.5"/></svg>' },
   { id:'installers', label:'Solar Installers', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>' },
   { id:'statistics', label:'Statistics', icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>' },
   { section:'PROGRAMMES' },
@@ -330,6 +331,7 @@ async function renderView(viewId) {
       case 'projects':       await renderProjects(); break
       case 'kpis':           await renderKpis(); break
       case 'solar-registry': await renderSolarRegistry(); break
+      case 'ev-fleet':       await renderEvFleet(); break
       case 'installers':     await renderInstallers(); break
       case 'statistics':     await renderStatistics(); break
       case 'education':      await renderEducation(); break
@@ -1607,6 +1609,108 @@ async function uploadSolarExcel(input) {
     toast(data.inserted != null ? `Solar data saved — ${data.inserted.toLocaleString()} installations loaded into database` : 'Solar data file uploaded')
     // Refresh the view to show new stats
     setTimeout(() => renderSolarRegistry(), 1200)
+  } catch (err) {
+    statusEl.textContent = 'Error: ' + err.message
+    statusEl.style.color = '#dc2626'
+    toast('Upload failed: ' + err.message, 'error')
+  }
+  input.value = ''
+}
+
+// ─── EV FLEET DATA ─────────────────────────────
+//
+// The backend has accepted a replacement vehicle register at
+// /api/data-files/vehicles since July, but nothing in this admin ever offered
+// it -- only the solar file had an upload card. So the register could not be
+// refreshed without redeploying the server, and the public dashboards sat on
+// whatever spreadsheet shipped with the last deploy.
+async function renderEvFleet() {
+  const vc = document.getElementById('view-container')
+
+  let fleet = null
+  try {
+    const res = await fetch('/api/vehicles/fleet', { credentials: 'include' })
+    if (res.ok) fleet = await res.json()
+  } catch (_) {}
+
+  const fmt = n => Number.isFinite(n) ? n.toLocaleString() : '—'
+  const rows = fleet ? Object.entries(fleet.byCategory || {}).sort((a, b) => b[1] - a[1]) : []
+
+  vc.innerHTML = `
+    <div class="view-header">
+      <div>
+        <h2 class="view-title">EV Fleet Data</h2>
+        <p class="view-sub">The electric vehicle register behind the Transition Dashboard and the Vehicles page.</p>
+      </div>
+    </div>
+
+    <div style="background:#eff6ff;border:2px dashed #3b82f6;border-radius:12px;padding:24px 28px;margin-bottom:24px" class="write-only">
+      <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px">
+          <p style="font-weight:700;color:#1e40af;margin:0 0 4px;font-size:15px">Upload Vehicle Register (Excel)</p>
+          <p style="font-size:13px;color:#1e3a8a;margin:0 0 10px">
+            Replaces the active register. Expects the Department's
+            <strong>Vehicles by Fuel Type</strong> workbook: a <strong>FORECAST</strong> sheet with one row per
+            vehicle under <strong>Vehicle Category, Sub-Category, Make, Model</strong>.
+          </p>
+          <p style="font-size:12px;color:#1e3a8a;margin:0">
+            Takes effect immediately &mdash; the public pages read the uploaded file on their next load, with no deploy.
+          </p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-start">
+          <label style="cursor:pointer">
+            <input type="file" id="vehicles-excel-input" accept=".xlsx,.xls" style="display:none" onchange="uploadVehiclesExcel(this)">
+            <span class="btn btn-primary" onclick="document.getElementById('vehicles-excel-input').click()">
+              Choose Excel File
+            </span>
+          </label>
+          <p id="vehicles-upload-status" style="font-size:12px;color:#6b7280;margin:0"></p>
+        </div>
+      </div>
+    </div>
+
+    ${!fleet ? `
+      ${emptyState('No register loaded. Upload the vehicles spreadsheet above.')}
+    ` : `
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-info"><div class="stat-value">${fmt(fleet.total)}</div><div class="stat-label">Registered EVs</div></div></div>
+        <div class="stat-card"><div class="stat-info"><div class="stat-value">${fleet.fuelType || '—'}</div><div class="stat-label">Fuel type</div></div></div>
+        <div class="stat-card"><div class="stat-info"><div class="stat-value">${fleet.asOf || '—'}</div><div class="stat-label">As at</div></div></div>
+      </div>
+      <div class="table-wrap">
+        <table class="cms-table">
+          <thead><tr><th>Category</th><th style="text-align:right">Vehicles</th><th style="text-align:right">Share</th></tr></thead>
+          <tbody>
+            ${rows.map(([cat, n]) => `
+              <tr>
+                <td>${cat}</td>
+                <td style="text-align:right">${fmt(n)}</td>
+                <td style="text-align:right">${fleet.total ? ((n / fleet.total) * 100).toFixed(1) + '%' : '—'}</td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>
+    `}
+  `
+  applyRbac(STATE.role)
+}
+
+async function uploadVehiclesExcel(input) {
+  const file = input.files[0]
+  if (!file) return
+  const statusEl = document.getElementById('vehicles-upload-status')
+  statusEl.textContent = 'Uploading…'
+  statusEl.style.color = '#6b7280'
+  try {
+    const fd = new FormData()
+    fd.append('file', file)
+    const res = await fetch('/api/data-files/vehicles', { method: 'POST', credentials: 'include', body: fd })
+    if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Upload failed') }
+    await res.json()
+    statusEl.textContent = `Uploaded: ${file.name}`
+    statusEl.style.color = '#16a34a'
+    toast('Vehicle register updated — the public pages will show it on their next load')
+    setTimeout(() => renderEvFleet(), 1200)
   } catch (err) {
     statusEl.textContent = 'Error: ' + err.message
     statusEl.style.color = '#dc2626'
