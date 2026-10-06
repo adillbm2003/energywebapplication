@@ -122,6 +122,20 @@ export const dashboardService = {
       }
     } catch { /* registry unreachable — fall back to the CMS/bundled values */ }
 
+    // The register beats the CMS for the EV count, the same rule applied just
+    // above to solar capacity and installations, and already applied on the
+    // transition dashboard. Home was the last surface still showing the stale
+    // CMS row -- 842 against a register holding 1,789 -- so the two pages
+    // disagreed about the same fleet.
+    try {
+      const fleet = await fetchFleet()
+      const evs = find('registered ev')
+      if (evs && fleet.total > 0) {
+        evs.value = fleet.total.toLocaleString()
+        evs.unit = ''
+      }
+    } catch { /* register unreachable -- keep the CMS/bundled value */ }
+
     return stats
   },
 
