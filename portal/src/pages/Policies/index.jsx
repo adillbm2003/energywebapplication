@@ -29,6 +29,8 @@ import { policyService } from '../../services'
 import { filterBySearch, filterByField } from '../../utils/filter'
 
 import { EXTERNAL_LINKS } from '../../constants/externalLinks'
+import { Link } from 'react-router-dom'
+import { policyDocumentList } from '../../data/policyDocuments'
 
 
 
@@ -117,6 +119,34 @@ export default function Policies() {
             >
               www.bermudalaws.bm
             </a>
+          </div>
+
+          <div className="mb-8">
+            <h2 className="mb-1 text-xl font-bold text-navy-900">Published policy documents</h2>
+            <p className="mb-4 text-body-small text-slate-600">
+              Full documents issued by the Ministry of Home Affairs, with the PDF available to read or download.
+            </p>
+            <div className="grid gap-4 md:grid-cols-2">
+              {policyDocumentList.map((doc) => (
+                <Link
+                  key={doc.slug}
+                  to={`/policies/${doc.slug}`}
+                  className="group rounded-xl border border-slate-200 bg-white card-padding card-shadow transition-all hover:-translate-y-0.5 hover:border-teal-300 hover:card-shadow-hover"
+                >
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-gold-100 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-navy-900">
+                      {doc.status}
+                    </span>
+                    <span className="text-caption text-slate-500">{doc.date}</span>
+                  </div>
+                  <h3 className="mb-1.5 group-hover:text-teal-700">{doc.title}</h3>
+                  <p className="text-body-small leading-relaxed text-slate-600">{doc.summary[0]}</p>
+                  <span className="mt-3 inline-block text-body-small font-semibold text-teal-600">
+                    Read the document →
+                  </span>
+                </Link>
+              ))}
+            </div>
           </div>
 
           <div className="mb-6 grid gap-4 md:grid-cols-3">

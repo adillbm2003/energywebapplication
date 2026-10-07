@@ -12,6 +12,7 @@ const ElectronicCommunications = lazy(() => import('../pages/ElectronicCommunica
 const SpaceSatellite = lazy(() => import('../pages/SpaceSatellite'))
 const Broadcasting = lazy(() => import('../pages/Broadcasting'))
 const SpaceSatellitePage = lazy(() => import('../pages/SpaceSatellite/SpacePage'))
+const PolicyDocumentPage = lazy(() => import('../pages/PolicyDocument'))
 const Policies = lazy(() => import('../pages/Policies'))
 const Consultations = lazy(() => import('../pages/Consultations'))
 const Projects = lazy(() => import('../pages/Projects'))
@@ -48,6 +49,7 @@ export default function AppRoutes() {
           <Route path="space-satellite" element={<SpaceSatellite />} />
           <Route path="space-satellite/:slug" element={<SpaceSatellitePage />} />
           <Route path="policies" element={<Policies />} />
+          <Route path="policies/:slug" element={<PolicyDocumentPage />} />
           <Route path="consultations" element={<Consultations />} />
           <Route path="projects" element={<Projects />} />
           <Route path="projects/:id" element={<ProjectDetail />} />
