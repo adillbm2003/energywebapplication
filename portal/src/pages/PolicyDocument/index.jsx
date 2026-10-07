@@ -3,18 +3,19 @@ import { useParams, Navigate } from 'react-router-dom'
 import PageBanner from '../../components/common/PageBanner'
 import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
-import SectionHeading from '../../components/ui/SectionHeading'
 import { PAGE_IMAGES } from '../../constants/branding'
 import { ROUTES } from '../../constants/routes'
 import { useDocumentTitle } from '../../hooks/useDocumentTitle'
 import { policyDocuments } from '../../data/policyDocuments'
+import DocumentBody from '../../components/common/DocumentBody'
+import { sectionId } from '../../utils/sectionId'
 
-// The document is shown as the Department published it: the PDF is embedded, so
-// the layout, numbering and tables are the document's own rather than a
-// transcription of them. The contents list above it is there so the page is
-// navigable and readable where a PDF cannot be rendered -- phones commonly
-// refuse to, and a screen reader gets nothing from an <object> -- and the file
-// is downloadable either way.
+// The document is set as web content, with its own section numbering, tables
+// and definition lists. An earlier version embedded the PDF instead, which
+// handed the page to the browser's own viewer: a dark toolbar, a thumbnail
+// rail and a menu bar that belong to Chrome rather than to the Department,
+// and that cannot be styled, linked to by section, or read sensibly on a
+// phone. The original PDF stays downloadable for anyone who wants it.
 export default function PolicyDocument() {
   const { slug } = useParams()
   const doc = policyDocuments[slug]
@@ -75,9 +76,12 @@ export default function PolicyDocument() {
                 <ol className="space-y-3">
                   {doc.contents.map((section) => (
                     <li key={section.number}>
-                      <p className="text-sm font-semibold text-navy-900">
+                      <a
+                        href={`#${sectionId(section.number)}`}
+                        className="block text-sm font-semibold text-navy-900 hover:text-teal-700"
+                      >
                         {section.number}. {section.title}
-                      </p>
+                      </a>
                       {section.children && (
                         <ul className="mt-1 space-y-1 border-l border-slate-200 pl-3">
                           {section.children.map((child) => (
@@ -96,31 +100,23 @@ export default function PolicyDocument() {
 
       <section className="section-padding bg-slate-50 pt-0">
         <div className="container-page">
-          <SectionHeading
-            title="Read the document"
-            subtitle="The full document, as published"
-            className="mb-4"
-          />
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white card-shadow">
-            <object data={doc.file} type="application/pdf" className="h-[80vh] min-h-[480px] w-full" aria-label={doc.title}>
-              <div className="card-padding">
-                <p className="text-slate-600 leading-relaxed">
-                  Your browser cannot display the document inline.
-                </p>
-                <div className="mt-4">
-                  <Button href={doc.file} variant="primary" target="_blank" rel="noopener noreferrer">
-                    Download PDF ({doc.fileSize})
-                  </Button>
-                </div>
+          <article className="rounded-xl border border-slate-200 bg-white px-6 py-8 card-shadow sm:px-10 sm:py-12">
+            <DocumentBody blocks={doc.blocks} />
+
+            <footer className="mt-12 border-t border-slate-200 pt-6">
+              <p className="text-caption text-slate-500">
+                {doc.title} — {doc.status}, {doc.date}. Issued by the {doc.issuedBy.replace('Government of Bermuda, ', '')}.
+              </p>
+              <div className="mt-4">
+                <Button href={doc.file} variant="outline" size="sm" target="_blank" rel="noopener noreferrer">
+                  Download the original PDF ({doc.fileSize})
+                </Button>
               </div>
-            </object>
-          </div>
-          <p className="mt-3 text-caption text-slate-500">
-            Issued by the {doc.issuedBy.replace('Government of Bermuda, ', '')}, {doc.date}. If the document does not
-            display above, <a href={doc.file} target="_blank" rel="noopener noreferrer" className="font-semibold text-teal-700 underline hover:text-teal-800">open the PDF directly</a>.
-          </p>
+            </footer>
+          </article>
         </div>
       </section>
+
     </>
   )
 }

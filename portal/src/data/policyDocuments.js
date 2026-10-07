@@ -1,3 +1,6 @@
+import { nespPolicyBlocks } from './documents/nespPolicy'
+import { earthStationsFrameworkBlocks } from './documents/earthStationsFramework'
+
 const base = import.meta.env.BASE_URL || '/'
 
 // Policy documents published as supplied by the Department, with the PDF itself
@@ -16,6 +19,7 @@ export const policyDocuments = {
     date: 'April 2026',
     issuedBy: 'Government of Bermuda, Ministry of Home Affairs',
     file: base + 'documents/national-electricity-sector-policy-2026.pdf',
+    blocks: nespPolicyBlocks,
     fileSize: '6.1 MB',
     summary: [
       'The National Electricity Sector Policy sets out the Government’s policy direction for the structure, planning and regulation of Bermuda’s electricity sector. Its objective is to reduce Bermuda’s reliance on fossil fuels by increasing the share of renewable energy, while simultaneously ensuring affordability, equity, and system stability.',
@@ -46,6 +50,7 @@ export const policyDocuments = {
     date: 'May 2026',
     issuedBy: 'Government of Bermuda, Ministry of Home Affairs',
     file: base + 'documents/national-earth-stations-licensing-framework-2026.pdf',
+    blocks: earthStationsFrameworkBlocks,
     fileSize: '4.0 MB',
     summary: [
       'This Framework is issued by the Government of Bermuda as a statement of national policy for the licensing and operation of Earth Stations. The Government sets policy direction. The Regulatory Authority of Bermuda implements that policy within its statutory mandate.',
