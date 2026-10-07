@@ -51,13 +51,6 @@ export const spacePages = {
       },
     ],
     disclaimer: DISCLAIMER,
-    highlights: [
-      'Satellite communications experience',
-      'Satellite network filings',
-      'ITU regulatory framework',
-      'Regulatory administration',
-      'International engagement',
-    ],
     crossLinks: [
       { label: 'Why Choose Bermuda', to: '/space-satellite/why-choose-bermuda' },
       { label: 'Earth Stations & Operations', to: '/space-satellite/earth-stations-operations' },
@@ -90,13 +83,6 @@ export const spacePages = {
       },
     ],
     disclaimer: DISCLAIMER,
-    highlights: [
-      'Western North Atlantic location',
-      'Visibility to a broad portion of the geostationary arc',
-      'British Overseas Territory',
-      'Common law legal system',
-      'Transparent regulatory environment',
-    ],
     crossLinks: [
       { label: 'Earth Stations & Operations', to: '/space-satellite/earth-stations-operations' },
       { label: 'Satellite Filing & Guidance', to: '/space-satellite/satellite-filing-guidance' },
@@ -128,12 +114,6 @@ export const spacePages = {
       },
     ],
     disclaimer: DISCLAIMER,
-    highlights: [
-      'Earth station licensing by the Regulatory Authority',
-      'Radio frequency spectrum management',
-      'Technical and operational information for review',
-      'Department of Energy policy engagement',
-    ],
     crossLinks: [
       { label: 'Satellite Filing & Guidance', to: '/space-satellite/satellite-filing-guidance' },
       { label: 'Sector Enquiries', to: '/space-satellite/sector-enquiries' },
@@ -157,12 +137,6 @@ export const spacePages = {
       },
     ],
     disclaimer: DISCLAIMER,
-    highlights: [
-      'ITU Radio Regulations',
-      'Coordination, notification, and registration',
-      'Frequency assignments',
-      'Filings under applicable legislation and policy',
-    ],
     crossLinks: [
       { label: 'Earth Stations & Operations', to: '/space-satellite/earth-stations-operations' },
       { label: 'National Space Strategy', to: '/space-satellite/national-space-strategy' },
@@ -205,11 +179,6 @@ export const spacePages = {
     documents: [
       { title: 'Space & Satellite Consultation', url: EXTERNAL_LINKS.consultationsForum, size: 'External' },
     ],
-    highlights: [
-      'National Space Strategy',
-      'Consultation papers and policy documents',
-      'STEM education initiatives',
-    ],
     crossLinks: [
       { label: 'Bermuda & Global Space Economy', to: '/space-satellite/bermuda-global-space-economy' },
       { label: 'Satellite Filing & Guidance', to: '/space-satellite/satellite-filing-guidance' },
@@ -231,11 +200,6 @@ export const spacePages = {
       address: 'Department of Energy, Government Administration Building, 30 Parliament Street, Hamilton HM 12, Bermuda',
       hours: 'Monday – Friday, 9:00 AM – 5:00 PM',
     },
-    highlights: [
-      'Space and satellite policy',
-      'Satellite network filings',
-      'Other space-sector matters',
-    ],
     crossLinks: [
       { label: 'Bermuda & Global Space Economy', to: '/space-satellite/bermuda-global-space-economy' },
       { label: 'Earth Stations & Operations', to: '/space-satellite/earth-stations-operations' },

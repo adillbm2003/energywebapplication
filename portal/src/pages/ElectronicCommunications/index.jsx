@@ -25,7 +25,7 @@ const FRAMEWORK = [
   {
     icon: '🛡️',
     title: 'Consumer Protection',
-    description: 'Safeguarding residents and businesses through service standards, complaint resolution, and fair market practices overseen by the RA.',
+    description: 'Information on consumer protections applicable to electronic communications services in Bermuda, including regulatory requirements, complaint processes, and matters relating to service providers.',
   },
 ]
 

@@ -157,20 +157,6 @@ export default function SpacePage() {
                   ))}
                 </ul>
               </nav>
-
-              {page.highlights && (
-                <div className="mt-6 rounded-lg border border-slate-200 bg-white p-4 card-shadow">
-                  <h2 className="mb-3 text-sm font-semibold text-navy-900">Key Points</h2>
-                  <ul className="space-y-2">
-                    {page.highlights.map((item) => (
-                      <li key={item} className="flex items-start gap-2 text-sm text-slate-600">
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold-500" aria-hidden="true" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </aside>
           </div>
         </div>
