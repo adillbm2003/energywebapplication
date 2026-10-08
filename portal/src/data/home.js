@@ -8,7 +8,7 @@ export const homePriorities = [
       'Track installed solar capacity, battery storage, and renewable penetration across Bermuda through live dashboards and the national registry.',
     image: PAGE_IMAGES.solarFieldBermuda,
     to: ROUTES.renewableResource,
-    cta: 'View Renewable Dashboard',
+    cta: 'Renewable Energy Resources',
   },
   {
     title: 'Shape Energy Policy',
@@ -21,7 +21,7 @@ export const homePriorities = [
   {
     title: 'Plan Your Clean Energy Future',
     description:
-      'Use the energy simulator to estimate savings from solar, storage, and EVs. Find registered installers and educational guides.',
+      'Explore how different technologies may affect household energy use through interactive educational simulations.',
     image: PAGE_IMAGES.hamiltonStreet,
     href: 'https://simulator.energy.bm/',
     cta: 'Try the Simulator',

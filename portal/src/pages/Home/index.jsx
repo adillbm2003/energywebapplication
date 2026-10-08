@@ -46,10 +46,6 @@ export default function Home() {
       <Hero
         title="Powering Bermuda's Sustainable Energy Future"
         subtitle="The Department of Energy shapes Bermuda's policy, legislation, and regulatory framework for the energy, telecommunications, broadcasting, space, and satellite sectors, working to secure an affordable, sustainable, and reliable energy future for the island."
-        ctaLabel="Explore Renewable Dashboard"
-        ctaTo={ROUTES.renewableResource}
-        secondaryLabel="View Consultations"
-        secondaryTo={ROUTES.consultations}
         useDefaultImage
       />
 

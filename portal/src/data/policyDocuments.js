@@ -15,7 +15,7 @@ export const policyDocuments = {
   'national-electricity-sector-policy-2026': {
     title: 'The National Electricity Sector Policy',
     shortTitle: 'National Electricity Sector Policy (NESP 2026)',
-    status: 'Consultation Draft',
+    status: 'Active',
     date: 'April 2026',
     issuedBy: 'Government of Bermuda, Ministry of Home Affairs',
     file: base + 'documents/national-electricity-sector-policy-2026.pdf',
@@ -25,7 +25,6 @@ export const policyDocuments = {
       'The National Electricity Sector Policy sets out the Government’s policy direction for the structure, planning and regulation of Bermuda’s electricity sector. Its objective is to reduce Bermuda’s reliance on fossil fuels by increasing the share of renewable energy, while simultaneously ensuring affordability, equity, and system stability.',
       'The policy is deliberately technology-agnostic. Rather than prescribing specific generation technologies, capacity levels, or fixed carbon targets, it establishes clear principles to guide planning and regulatory decisions through the Integrated Resource Planning process.',
     ],
-    note: 'This document is published as a consultation draft. It is not a final statement of Government policy, and its contents may change following consultation.',
     contents: [
       { number: '1', title: 'Introduction', children: ['1.1 Purpose of the Updated Policy', '1.2 National Development Goals, Climate Commitments and Just Energy Transition Alignment'] },
       { number: '2', title: 'Context', children: ['2.1 Historical Overview', '2.2 Developments Since NESP 2015', '2.3 Current Challenges: Cost, Equity, Security, and Sustainability', '2.4 Lessons from Past Policy Implementation'] },

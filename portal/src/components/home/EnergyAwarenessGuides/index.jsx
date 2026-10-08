@@ -61,7 +61,7 @@ export default function EnergyAwarenessGuides({ loading = false }) {
                       <p className="mt-4 flex-1 text-body-small text-slate-600">{guide.description}</p>
 
                       <div className="mt-5 space-y-3">
-                        {guide.pdfUrl ? (
+                        {guide.pdfUrl && (
                           <a
                             href={guide.pdfUrl}
                             download
@@ -69,13 +69,6 @@ export default function EnergyAwarenessGuides({ loading = false }) {
                           >
                             Download PDF Guide
                           </a>
-                        ) : (
-                          <Link
-                            to={guide.learnMoreTo}
-                            className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#2E5496] px-3.5 py-1.5 text-sm font-medium text-white uppercase tracking-wide transition-colors hover:bg-[#244475]"
-                          >
-                            View Guide
-                          </Link>
                         )}
                         <Link
                           to={guide.learnMoreTo}

@@ -1,12 +1,12 @@
-// The National Electricity Sector Policy (NESP 2026), Consultation Draft, April 2026.
+// The National Electricity Sector Policy (NESP 2026), April 2026.
 // Government of Bermuda, Ministry of Home Affairs.
 //
 // Transcribed from the document as supplied. Section numbering and headings are
-// the document's own, including where the draft numbers them inconsistently
-// (it carries two sections numbered 12.3, and skips 9.4 in its contents). The
-// draft also refers to itself as NESP 2025, NESP 2026 and "The NESP 2026" in
-// different places; that is left as written rather than silently harmonised,
-// since this is a consultation draft and the wording is the Department's.
+// the document's own, including where it numbers them inconsistently (it
+// carries two sections numbered 12.3, and its contents page skips 9.4 although
+// the body has it). The document also refers to itself as NESP 2025, NESP 2026
+// and "The NESP 2026" in different places; that is left as written rather than
+// silently harmonised, since the wording is the Department's.
 //
 // Figures 1 and 2 are charts in the PDF and are not reproduced here; the
 // surrounding text names them and the PDF is linked from the page.
