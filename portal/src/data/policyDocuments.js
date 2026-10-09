@@ -11,34 +11,38 @@ const base = import.meta.env.BASE_URL || '/'
 // The register on /policies is CMS-driven and answers from /api/policies. These
 // two are held here because they are published documents with a file behind
 // them, not rows someone maintains in the CMS.
+//
+// The electricity policy was briefly published from the April 2026 consultation
+// draft. The Department has since supplied the final July 2026 document, which
+// is the active policy; the slug is unchanged so existing links keep working.
 export const policyDocuments = {
   'national-electricity-sector-policy-2026': {
     title: 'The National Electricity Sector Policy',
     shortTitle: 'National Electricity Sector Policy (NESP 2026)',
     status: 'Active',
-    date: 'April 2026',
+    date: 'July 2026',
     issuedBy: 'Government of Bermuda, Ministry of Home Affairs',
-    file: base + 'documents/national-electricity-sector-policy-2026.pdf',
+    file: base + 'documents/national-electricity-sector-policy-july-2026.pdf',
     blocks: nespPolicyBlocks,
-    fileSize: '6.1 MB',
+    fileSize: '4.3 MB',
     summary: [
-      'The National Electricity Sector Policy sets out the Government’s policy direction for the structure, planning and regulation of Bermuda’s electricity sector. Its objective is to reduce Bermuda’s reliance on fossil fuels by increasing the share of renewable energy, while simultaneously ensuring affordability, equity, and system stability.',
-      'The policy is deliberately technology-agnostic. Rather than prescribing specific generation technologies, capacity levels, or fixed carbon targets, it establishes clear principles to guide planning and regulatory decisions through the Integrated Resource Planning process.',
+      'The National Electricity Sector Policy sets out the Government’s policy direction for the structure, planning and regulation of Bermuda’s electricity sector through 2045. Its objective is to reduce Bermuda’s reliance on fossil fuels by increasing the share of renewable energy, while simultaneously ensuring least-cost, equity, and system stability.',
+      'The policy is deliberately technology-agnostic. Rather than prescribing specific generation technologies, capacity levels, or fixed carbon targets, it establishes clear principles to guide planning and regulatory decisions through the Integrated Resource Planning process. Affordability describes the outcome for the customer; least cost describes the analytical test applied to resource options through the Integrated Resource Plan.',
     ],
     contents: [
-      { number: '1', title: 'Introduction', children: ['1.1 Purpose of the Updated Policy', '1.2 National Development Goals, Climate Commitments and Just Energy Transition Alignment'] },
-      { number: '2', title: 'Context', children: ['2.1 Historical Overview', '2.2 Developments Since NESP 2015', '2.3 Current Challenges: Cost, Equity, Security, and Sustainability', '2.4 Lessons from Past Policy Implementation'] },
+      { number: '1', title: 'Introduction', children: ['1.1 Purpose of the Updated Policy', '1.2 National Development Goals, Climate Commitments and Just Transition Principles'] },
+      { number: '2', title: 'Context', children: ['2.1 Historical Overview', '2.2 Developments Since NESP 2015', '2.3 Current Challenges: Cost, Equity, Security and Sustainability', '2.4 Lessons from Past Policy Implementation'] },
       { number: '3', title: '2045 Vision and Rate Drivers', children: ['3.1 2045 Vision: Reliable, Affordable, Equitable and Low Carbon Electricity', '3.2 Benchmarks for Affordability', '3.3 Main Impacts on Rate Stabilisation'] },
-      { number: '4', title: 'Structure of the Electricity Sector', children: ['4.1 The Ministry responsible for Energy', '4.2 The Regulatory Authority', '4.3 The Electric Utility', '4.4 Independent Power Producers', '4.5 BG Sole Use Installation (BGSUI)', '4.6 Innovative Licence (IL)', '4.7 End Users', '4.8 Distributed Generators (DG)', '4.9 Community and Cooperative Energy Models'] },
-      { number: '5', title: 'Integrated Resource Planning and Policy Objectives', children: ['5.1 IRP as the Central Planning Tool', '5.2 IRP Informing Future Policy Objectives', '5.3 Resilience and Security Considerations', '5.4 Incorporation of Energy Storage in Resource Planning'] },
+      { number: '4', title: 'Structure of the Electricity Sector', children: ['4.1 The Ministry Responsible for Energy', '4.2 The Regulatory Authority', '4.3 The Transmission, Distribution and Retail Licensee (TD&R)', '4.4 Independent Power Producers', '4.5 BG Sole Use Installation (BGSUI)', '4.6 Innovative Licence (IL)', '4.7 End Users', '4.8 Distributed Generators (DG)', '4.9 Community and Cooperative Energy Models'] },
+      { number: '5', title: 'Integrated Resource Planning and Policy Objectives', children: ['5.1 IRP as the Central Planning Tool', '5.2 IRP Informing Future Policy Objectives', '5.3 Setting Transition Milestones', '5.4 Resilience and Security Considerations', '5.5 Incorporation of Energy Storage in Resource Planning', '5.6 Development and Approval of the IRP', '5.7 Transition Linked Returns and Feed-in Tariff Reform'] },
       { number: '6', title: 'Distributed Generation (DG) and Energy Equity', children: ['6.1 Access and Financing Mechanisms for Low Income Households', '6.2 Community and Cooperative Solar', '6.3 Micro-Grid Policy'] },
-      { number: '7', title: 'Bulk Generation', children: ['7.1 Procurement Rules', '7.2 Renewable Energy Priority in Resource Mix', '7.3 Green Hydrogen, Biomass, Waste to Energy Policy Direction', '7.4 Local Benefit and Industrial Participation Requirements'] },
-      { number: '8', title: 'Transmission, Distribution, and Retail', children: ['8.1 Tariff Structures and Cost Reflectivity', '8.2 Grid Modernization, Strategy and Smart Metering', '8.3 Consumer Protection Framework', '8.4 Industrial Auditing Program', '8.5 Performance Based Regulation (PBR)'] },
-      { number: '9', title: 'Electric Vehicles and Transport Electrification', children: ['9.1 Alignment with Government’s Electric Vehicle Transition Strategy', '9.2 National Electric Vehicle Charging Infrastructure Framework', '9.3 Role of EVs in Increasing kWh Sales and Tariff Stability', '9.5 Battery Lifecycle Management and Sustainability'] },
-      { number: '10', title: 'Renewable Energy Market Oversight', children: ['10.1 Installer Licensing and National Certification', '10.2 Installation Standards and Compliance', '10.3 Just Energy Transition Framework: Workforce Reskilling', '10.4 Climate Resilience and Adaptation Targets'] },
-      { number: '11', title: 'End-Use Efficiency and Demand-Side Resources', children: ['11.1 Planning for Demand-Side Resources', '11.2 Supporting End-User Conservation', '11.3 Appliances Standards, Labelling and Building Codes'] },
-      { number: '12', title: 'Legal and Regulatory Framework', children: ['12.1 EA 2016 and Related Laws', '12.2 Amendments Needed for Installer Certification', '12.3 Enforcement Powers', '12.3 Cross-Ministerial Linkages'] },
-      { number: '13', title: 'Appendices', children: ['13.1 References', '13.3 Abbreviations, Acronyms and Definitions'] },
+      { number: '7', title: 'Bulk Generation', children: ['7.1 Procurement Rules', '7.2 Renewable Energy Priority in Resource Mix', '7.3 Green Hydrogen, Biomass and Waste to Energy', '7.4 Local Benefit and Industrial Participation Requirements'] },
+      { number: '8', title: 'Transmission, Distribution and Retail', children: ['8.1 Tariff Structures and Cost Reflectivity', '8.2 Grid Modernisation, Strategy and Smart Metering', '8.3 Consumer Protection Framework', '8.4 Industrial Auditing Programme', '8.5 Performance Based Regulation (PBR)'] },
+      { number: '9', title: 'Electric Vehicles and Transport Electrification', children: ['9.1 Alignment with Government’s Electric Vehicle Transition Strategy', '9.2 National Electric Vehicle Charging Infrastructure Framework', '9.3 Role of EVs in Increasing kWh Sales and Tariff Stability', '9.4 Smart Charging, Vehicle to Grid (V2G) Integration and Resilience', '9.5 Battery Lifecycle Management and Sustainability'] },
+      { number: '10', title: 'Renewable Energy Market Oversight', children: ['10.1 Installer Licensing and National Certification', '10.2 Installation Standards and Compliance', '10.3 Workforce Reskilling', '10.4 Climate Resilience and Adaptation Targets'] },
+      { number: '11', title: 'End-Use Efficiency and Demand-Side Resources', children: ['11.1 Planning for Demand-Side Resources', '11.2 Supporting End-User Conservation', '11.3 Appliance Standards, Labelling and Building Codes'] },
+      { number: '12', title: 'Legal and Regulatory Framework', children: ['12.1 EA 2016 and Related Laws', '12.2 Amendments Needed for Installer Certification', '12.3 Enforcement Powers', '12.4 Cross-Ministerial Linkages', '12.5 Implementation, Monitoring and Review', '12.6 Required Legislative Changes'] },
+      { number: '13', title: 'Appendices', children: ['13.1 References', '13.2 Abbreviations and Acronyms', '13.3 Definitions'] },
     ],
   },
 
