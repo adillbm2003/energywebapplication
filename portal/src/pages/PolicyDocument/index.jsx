@@ -18,17 +18,19 @@ import { sectionId } from '../../utils/sectionId'
 // and that cannot be styled, linked to by section, or read sensibly on a
 // phone. The original PDF stays downloadable for anyone who wants it.
 //
-// Contents sits beside the document body rather than beside the summary. The
-// electricity policy has 65 entries in its contents, and pairing that with the
-// short summary stretched the row to the height of the list and left most of a
-// screen blank next to it. Beside the body it has something to sit against, and
-// it sticks while the reader scrolls.
-//
-// The body itself opens collapsed. The electricity policy runs to 85 pages, and
+// The body opens collapsed. The electricity policy runs to 85 pages, and
 // landing on the whole of it meant a scrollbar a few pixels tall and no way to
 // see what the page held without dragging through all of it. Collapsed, the
-// reader gets the opening of the document, the contents list, and the download
-// button within one screen, and opens the rest deliberately.
+// reader gets the opening of the document and the download button within one
+// screen, and opens the rest deliberately.
+//
+// Contents appears only with the body it indexes. It has 65 entries, so while
+// the body was ten lines the list was the whole page -- the thing that made
+// the page long, after collapsing the body to make the page short. Open, it
+// sits beside the body rather than beside the summary: paired with the short
+// summary it stretched the row to the height of the list and left most of a
+// screen blank next to it. Beside the body it has something to sit against,
+// and it sticks while the reader scrolls.
 const COLLAPSED_BODY = 'relative max-h-[17rem] overflow-hidden print:max-h-none print:overflow-visible'
 
 export default function PolicyDocument() {
@@ -57,13 +59,6 @@ export default function PolicyDocument() {
   }, [expanded])
 
   if (!doc) return <Navigate to="/404" replace />
-
-  const handleContentsClick = (event, id) => {
-    if (expanded) return // already open; let the browser handle the anchor
-    event.preventDefault()
-    pendingAnchor.current = id
-    setExpanded(true)
-  }
 
   // Collapsing from the bottom of an 85-page document would otherwise leave the
   // reader stranded in whitespace far below the page.
@@ -118,10 +113,18 @@ export default function PolicyDocument() {
 
       <section className="section-padding bg-slate-50 pt-0">
         <div className="container-page">
-          <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_17rem]">
+          <div
+            className={`grid items-start gap-8 ${expanded ? 'lg:grid-cols-[minmax(0,1fr)_17rem]' : 'grid-cols-1'}`}
+          >
+            {/* min-w-0: a grid item floors at its min-content width, and Table
+                carries min-w-[520px] so its own overflow-x-auto has something
+                to scroll. Without this the column is forced to 520px and the
+                whole page scrolls sideways on a phone -- the lg track already
+                says minmax(0,1fr) for the same reason, but there is no track
+                below lg. */}
             <article
               ref={articleRef}
-              className="order-2 scroll-mt-24 rounded-xl border border-slate-200 bg-white px-6 py-8 card-shadow sm:px-10 sm:py-12 lg:order-1"
+              className="order-2 min-w-0 scroll-mt-24 rounded-xl border border-slate-200 bg-white px-6 py-8 card-shadow sm:px-10 sm:py-12 lg:order-1"
             >
               <div id={`${slug}-body`} className={expanded ? undefined : COLLAPSED_BODY}>
                 <DocumentBody blocks={doc.blocks} />
@@ -176,8 +179,12 @@ export default function PolicyDocument() {
               </footer>
             </article>
 
-            {/* Capped at the viewport and scrollable in itself, so a long contents
-                list never drives the height of the row. */}
+            {/* Only once the document is open. Collapsed, the body is ten lines
+                and the contents list is thirteen sections with their
+                subsections -- the list became the page, which is the opposite
+                of the point. Capped at the viewport and scrollable in itself,
+                so it never drives the height of the row. */}
+            {expanded && (
             <aside className="order-1 lg:order-2 lg:sticky lg:top-24">
               <nav
                 aria-label={`Contents of ${doc.title}`}
@@ -189,7 +196,6 @@ export default function PolicyDocument() {
                     <li key={section.number}>
                       <a
                         href={`#${sectionId(section.number)}`}
-                        onClick={(event) => handleContentsClick(event, sectionId(section.number))}
                         className="block text-sm font-semibold leading-snug text-navy-900 hover:text-teal-700"
                       >
                         {section.number}. {section.title}
@@ -208,6 +214,7 @@ export default function PolicyDocument() {
                 </ol>
               </nav>
             </aside>
+            )}
           </div>
         </div>
       </section>
