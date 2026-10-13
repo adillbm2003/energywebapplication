@@ -598,6 +598,17 @@ function optionList(values, current, fallback) {
   ).join('')
 }
 
+// media.size is written as a formatted string ("0.35 MB") by the upload
+// endpoint, but older rows and other code paths store a byte count. Render
+// either, and show nothing rather than "NaN MB" when it is neither.
+function mediaSize(size) {
+  if (size == null || size === '') return ''
+  if (typeof size === 'number') return fmtBytes(size)
+  const text = String(size).trim()
+  if (/^\d+(\.\d+)?$/.test(text)) return fmtBytes(Number(text))
+  return text
+}
+
 function val(id) {
   const el = document.getElementById(id)
   return el ? el.value.trim() : ''
@@ -2689,7 +2700,7 @@ async function loadMedia() {
             : `<div class="media-thumb-pdf">📄</div>`}
           <div class="media-info">
             <div class="media-name" title="${esc(f.filename||f.url||'')}">${esc((f.filename||f.url||'').split('/').pop())}</div>
-            <div class="media-meta">${f.size ? fmtBytes(f.size) : ''}</div>
+            <div class="media-meta">${esc(mediaSize(f.size))}</div>
           </div>
           <div class="media-actions">
             <button class="btn btn-sm btn-outline" onclick="copyMediaUrl('${esc(f.url)}')" title="Copy URL">📋 Copy</button>
@@ -2714,7 +2725,16 @@ async function handleMediaUpload(files) {
 }
 
 function copyMediaUrl(url) {
-  navigator.clipboard.writeText(window.location.origin + url).then(() => toast('URL copied to clipboard'))
+  // Many stored urls are already absolute, and two are literally "#".
+  // Prefixing the origin unconditionally produced
+  // "http://localhost:8000http://localhost:8000/uploads/..." -- unusable, and
+  // reported as copied.
+  if (!url || url === '#') { toast('This item has no file behind it, so there is no URL to copy', 'warning'); return }
+  let absolute
+  try { absolute = new URL(url, window.location.origin).href } catch (e) { absolute = url }
+  navigator.clipboard.writeText(absolute)
+    .then(() => toast('URL copied to clipboard'))
+    .catch(() => toast('Could not copy automatically. The URL is: ' + absolute, 'warning'))
 }
 
 async function deleteMediaFile(id, url) {
