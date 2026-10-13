@@ -1487,7 +1487,14 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
   // import would do, without changing anything. The CMS asks for one before it
   // offers the Import button, so a spreadsheet with shuffled coordinates or a
   // missing column is caught while the existing registry is still intact.
-  const dryRun = req.query.dryRun === '1' || req.query.dryRun === 'true';
+  // Preview unless the caller explicitly confirms. This used to read
+  // `dryRun === '1' || === 'true'`, so ?dryRun=TRUE, ?dryRun=yes or a
+  // lowercase ?dryrun=1 all fell through to a REAL import that truncated the
+  // registry -- the one operation here with no undo, reached by a typo. The
+  // CMS now sends ?confirm=1 when the operator presses the button, and
+  // anything else previews harmlessly.
+  const confirmed = req.query.confirm === '1' || req.query.confirm === 'true';
+  const dryRun = !confirmed;
 
   multerExcel.single('file')(req, res, async (err) => {
     if (err) return res.status(400).json({ error: err.message });
@@ -1503,8 +1510,14 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
             filename: req.file.originalname,
             size: req.file.size,
             total: fleetData.total,
-            byFuel: fleetData.byFuel || null,
-            categories: fleetData.categories || null,
+            // parseVehiclesExcel returns byCategory / rawCategories / topMakes.
+            // This read byFuel / categories, which it has never returned, so
+            // every preview showed one unverifiable number.
+            fuelType: fleetData.fuelType || null,
+            asOf: fleetData.asOf || null,
+            byCategory: fleetData.byCategory || null,
+            categories: fleetData.rawCategories || null,
+            topMakes: fleetData.topMakes || null,
           });
         }
         await db.query(`CREATE TABLE IF NOT EXISTS data_cache (key TEXT PRIMARY KEY, value JSONB, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)`);
@@ -1513,6 +1526,15 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         return res.json({ success: true, filename: req.file.filename, size: req.file.size, total: fleetData.total });
       } catch (parseErr) {
         console.error('Vehicles Excel parse error:', parseErr);
+        // Without this a failed preview leaves its .preview-*.tmp sitting in
+        // the authoritative data directory, one per attempt.
+        try { fs.unlinkSync(req.file.path); } catch (e) {}
+        if (dryRun) {
+          return res.status(400).json({
+            error: 'That file could not be read as a vehicle register. Nothing was changed. ' +
+                   'Check it is the Department\'s "Vehicles by Fuel Type" workbook and not another spreadsheet.',
+          });
+        }
         logAction(req.user.username, 'UPLOAD', 'Data File', DATA_FILES[key].label);
         return res.json({ success: true, filename: req.file.filename, size: req.file.size });
       }
@@ -1663,6 +1685,14 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       const filteredOut = [];
       let noCoordinateCount = 0;
       let blankCapacityCount = 0;
+      const outOfBounds = [];
+      // What the registry holds now, so the preview can judge the magnitude of
+      // the change rather than only describing it.
+      let existingCount = 0;
+      try {
+        const cur = await db.query('SELECT COUNT(*)::int AS n FROM solar_installations');
+        existingCount = cur.rows[0].n;
+      } catch (e) { existingCount = 0; }
       // Which heading the capacity actually came from, so the preview can say
       // "read from <column>" rather than leaving the operator to assume.
       const capacityColumn = CAPACITY_COLUMNS.find(c => colMap[c.toLowerCase().trim()] !== undefined) || null;
@@ -1773,6 +1803,16 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         const permitNo = getCol(row,'Permit Number','Permit No','PermitNumber') || '';
         const id = permitNo ? String(permitNo) : `solar-${i}`;
 
+        // Bermuda is roughly 32.24-32.39 N, -64.90 to -64.64 E. Anything outside
+        // that is not a Bermuda permit: the columns are swapped, the sign is
+        // wrong, or the cell held degrees-and-minutes text that parseFloat
+        // truncated -- "32°17'N" becomes 32, which plots in open ocean. The
+        // import accepted all of these silently, which is the same shape as the
+        // incident that put 40% of permits on other permits' coordinates.
+        if (hasCoords && (lat < 32.2 || lat > 32.45 || lng > -64.6 || lng < -65.0)) {
+          outOfBounds.push({ id, lat: Number(lat).toFixed(4), lng: Number(lng).toFixed(4) });
+        }
+
         // Excel dates arrive either as a serial number or as text.
         const parseSheetDate = (value) => {
           if (typeof value === 'number') {
@@ -1870,6 +1910,19 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
                 '". Those installations would appear on the map with no size.',
         });
       }
+      // Bermuda sits at roughly 32.24-32.39 N, -64.90 to -64.64 E. A value
+      // outside that is not a Bermuda permit: either the columns are swapped,
+      // the sign is wrong, or it is degrees/minutes text that parseFloat has
+      // quietly truncated ("32°17'N" becomes 32, which lands in open ocean).
+      if (outOfBounds.length > 0) {
+        warnings.push({
+          level: 'severe',
+          text: outOfBounds.length + ' rows have coordinates outside Bermuda and would be placed in the ' +
+                'wrong part of the world, for example ' + outOfBounds.slice(0, 3).map(o => o.id + ' at ' + o.lat + ', ' + o.lng).join('; ') +
+                '. Check the latitude and longitude columns have not been swapped, that longitudes are negative, ' +
+                'and that they are decimal degrees rather than degrees and minutes.',
+        });
+      }
       if (noCoordinateCount > 0) {
         warnings.push({
           level: noCoordinateCount > raw.length * 0.1 ? 'severe' : 'warn',
@@ -1879,6 +1932,26 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       }
       if (skipped.length > 0) {
         warnings.push({ level: 'severe', text: skipped.length + ' rows could not be read and would be dropped entirely.' });
+      }
+      // A file that empties or guts the registry is the shape of the wrong
+      // file being picked. Previously 777 -> 0 produced no warning at all and
+      // the dialog said "No problems found in this file."
+      if (existingCount > 0) {
+        if (inserted === 0) {
+          warnings.push({
+            level: 'severe',
+            text: 'This file would leave the registry empty. The published map and the installations total would ' +
+                  'show nothing, replacing the ' + existingCount.toLocaleString() + ' installations held now. ' +
+                  'That is almost always the wrong file or the wrong sheet.',
+          });
+        } else if (inserted < existingCount * 0.5) {
+          warnings.push({
+            level: 'severe',
+            text: 'This file holds ' + inserted.toLocaleString() + ' installations against the ' +
+                  existingCount.toLocaleString() + ' held now — a drop of ' +
+                  Math.round((1 - inserted / existingCount) * 100) + '%. Check this is the full export and not a filtered extract.',
+          });
+        }
       }
       if (filteredOut.length > 0) {
         warnings.push({

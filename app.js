@@ -1752,7 +1752,10 @@ async function commitDataImport(file, key, target) {
   try {
     const fd = new FormData()
     fd.append('file', file)
-    const res = await fetch(`/api/data-files/${key}`, { method: 'POST', credentials: 'include', body: fd })
+    // ?confirm=1 is what makes this a real import. Without it the server
+    // previews and writes nothing, so a dropped or mistyped parameter cannot
+    // truncate the registry by accident.
+    const res = await fetch(`/api/data-files/${key}?confirm=1`, { method: 'POST', credentials: 'include', body: fd })
     const data = await res.json().catch(() => ({}))
     if (!res.ok) throw new Error(data.error || 'Import failed')
     closeImportModal()
