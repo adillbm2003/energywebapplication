@@ -574,6 +574,30 @@ async function resolveUploads() {
   return urls
 }
 
+// Builds the <option>s for a select, always carrying the record's own value.
+//
+// A <select> whose options do not include the stored value does not show it
+// blank -- it shows its FIRST option, and the form then saves that. So opening
+// a record to fix a typo rewrote a field nobody touched, and the list column
+// went on showing the real value until the save landed. Confirmed on policy
+// category and status, project status, education category and innovation
+// status: five fields, five different vocabularies that had drifted from the
+// data.
+//
+// Keeping the stored value as an option makes the whole class impossible,
+// including for categories the Department invents after this is written. The
+// value attribute is set explicitly so what is saved is the stored string
+// exactly, never a re-spelled label.
+function optionList(values, current, fallback) {
+  const raw = (current == null || current === '') ? (fallback == null ? '' : fallback) : current
+  const chosen = String(raw)
+  const all = values.slice()
+  if (chosen && !all.includes(chosen)) all.unshift(chosen)
+  return all.map(v =>
+    `<option value="${esc(v)}"${v === chosen ? ' selected' : ''}>${esc(v)}</option>`
+  ).join('')
+}
+
 function val(id) {
   const el = document.getElementById(id)
   return el ? el.value.trim() : ''
@@ -658,7 +682,7 @@ async function renderDashboard() {
               <li class="activity-item">
                 <div class="activity-dot"></div>
                 <div class="activity-text">${esc(a.title)}</div>
-                <div class="activity-time">${formatDate(a.date||a.publishedAt)}</div>
+                <div class="activity-time">${formatDate(a.publishDate||a.date||a.publishedAt)}</div>
               </li>`).join('')}
           </ul>`}
         </div>
@@ -769,21 +793,20 @@ async function openNewsDrawer(id) {
       <div class="form-field">
         <label class="form-label">Category</label>
         <select id="n-category" class="form-select">
-          ${['General','Policy','Renewable Energy','Events','Announcements','Press Release'].map(c=>`<option${c===(item.category||'General')?' selected':''}>${c}</option>`).join('')}
+          ${optionList(['General','Policy','Renewable Energy','Events','Announcements','Press Release'], item.category, 'General')}
         </select>
       </div>
       <div class="form-field">
         <label class="form-label">Status</label>
         <select id="n-status" class="form-select">
-          <option${(item.status||'Draft')==='Draft'?' selected':''}>Draft</option>
-          <option${item.status==='Published'?' selected':''}>Published</option>
+          ${optionList(['Draft','Published','Scheduled','Archived'], item.status, 'Draft')}
         </select>
       </div>
     </div>
     <div class="field-row">
       <div class="form-field">
         <label class="form-label">Publication Date</label>
-        <input id="n-date" type="date" class="form-input" value="${esc((item.date||item.publishedAt||'').split('T')[0])}">
+        <input id="n-date" type="date" class="form-input" value="${esc(String(item.publishDate||item.date||item.publishedAt||'').split('T')[0])}">
       </div>
       <div class="form-field">
         <label class="form-label">External URL</label>
@@ -930,15 +953,13 @@ function openPolicyDrawer(id) {
         <div class="form-field">
           <label class="form-label">Category</label>
           <select id="p-category" class="form-select">
-            ${['Energy Policy','Legislation','Regulation','Renewable Energy','Efficiency','Other'].map(c=>`<option${c===(item.category||'Energy Policy')?' selected':''}>${c}</option>`).join('')}
+            ${optionList(['Energy Policy','Legislation','Regulation','Renewable Energy','Efficiency','Other'], item.category, 'Energy Policy')}
           </select>
         </div>
         <div class="form-field">
           <label class="form-label">Status</label>
           <select id="p-status" class="form-select">
-            <option${(item.status||'Active')==='Active'?' selected':''}>Active</option>
-            <option${item.status==='Draft'?' selected':''}>Draft</option>
-            <option${item.status==='Archived'?' selected':''}>Archived</option>
+            ${optionList(['In Development','Approved','In Force','Completed','Active','Draft','Archived'], item.status, 'In Development')}
           </select>
         </div>
       </div>
@@ -1067,9 +1088,7 @@ function openConsultationDrawer(id) {
         <div class="form-field">
           <label class="form-label">Status</label>
           <select id="c-status" class="form-select">
-            <option${(item.status||'Open')==='Open'?' selected':''}>Open</option>
-            <option${item.status==='Closed'?' selected':''}>Closed</option>
-            <option${item.status==='Draft'?' selected':''}>Draft</option>
+            ${optionList(['Open','Closed','Draft'], item.status, 'Open')}
           </select>
         </div>
         <div class="form-field">
@@ -1165,7 +1184,7 @@ function openProjectDrawer(id) {
         <div class="form-field">
           <label class="form-label">Status</label>
           <select id="pr-status" class="form-select">
-            ${['Active','In Progress','Completed','On Hold','Cancelled'].map(s=>`<option${s===(item.status||'Active')?' selected':''}>${s}</option>`).join('')}
+            ${optionList(['Planning','Active','In Progress','Completed','On Hold','Cancelled'], item.status, 'Planning')}
           </select>
         </div>
         <div class="form-field">
@@ -1888,7 +1907,7 @@ function openSolarDrawer(id) {
           <input id="sol-cap" type="number" step="0.1" class="form-input" value="${esc(item.capacity||item.capacityKw||'')}"></div>
         <div class="form-field"><label class="form-label">System Type</label>
           <select id="sol-type" class="form-select">
-            ${['Residential','Commercial','Industrial','Community','Agricultural','Other'].map(t=>`<option${t===(item.type||item.systemType||'Residential')?' selected':''}>${t}</option>`).join('')}
+            ${optionList(['Residential','Commercial','Industrial','Community','Agricultural','Other'], item.type || item.systemType, 'Residential')}
           </select></div>
       </div>
       <div class="field-row">
@@ -2002,7 +2021,7 @@ function openInstallerDrawer(id) {
           <input id="ins-lic" class="form-input" value="${esc(item.licenseNumber||item.licence||'')}"></div>
         <div class="form-field"><label class="form-label">Status</label>
           <select id="ins-status" class="form-select">
-            ${['Active','Inactive','Suspended'].map(s=>`<option${s===(item.status||'Active')?' selected':''}>${s}</option>`).join('')}
+            ${optionList(['Active','Inactive','Suspended'], item.status, 'Active')}
           </select></div>
       </div>
       <div class="form-field"><label class="form-label">Website</label>
@@ -2176,11 +2195,11 @@ function openEducationDrawer(id) {
     <div class="field-row">
       <div class="form-field"><label class="form-label">Type</label>
         <select id="edu-type" class="form-select">
-          ${['Article','Video','Guide','Report','Toolkit','Infographic','Course'].map(t=>`<option${t===(item.type||'Article')?' selected':''}>${t}</option>`).join('')}
+          ${optionList(['Article','Video','Guide','Report','Toolkit','Infographic','Course'], item.type, 'Article')}
         </select></div>
       <div class="form-field"><label class="form-label">Category</label>
         <select id="edu-cat" class="form-select">
-          ${['Solar Energy','Energy Efficiency','Renewable Energy','Policy','General'].map(c=>`<option${c===(item.category||'General')?' selected':''}>${c}</option>`).join('')}
+          ${optionList(['Appliance Guides','Guides','Solar Energy','Energy Efficiency','Renewable Energy','Policy','General'], item.category, 'General')}
         </select></div>
     </div>
     <div class="form-field"><label class="form-label">Resource URL / Link</label>
@@ -2242,11 +2261,11 @@ function openInnovationDrawer(id) {
     <div class="field-row">
       <div class="form-field"><label class="form-label">Category</label>
         <select id="inn-cat" class="form-select">
-          ${['Battery Storage','EV & Transport','Smart Grid','Green Hydrogen','Offshore Wind','Solar Tech','Other'].map(c=>`<option${c===(item.category||'Other')?' selected':''}>${c}</option>`).join('')}
+          ${optionList(['Battery Storage','EV & Transport','Smart Grid','Green Hydrogen','Offshore Wind','Solar Tech','Other'], item.category, 'Other')}
         </select></div>
       <div class="form-field"><label class="form-label">Status</label>
         <select id="inn-status" class="form-select">
-          ${['Active','Research','Pilot','Completed','Inactive'].map(s=>`<option${s===(item.status||'Active')?' selected':''}>${s}</option>`).join('')}
+          ${optionList(['Active','Research','Pilot','Coming Soon','Completed','Inactive'], item.status, 'Active')}
         </select></div>
     </div>
   `, saveFn:()=>saveInnovation(id), saveLabel:id?'Update':'Save' })
