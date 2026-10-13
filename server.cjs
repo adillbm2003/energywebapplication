@@ -1324,9 +1324,66 @@ const DATA_FILE_TEMPLATES = {
   },
 };
 
-app.get('/api/data-files/:key/template', authenticate, authorize('Administrator', 'Approver'), (req, res, next) => {
+// Maps a live solar_installations row onto the template's columns, by heading.
+// Order follows DATA_FILE_TEMPLATES.solar.columns and must keep following it.
+function solarRowToTemplate(r) {
+  // A permit date is a calendar date, not an instant. toISOString() converts to
+  // UTC first, so on any machine east of Greenwich local midnight falls on the
+  // previous day and every date came back one day earlier -- all 785 of them,
+  // walking further back on each export/import cycle. Read the local calendar
+  // fields instead, and pass a string straight through untouched.
+  const day = (d) => {
+    if (!d) return '';
+    if (typeof d === 'string') return d.slice(0, 10);
+    const x = new Date(d);
+    if (Number.isNaN(x.getTime())) return '';
+    const p = (v) => String(v).padStart(2, '0');
+    return x.getFullYear() + '-' + p(x.getMonth() + 1) + '-' + p(x.getDate());
+  };
+  return {
+    'Permit Number': r.id || '',
+    'Address': r.address || r.name || '',
+    'Permit Type': '',
+    'Permit Status': r.status || '',
+    'Permit Issue Date': day(r.install_date),
+    'Permit Description': r.notes || '',
+    // Numbers stay numbers. Exported as text they come back as text, and a
+    // capacity Excel reads as text is left out of SUM and out of the published
+    // total in exactly the same way.
+    // A stored 0 means 'not recorded', and the importer turns 0 back into null
+    // on the way in. Exporting it as 0 would make a clean round trip report a
+    // difference that is only the two spellings of the same absence.
+    'System Capacity': r.capacity == null || Number(r.capacity) === 0 ? '' : Number(r.capacity),
+    'Permit Work Class': r.type || '',
+    'Permit Application Date': '',
+    'Permit District': r.parish || '',
+    'Permit Expiration Date': day(r.expiry_date),
+    'Annual Output (kWh)': r.annual_output == null ? '' : Number(r.annual_output),
+    'latitude': r.lat == null ? '' : Number(r.lat),
+    'longitude': r.lng == null ? '' : Number(r.lng),
+  };
+}
+
+app.get('/api/data-files/:key/template', authenticate, authorize('Administrator', 'Approver'), async (req, res, next) => {
   try {
-    const spec = DATA_FILE_TEMPLATES[req.params.key];
+    const key = req.params.key;
+    const withData = req.query.withData === '1' || req.query.withData === 'true';
+
+    // The vehicle register has no database form -- the stored workbook IS the
+    // data. Handing back a rebuilt copy could only lose something, so the real
+    // file is served untouched and goes back in the same shape it came out.
+    if (withData && key === 'vehicles') {
+      const meta = DATA_FILES.vehicles;
+      const current = path.join(DATA_DIR, meta.filename);
+      if (!fs.existsSync(current)) {
+        return res.status(404).json({ error: 'No vehicle register has been uploaded yet, so there is no current data to download. Use Download Template to start a new one.' });
+      }
+      res.setHeader('Content-Type', 'application/vnd.ms-excel');
+      res.setHeader('Content-Disposition', 'attachment; filename="Vehicles by Fuel Type - CURRENT.xls"');
+      return res.sendFile(current);
+    }
+
+    const spec = DATA_FILE_TEMPLATES[key];
     if (!spec) return res.status(404).json({ error: 'No template is available for this data file' });
 
     const XLSX = require('xlsx');
@@ -1341,19 +1398,32 @@ app.get('/api/data-files/:key/template', authenticate, authorize('Administrator'
     ws1['!cols'] = [{ wch: 26 }, { wch: 10 }, { wch: 76 }];
     XLSX.utils.book_append_sheet(wb, ws1, 'How to fill this in');
 
-    // Sheet 2 carries the real headings and two worked example rows.
+    // Sheet 2 carries the real headings. With data it holds every live record,
+    // so the sheet that comes back is the sheet that went out plus whatever was
+    // added to it. Without, two worked example rows.
     const headers = spec.columns.map(c => c[0]);
-    const ws2 = XLSX.utils.aoa_to_sheet([
-      headers,
-      spec.columns.map(c => c[3]),
-      spec.columns.map(c => c[4]),
-    ]);
+    let body;
+    if (withData && key === 'solar') {
+      const live = await db.query(
+        'SELECT id,name,parish,type,capacity,status,install_date,expiry_date,lat,lng,notes,address,annual_output ' +
+        'FROM solar_installations ORDER BY id'
+      );
+      body = live.rows.map(r => {
+        const mapped = solarRowToTemplate(r);
+        return headers.map(h => mapped[h]);
+      });
+      if (body.length === 0) body = [spec.columns.map(c => c[3])];
+    } else {
+      body = [spec.columns.map(c => c[3]), spec.columns.map(c => c[4])];
+    }
+    const ws2 = XLSX.utils.aoa_to_sheet([headers, ...body]);
     ws2['!cols'] = headers.map(h => ({ wch: Math.max(14, h.length + 4) }));
     XLSX.utils.book_append_sheet(wb, ws2, spec.sheet);
 
     const buf = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' });
+    const outName = withData ? spec.filename.replace(/TEMPLATE/i, 'CURRENT DATA') : spec.filename;
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename="' + spec.filename + '"');
+    res.setHeader('Content-Disposition', 'attachment; filename="' + outName + '"');
     res.setHeader('Content-Length', buf.length);
     res.send(buf);
   } catch (err) {

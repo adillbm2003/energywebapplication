@@ -1493,9 +1493,16 @@ async function renderSolarRegistry() {
               Choose Excel File
             </span>
           </label>
-          <button class="btn btn-sm" style="white-space:nowrap" onclick="downloadDataTemplate('solar')">
-            Download Template
+          <button class="btn btn-sm btn-primary" style="white-space:nowrap" onclick="downloadDataTemplate('solar', true)">
+            Download Current Data
           </button>
+          <button class="btn btn-sm btn-outline" style="white-space:nowrap" onclick="downloadDataTemplate('solar')">
+            Blank Template
+          </button>
+          <p style="font-size:11px;color:#94a3b8;margin:0;max-width:200px;line-height:1.45">
+            Start from <strong>Current Data</strong> to add or correct permits — it already holds every
+            installation in the right columns, so nothing has to be rebuilt or re-joined.
+          </p>
           <p id="solar-upload-status" style="font-size:12px;color:#6b7280;margin:0"></p>
         </div>
       </div>
@@ -1566,11 +1573,11 @@ async function renderSolarRegistry() {
 // else, so they are fetched and turned into a blob rather than linked directly:
 // a plain <a href> would replace the CMS with a JSON error page if the session
 // had expired, instead of reporting it.
-async function downloadDataTemplate(key) {
+async function downloadDataTemplate(key, withData) {
   try {
-    const res = await fetch(`/api/data-files/${key}/template`, { credentials: 'include' })
+    const res = await fetch(`/api/data-files/${key}/template${withData ? '?withData=1' : ''}`, { credentials: 'include' })
     if (!res.ok) {
-      let msg = 'Could not download the template'
+      let msg = withData ? 'Could not download the current data' : 'Could not download the template'
       try { msg = (await res.json()).error || msg } catch (e) {}
       throw new Error(msg)
     }
@@ -1580,12 +1587,14 @@ async function downloadDataTemplate(key) {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = m ? m[1] : `${key}-template.xlsx`
+    a.download = m ? m[1] : `${key}-${withData ? 'current-data' : 'template'}.xlsx`
     document.body.appendChild(a)
     a.click()
     a.remove()
     URL.revokeObjectURL(url)
-    toast('Template downloaded')
+    toast(withData
+      ? 'Downloaded — edit it or add rows at the bottom, then upload it back with Choose Excel File'
+      : 'Blank template downloaded')
   } catch (err) {
     toast(err.message, 'error')
   }
@@ -1809,6 +1818,13 @@ async function renderEvFleet() {
               Choose Excel File
             </span>
           </label>
+          <button class="btn btn-sm btn-primary" style="white-space:nowrap" onclick="downloadDataTemplate('vehicles', true)">
+            Download Current Register
+          </button>
+          <p style="font-size:11px;color:#94a3b8;margin:0;max-width:220px;line-height:1.45">
+            This is the register exactly as the website reads it now. Add the new vehicles
+            to the bottom and upload it back.
+          </p>
           <p id="vehicles-upload-status" style="font-size:12px;color:#6b7280;margin:0"></p>
         </div>
       </div>
