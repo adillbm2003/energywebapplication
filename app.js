@@ -2072,6 +2072,14 @@ async function renderStatistics() {
           <p class="upload-hint">XLSX, XLS, CSV — max 10 MB</p>
         </div>
         <div id="stat-upload-result" style="margin-top:1rem"></div>
+        <div style="margin-top:1.25rem;display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+          <button class="btn btn-sm btn-primary" onclick="downloadStatistics()">Download Current Statistics</button>
+          <p style="font-size:11.5px;color:#94a3b8;margin:0;max-width:430px;line-height:1.5">
+            For reference, and for getting the columns right. <strong>Uploading adds rows, it does not
+            replace them</strong> &mdash; unlike the solar and vehicle uploads on this CMS. Upload only
+            the new rows, or every statistic already here will appear twice.
+          </p>
+        </div>
       </div>
     </div>
     <div class="card" style="margin-top:1.25rem">
@@ -2897,3 +2905,30 @@ function renderSearchResults() {
 
 // ─── INIT ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', init)
+
+
+// ─── STATISTICS DOWNLOAD ───────────────────────────────────
+async function downloadStatistics() {
+  try {
+    const res = await fetch('/api/statistics/export', { credentials: 'include' })
+    if (!res.ok) {
+      let msg = 'Could not download the statistics'
+      try { msg = (await res.json()).error || msg } catch (e) {}
+      throw new Error(msg)
+    }
+    const blob = await res.blob()
+    const cd = res.headers.get('Content-Disposition') || ''
+    const m = cd.match(/filename="([^"]+)"/)
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = m ? m[1] : 'statistics.csv'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(url)
+    toast('Downloaded — an upload ADDS rows, so send back only the new ones')
+  } catch (err) {
+    toast(err.message, 'error')
+  }
+}

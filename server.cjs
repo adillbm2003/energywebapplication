@@ -2788,6 +2788,27 @@ app.post('/api/statistics/upload', authenticate, checkWritePermission('kpis'), u
   }
 });
 
+// Download the current statistics as a CSV in the columns the uploader reads.
+app.get('/api/statistics/export', authenticate, async (req, res, next) => {
+  try {
+    const result = await db.query('SELECT * FROM statistics_history ORDER BY period DESC, data_type ASC');
+    // The importer splits on commas and does not honour quotes, so a comma in a
+    // label would shift every column after it on that row.
+    const safe = (v) => String(v == null ? '' : v).replace(/[\r\n]+/g, ' ').replace(/,/g, ';').trim();
+    const header = 'category,label,value,unit,year';
+    const lines = result.rows.map(r => [
+      safe(r.data_type), safe(r.notes || r.data_type), safe(r.value), safe(r.unit), safe(r.period),
+    ].join(','));
+    const csv = [header, ...lines].join('\r\n') + '\r\n';
+    const stamp = new Date().toISOString().slice(0, 10);
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="Statistics CURRENT DATA ' + stamp + '.csv"');
+    res.send(csv);
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Get all statistics history entries
 app.get('/api/statistics', async (req, res, next) => {
   try {
