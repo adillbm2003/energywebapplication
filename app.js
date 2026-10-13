@@ -1591,30 +1591,175 @@ async function downloadDataTemplate(key) {
   }
 }
 
-async function uploadSolarExcel(input) {
+// ─── SPREADSHEET IMPORT: PREVIEW, THEN CONFIRM ─────────────
+//
+// Each import replaces a whole dataset. Done blind that is unrecoverable: the
+// solar registry is truncated and reloaded, so a spreadsheet with a renamed
+// column or shuffled coordinates silently becomes the published data. The
+// server will now report what an import WOULD do without doing it, and nothing
+// is written until the operator has seen that and agreed.
+const IMPORT_TARGETS = {
+  solar: {
+    noun: 'solar installations',
+    what: 'the solar installation registry',
+    affects: 'the Bermuda Solar PV Map, the installations total and the installed-capacity figure',
+    statusId: 'solar-upload-status',
+    current: () => (STATE.db.solarInstallations || []).length,
+    refresh: () => renderSolarRegistry(),
+  },
+  vehicles: {
+    noun: 'vehicles',
+    what: 'the vehicle register',
+    affects: 'the Vehicles & Transport Energy page and the registered-EV figures on the home page',
+    statusId: 'vehicles-upload-status',
+    current: () => null,
+    refresh: () => renderEvFleet(),
+  },
+}
+
+async function uploadSolarExcel(input) { return startDataImport(input, 'solar') }
+async function uploadVehiclesExcel(input) { return startDataImport(input, 'vehicles') }
+
+async function startDataImport(input, key) {
   const file = input.files[0]
+  input.value = ''
   if (!file) return
-  const statusEl = document.getElementById('solar-upload-status')
-  statusEl.textContent = 'Uploading…'
-  statusEl.style.color = '#6b7280'
+  const target = IMPORT_TARGETS[key]
+  const statusEl = document.getElementById(target.statusId)
+  const setStatus = (text, colour) => { if (statusEl) { statusEl.textContent = text; statusEl.style.color = colour } }
+
+  setStatus('Checking the file…', '#6b7280')
+  let preview
   try {
     const fd = new FormData()
     fd.append('file', file)
-    const res = await fetch('/api/data-files/solar', { method: 'POST', credentials: 'include', body: fd })
-    if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Upload failed') }
-    const data = await res.json()
-    const rowInfo = data.inserted != null ? ` — ${data.inserted.toLocaleString()} installations imported` : ` (${(data.size/1024).toFixed(0)} KB)`
-    statusEl.textContent = `Uploaded: ${file.name}${rowInfo}`
-    statusEl.style.color = '#16a34a'
-    toast(data.inserted != null ? `Solar data saved — ${data.inserted.toLocaleString()} installations loaded into database` : 'Solar data file uploaded')
-    // Refresh the view to show new stats
-    setTimeout(() => renderSolarRegistry(), 1200)
+    const res = await fetch(`/api/data-files/${key}?dryRun=1`, { method: 'POST', credentials: 'include', body: fd })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(data.error || 'The file could not be read')
+    preview = data
   } catch (err) {
-    statusEl.textContent = 'Error: ' + err.message
-    statusEl.style.color = '#dc2626'
-    toast('Upload failed: ' + err.message, 'error')
+    setStatus('', '#6b7280')
+    showImportProblem(file, target, err.message)
+    return
   }
-  input.value = ''
+  setStatus('', '#6b7280')
+  showImportPreview(file, key, target, preview)
+}
+
+// A rejected file is not a failure the operator caused, and the important part
+// is that their existing data is still there. Say that first.
+function showImportProblem(file, target, message) {
+  openImportModal(`
+    <div class="imp-head imp-head-bad">
+      <h2 class="imp-title">This file cannot be imported</h2>
+      <p class="imp-file">${esc(file.name)}</p>
+    </div>
+    <div class="imp-body">
+      <p class="imp-reassure"><strong>Nothing has changed.</strong> ${esc(target.what[0].toUpperCase() + target.what.slice(1))} is exactly as it was.</p>
+      <div class="imp-warn imp-warn-severe"><p>${esc(message)}</p></div>
+    </div>
+    <div class="imp-foot"><button class="btn btn-primary" onclick="closeImportModal()">Close</button></div>
+  `)
+}
+
+function showImportPreview(file, key, target, p) {
+  const warnings = p.warnings || []
+  const severe = warnings.filter(w => w.level === 'severe')
+  const rows = p.inserted != null ? p.inserted : (p.total != null ? p.total : null)
+  const current = target.current()
+
+  const stat = (value, label) => `<div class="imp-stat"><div class="imp-stat-n">${value}</div><div class="imp-stat-l">${label}</div></div>`
+  let stats = ''
+  if (key === 'solar') {
+    stats =
+      stat((p.totalRows ?? 0).toLocaleString(), 'rows in the file') +
+      stat((p.inserted ?? 0).toLocaleString(), 'would be imported') +
+      stat((p.excluded ?? 0).toLocaleString(), 'would be left out') +
+      stat((p.withoutCoordinates ?? 0).toLocaleString(), 'without coordinates')
+  } else {
+    stats = stat((p.total ?? 0).toLocaleString(), 'vehicles in the file')
+  }
+
+  const delta = (current != null && rows != null)
+    ? `<p class="imp-delta">${target.what[0].toUpperCase() + target.what.slice(1)} currently holds <strong>${current.toLocaleString()}</strong> ${target.noun}. Importing replaces all of them with the <strong>${rows.toLocaleString()}</strong> in this file.</p>`
+    : `<p class="imp-delta">Importing replaces ${target.what} completely with the contents of this file.</p>`
+
+  const warnHtml = warnings.length
+    ? `<div class="imp-warns">${warnings.map(w => `
+        <div class="imp-warn imp-warn-${esc(w.level)}">
+          <span class="imp-warn-tag">${w.level === 'severe' ? 'Check this' : w.level === 'warn' ? 'Worth knowing' : 'Note'}</span>
+          <p>${esc(w.text)}</p>
+        </div>`).join('')}</div>`
+    : `<div class="imp-warn imp-warn-ok"><p>No problems found in this file.</p></div>`
+
+  const confirmLabel = key === 'solar'
+    ? `Replace the registry with these ${(p.inserted ?? 0).toLocaleString()} installations`
+    : `Replace the register with these ${(p.total ?? 0).toLocaleString()} vehicles`
+
+  openImportModal(`
+    <div class="imp-head${severe.length ? ' imp-head-warn' : ''}">
+      <h2 class="imp-title">Check before importing</h2>
+      <p class="imp-file">${esc(file.name)}${p.sheet ? ' · sheet "' + esc(p.sheet) + '"' : ''}</p>
+    </div>
+    <div class="imp-body">
+      <p class="imp-reassure"><strong>Nothing has changed yet.</strong> This is what would happen if you import this file.</p>
+      <div class="imp-stats">${stats}</div>
+      ${delta}
+      ${warnHtml}
+      <p class="imp-affects">This will change ${esc(target.affects)} on the public website.</p>
+    </div>
+    <div class="imp-foot">
+      <button class="btn btn-ghost" onclick="closeImportModal()">Cancel</button>
+      <button class="btn ${severe.length ? 'btn-danger' : 'btn-primary'}" id="imp-go">${esc(confirmLabel)}</button>
+    </div>
+  `)
+
+  document.getElementById('imp-go').onclick = () => commitDataImport(file, key, target)
+}
+
+async function commitDataImport(file, key, target) {
+  const go = document.getElementById('imp-go')
+  if (go) { go.disabled = true; go.textContent = 'Importing…' }
+  const statusEl = document.getElementById(target.statusId)
+  try {
+    const fd = new FormData()
+    fd.append('file', file)
+    const res = await fetch(`/api/data-files/${key}`, { method: 'POST', credentials: 'include', body: fd })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) throw new Error(data.error || 'Import failed')
+    closeImportModal()
+    const count = data.inserted != null ? data.inserted : data.total
+    if (statusEl) {
+      statusEl.textContent = count != null
+        ? `Imported ${Number(count).toLocaleString()} ${target.noun} from ${file.name}`
+        : `Imported ${file.name}`
+      statusEl.style.color = '#16a34a'
+    }
+    toast(count != null
+      ? `${Number(count).toLocaleString()} ${target.noun} imported — the public pages will show them on their next load`
+      : 'Import complete')
+    setTimeout(() => target.refresh(), 1000)
+  } catch (err) {
+    if (go) { go.disabled = false; go.textContent = 'Try the import again' }
+    toast('Import failed: ' + err.message, 'error')
+    if (statusEl) { statusEl.textContent = 'Import failed: ' + err.message; statusEl.style.color = '#dc2626' }
+  }
+}
+
+function openImportModal(html) {
+  let el = document.getElementById('import-modal')
+  if (!el) {
+    el = document.createElement('div')
+    el.id = 'import-modal'
+    document.body.appendChild(el)
+  }
+  el.innerHTML = `<div class="imp-box" role="dialog" aria-modal="true" aria-labelledby="imp-title">${html}</div>`
+  el.style.display = 'flex'
+}
+
+function closeImportModal() {
+  const el = document.getElementById('import-modal')
+  if (el) { el.style.display = 'none'; el.innerHTML = '' }
 }
 
 // ─── EV FLEET DATA ─────────────────────────────
@@ -1695,29 +1840,9 @@ async function renderEvFleet() {
   applyRbac(STATE.role)
 }
 
-async function uploadVehiclesExcel(input) {
-  const file = input.files[0]
-  if (!file) return
-  const statusEl = document.getElementById('vehicles-upload-status')
-  statusEl.textContent = 'Uploading…'
-  statusEl.style.color = '#6b7280'
-  try {
-    const fd = new FormData()
-    fd.append('file', file)
-    const res = await fetch('/api/data-files/vehicles', { method: 'POST', credentials: 'include', body: fd })
-    if (!res.ok) { const e = await res.json(); throw new Error(e.error || 'Upload failed') }
-    await res.json()
-    statusEl.textContent = `Uploaded: ${file.name}`
-    statusEl.style.color = '#16a34a'
-    toast('Vehicle register updated — the public pages will show it on their next load')
-    setTimeout(() => renderEvFleet(), 1200)
-  } catch (err) {
-    statusEl.textContent = 'Error: ' + err.message
-    statusEl.style.color = '#dc2626'
-    toast('Upload failed: ' + err.message, 'error')
-  }
-  input.value = ''
-}
+// uploadVehiclesExcel is defined with uploadSolarExcel above — both go through
+// startDataImport so the vehicle register gets the same preview-then-confirm
+// treatment as the solar registry.
 
 // The statuses a Planning permit actually carries. The drawer previously offered
 // Active / Inactive / Under Review, none of which a permit ever has, so the

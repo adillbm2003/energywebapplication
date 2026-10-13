@@ -1384,6 +1384,12 @@ const multerExcel = multer({
       const key = req.params.key;
       const meta = DATA_FILES[key];
       if (!meta) return cb(new Error('Unknown data file key'));
+      // The stored dataset IS this file, so a real upload replaces it in place.
+      // A preview must leave it exactly as it is, and multer writes before any
+      // handler runs -- so the only place to divert it is here.
+      if (req.query.dryRun === '1' || req.query.dryRun === 'true') {
+        return cb(null, meta.filename + '.preview-' + Date.now() + '.tmp');
+      }
       cb(null, meta.filename);
     },
   }),
@@ -1407,6 +1413,12 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
   const key = req.params.key;
   if (!DATA_FILES[key]) return res.status(400).json({ error: 'Unknown data file key' });
 
+  // A preview parses and validates the upload and reports exactly what the
+  // import would do, without changing anything. The CMS asks for one before it
+  // offers the Import button, so a spreadsheet with shuffled coordinates or a
+  // missing column is caught while the existing registry is still intact.
+  const dryRun = req.query.dryRun === '1' || req.query.dryRun === 'true';
+
   multerExcel.single('file')(req, res, async (err) => {
     if (err) return res.status(400).json({ error: err.message });
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
@@ -1414,6 +1426,17 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
     if (key === 'vehicles') {
       try {
         const fleetData = parseVehiclesExcel(req.file.path);
+        if (dryRun) {
+          try { fs.unlinkSync(req.file.path); } catch (e) {}
+          return res.json({
+            dryRun: true,
+            filename: req.file.originalname,
+            size: req.file.size,
+            total: fleetData.total,
+            byFuel: fleetData.byFuel || null,
+            categories: fleetData.categories || null,
+          });
+        }
         await db.query(`CREATE TABLE IF NOT EXISTS data_cache (key TEXT PRIMARY KEY, value JSONB, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)`);
         await db.query(`INSERT INTO data_cache (key,value,updated_at) VALUES ($1,$2,CURRENT_TIMESTAMP) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value,updated_at=CURRENT_TIMESTAMP`, ['vehicle_fleet', JSON.stringify(fleetData)]);
         logAction(req.user.username, 'UPLOAD', 'Data File', `Vehicles fleet — ${fleetData.total} records imported`);
@@ -1569,7 +1592,13 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       const skipped = [];
       const filteredOut = [];
       let noCoordinateCount = 0;
-      const inserted = await db.executeTransaction(async (client) => {
+      let blankCapacityCount = 0;
+      // Which heading the capacity actually came from, so the preview can say
+      // "read from <column>" rather than leaving the operator to assume.
+      const capacityColumn = CAPACITY_COLUMNS.find(c => colMap[c.toLowerCase().trim()] !== undefined) || null;
+      let inserted;
+      try {
+      inserted = await db.executeTransaction(async (client) => {
       await client.query('TRUNCATE solar_installations');
 
       let count = 0;
@@ -1654,6 +1683,7 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         // Only convert if clearly in watts (>10000W = >10kW), never for MW-scale systems
         if (capacity !== null && capacity > 10000) capacity = capacity / 1000;
         if (capacity !== null && !(capacity > 0)) capacity = null;
+        if (capacity === null) blankCapacityCount++;
 
         let annualOutput = parseFloat(String(getCol(row,'Annual Output (kWh)','Annual Output','Annual Output kWh') || 0)) || 0;
         if (!annualOutput) {
@@ -1729,8 +1759,16 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
           skipped.push({ row: i + 2, id, reason: rowErr.message });
         }
       }
+      // Abort rather than commit. Everything above has already run against the
+      // real table inside this transaction, so the counts are the true result;
+      // throwing hands them back out while discarding the writes.
+      if (dryRun) { const stop = new Error('__DRY_RUN__'); stop.__dryRunCount = count; throw stop; }
       return count;
       });
+      } catch (stop) {
+        if (dryRun && stop && stop.__dryRunCount !== undefined) inserted = stop.__dryRunCount;
+        else throw stop;
+      }
 
       if (skipped.length > 0) {
         console.warn(`[Solar import] ${skipped.length} row(s) failed to insert.`);
@@ -1738,12 +1776,54 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       if (filteredOut.length > 0) {
         console.log(`[Solar import] ${filteredOut.length} row(s) excluded (no location and not an active permit).`);
       }
-      logAction(
-        req.user.username, 'UPLOAD', 'Data File',
-        `Solar data — ${inserted} imported, ${filteredOut.length} excluded, ${skipped.length} failed`
-      );
+      if (!dryRun) {
+        logAction(
+          req.user.username, 'UPLOAD', 'Data File',
+          `Solar data — ${inserted} imported, ${filteredOut.length} excluded, ${skipped.length} failed`
+        );
+      }
+      if (dryRun) { try { fs.unlinkSync(req.file.path); } catch (e) {} }
+      // Stated in plain language, because the person importing is deciding
+      // whether to go ahead, not debugging a parser.
+      const warnings = [];
+      if (!capacityColumn) {
+        warnings.push({
+          level: 'severe',
+          text: 'No capacity column was recognised, so every installation would be imported with a blank capacity ' +
+                'and the published installed-capacity total would drop to zero. Expected one of: ' +
+                CAPACITY_COLUMNS.join(', ') + '. Found: ' + (headers.filter(Boolean).map(String).join(', ') || 'no headings') + '.',
+        });
+      } else if (blankCapacityCount > 0) {
+        warnings.push({
+          level: 'warn',
+          text: blankCapacityCount + ' of ' + raw.length + ' rows have no capacity in "' + capacityColumn +
+                '". Those installations would appear on the map with no size.',
+        });
+      }
+      if (noCoordinateCount > 0) {
+        warnings.push({
+          level: noCoordinateCount > raw.length * 0.1 ? 'severe' : 'warn',
+          text: noCoordinateCount + ' of ' + raw.length + ' rows have no coordinates and would be placed at the centre ' +
+                'of their parish rather than at the property. On the map they appear stacked on the parish centre.',
+        });
+      }
+      if (skipped.length > 0) {
+        warnings.push({ level: 'severe', text: skipped.length + ' rows could not be read and would be dropped entirely.' });
+      }
+      if (filteredOut.length > 0) {
+        warnings.push({
+          level: 'info',
+          text: filteredOut.length + ' rows would be left out because they have no location and no active permit status. ' +
+                'This is normal for withdrawn or rejected permits.',
+        });
+      }
+
       res.json({
         success: true,
+        dryRun,
+        warnings,
+        capacityColumn,
+        blankCapacity: blankCapacityCount,
         filename: req.file.filename,
         size: req.file.size,
         sheet: sheetName,
