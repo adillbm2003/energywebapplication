@@ -790,7 +790,14 @@ input, select, textarea { font-family: var(--font); }
   background: var(--c-white);
   border: 1px solid var(--c-border);
   border-radius: var(--radius-lg);
-  overflow: hidden;
+  /* overflow-x, not overflow. The hidden value was here to clip the rounded
+     corners, but it also clipped the table: at 390px the lists run 431-753px
+     wide inside a 356px wrapper, so Status and the whole Actions column -- Edit
+     and Delete -- were cut off with no way to reach them. Nothing could be
+     edited or deleted from a phone in any of the ten list views. The corners
+     still clip; the table now scrolls sideways within its own box. */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   box-shadow: var(--shadow-sm);
 }
 .cms-table {

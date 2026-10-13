@@ -3003,6 +3003,28 @@ app.use('/images', (req, res, next) => {
   if (fs.existsSync(local)) return res.sendFile(local);
   res.redirect(302, `${CF_URL}/images${req.url}`);
 });
+// Brand assets that sit at the root of the public tree rather than in /images.
+// Listed explicitly rather than served as a directory: this origin also holds
+// server.cjs, db.cjs and .env, and an open static mount here is what previously
+// exposed them.
+const ROOT_PUBLIC_ASSETS = new Set([
+  'dept-of-energy-white.png',
+  'gov-bermuda-logo.jpg',
+  'bermuda-silhouette.svg',
+  'favicon.svg',
+  'icons.svg',
+]);
+app.use((req, res, next) => {
+  if (req.method !== 'GET') return next();
+  const name = req.path.replace(/^\//, '');
+  if (!ROOT_PUBLIC_ASSETS.has(name)) return next();
+  const built = path.join(SPA_DIST, name);
+  if (fs.existsSync(built)) return res.sendFile(built);
+  const source = path.join(__dirname, 'portal', 'public', name);
+  if (fs.existsSync(source)) return res.sendFile(source);
+  return res.redirect(302, `${CF_URL}/${name}`);
+});
+
 app.use('/guides', (req, res, next) => {
   const local = path.join(distGuides, req.path);
   if (fs.existsSync(local)) return res.sendFile(local);
