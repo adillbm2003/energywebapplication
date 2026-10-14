@@ -1454,13 +1454,13 @@ const multerExcel = multer({
       const key = req.params.key;
       const meta = DATA_FILES[key];
       if (!meta) return cb(new Error('Unknown data file key'));
-      // The stored dataset IS this file, so a real upload replaces it in place.
-      // A preview must leave it exactly as it is, and multer writes before any
-      // handler runs -- so the only place to divert it is here.
-      if (req.query.dryRun === '1' || req.query.dryRun === 'true') {
-        return cb(null, meta.filename + '.preview-' + Date.now() + '.tmp');
-      }
-      cb(null, meta.filename);
+      // Never write over the stored dataset on arrival. multer runs before any
+      // validation, so a spreadsheet the importer goes on to REFUSE had already
+      // replaced the Department's data by the time the refusal was written --
+      // and the refusal claimed nothing had changed. Staging under a temporary
+      // name makes that claim true; commitDataFile() moves it into place only
+      // once the import has actually succeeded.
+      cb(null, meta.filename + '.incoming-' + Date.now() + '.tmp');
     },
   }),
   limits: { fileSize: 20 * 1024 * 1024 },
@@ -1500,11 +1500,38 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
     if (err) return res.status(400).json({ error: err.message });
     if (!req.file) return res.status(400).json({ error: 'No file uploaded' });
 
+    // A preview's upload is a .preview-*.tmp and is always cleaned up. A real
+    // import's upload IS the stored dataset -- multer writes it over the
+    // canonical file by design -- so it must never be deleted on a failure.
+    // Unconditional unlinks on the failure paths destroyed both committed
+    // workbooks: feeding the importer an unreadable file removed the data it
+    // was meant to replace.
+    // The staged upload is never the dataset, so it is always safe to remove.
+    const discardUpload = () => {
+      try { fs.unlinkSync(req.file.path); } catch (e) {}
+    };
+
+    // Called only after an import has succeeded: moves the staged file onto the
+    // canonical name it replaces. A rename on the same filesystem is atomic, so
+    // the dataset is either the old file or the new one, never a half-written
+    // mixture.
+    const commitDataFile = () => {
+      const meta = DATA_FILES[req.params.key];
+      if (!meta) return;
+      const target = path.join(DATA_DIR, meta.filename);
+      try {
+        fs.renameSync(req.file.path, target);
+      } catch (e) {
+        console.error('Could not move the imported file into place:', e.message);
+        discardUpload();
+      }
+    };
+
     if (key === 'vehicles') {
       try {
         const fleetData = parseVehiclesExcel(req.file.path);
         if (dryRun) {
-          try { fs.unlinkSync(req.file.path); } catch (e) {}
+          discardUpload();
           return res.json({
             dryRun: true,
             filename: req.file.originalname,
@@ -1522,13 +1549,22 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         }
         await db.query(`CREATE TABLE IF NOT EXISTS data_cache (key TEXT PRIMARY KEY, value JSONB, updated_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP)`);
         await db.query(`INSERT INTO data_cache (key,value,updated_at) VALUES ($1,$2,CURRENT_TIMESTAMP) ON CONFLICT (key) DO UPDATE SET value=EXCLUDED.value,updated_at=CURRENT_TIMESTAMP`, ['vehicle_fleet', JSON.stringify(fleetData)]);
+        // A register with no vehicles in it is not a register. This used to
+        // report {"success":true,"total":0} for a 24-byte text file and replace
+        // the published fleet with nothing.
+        if (!fleetData.total) {
+          discardUpload();
+          return res.status(400).json({
+            error: 'No vehicles could be read from that file, so the register has not been changed. ' +
+                   'Check it is the Department\'s "Vehicles by Fuel Type" workbook.',
+          });
+        }
+        commitDataFile();
         logAction(req.user.username, 'UPLOAD', 'Data File', `Vehicles fleet — ${fleetData.total} records imported`);
-        return res.json({ success: true, filename: req.file.filename, size: req.file.size, total: fleetData.total });
+        return res.json({ success: true, filename: DATA_FILES[key].filename, size: req.file.size, total: fleetData.total });
       } catch (parseErr) {
         console.error('Vehicles Excel parse error:', parseErr);
-        // Without this a failed preview leaves its .preview-*.tmp sitting in
-        // the authoritative data directory, one per attempt.
-        try { fs.unlinkSync(req.file.path); } catch (e) {}
+        discardUpload();
         if (dryRun) {
           return res.status(400).json({
             error: 'That file could not be read as a vehicle register. Nothing was changed. ' +
@@ -1541,6 +1577,8 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
     }
 
     if (key !== 'solar') {
+      if (dryRun) { discardUpload(); return res.json({ dryRun: true, filename: req.file.originalname, size: req.file.size }); }
+      commitDataFile();
       logAction(req.user.username, 'UPLOAD', 'Data File', DATA_FILES[key].label);
       return res.json({ success: true, filename: req.file.filename, size: req.file.size });
     }
@@ -1665,7 +1703,7 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
       // The truncate-and-reload runs below, so returning now leaves the existing
       // registry untouched.
       if (latCols.first === -1 || lonCols.first === -1) {
-        try { fs.unlinkSync(req.file.path); } catch (e) {}
+        discardUpload();
         const missing = [];
         if (latCols.first === -1) missing.push('latitude');
         if (lonCols.first === -1) missing.push('longitude');
@@ -1887,12 +1925,14 @@ app.post('/api/data-files/:key', authenticate, authorize('Administrator', 'Appro
         console.log(`[Solar import] ${filteredOut.length} row(s) excluded (no location and not an active permit).`);
       }
       if (!dryRun) {
+        commitDataFile();
         logAction(
           req.user.username, 'UPLOAD', 'Data File',
           `Solar data — ${inserted} imported, ${filteredOut.length} excluded, ${skipped.length} failed`
         );
+      } else {
+        discardUpload();
       }
-      if (dryRun) { try { fs.unlinkSync(req.file.path); } catch (e) {} }
       // Stated in plain language, because the person importing is deciding
       // whether to go ahead, not debugging a parser.
       const warnings = [];
