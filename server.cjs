@@ -3026,6 +3026,77 @@ if (spaBuilt) {
 app.use('/portal', express.static(SPA_DIST));
 
 // Fallback all other portal routes to index.html for React Router SPA
+// ── GO LIVE (opening ceremony) ───────────────────────────────────────────────
+const FRONTEND_BUCKET = process.env.FRONTEND_BUCKET || 'energybm-frontend-794528';
+const LIVE_INDEX_KEY = 'index.live-backup.html';   // the parked real homepage
+const HOLDING_BACKUP_KEY = 'index.holding-backup.html'; // the holding page, kept for revert
+
+async function s3GetText(key) {
+  const out = await s3Client.send(new GetObjectCommand({ Bucket: FRONTEND_BUCKET, Key: key }));
+  return await out.Body.transformToString();
+}
+async function s3PutHtml(key, body) {
+  await s3Client.send(new PutObjectCommand({
+    Bucket: FRONTEND_BUCKET,
+    Key: key,
+    Body: body,
+    ContentType: 'text/html; charset=utf-8',
+    CacheControl: 'no-cache,no-store,must-revalidate',
+  }));
+}
+// The live homepage loads the hashed JS bundle; the holding page carries a
+// robots noindex and no bundle. That is the difference we test on.
+const looksLive = (html) => /\/assets\/index-[A-Za-z0-9_-]+\.js/.test(html);
+
+app.get('/api/launch/status', authenticate, authorize('Administrator'), async (req, res, next) => {
+  try {
+    const current = await s3GetText('index.html');
+    res.json({ live: looksLive(current), bytes: current.length });
+  } catch (err) { next(err); }
+});
+
+app.post('/api/launch', authenticate, authorize('Administrator'), async (req, res, next) => {
+  const dryRun = req.query.dryRun === '1' || req.query.dryRun === 'true';
+  try {
+    const current = await s3GetText('index.html');
+    const liveIndex = await s3GetText(LIVE_INDEX_KEY);
+    if (!looksLive(liveIndex)) {
+      return res.status(409).json({ error: 'The parked homepage does not look like the real site. Aborting rather than publishing the wrong page.' });
+    }
+    const alreadyLive = looksLive(current);
+
+    // Preserve the holding page so the site can be put back. Only when the
+    // current page IS the holding page, so a second run cannot overwrite the
+    // backup with an already-live page. This write also proves the PutObject
+    // permission on a harmless key, which is what the dry run exercises.
+    if (!alreadyLive) {
+      await s3PutHtml(HOLDING_BACKUP_KEY, current);
+    }
+
+    if (dryRun) {
+      return res.json({ dryRun: true, wouldGoLive: !alreadyLive, alreadyLive, backedUpHoldingPage: !alreadyLive });
+    }
+    if (alreadyLive) {
+      return res.json({ live: true, alreadyLive: true, message: 'energy.bm was already live.' });
+    }
+
+    await s3PutHtml('index.html', liveIndex);
+    logAction(req.user.username, 'GO LIVE', 'Site', 'energy.bm published to the public');
+    res.json({ live: true, message: 'energy.bm is now live.' });
+  } catch (err) { next(err); }
+});
+
+app.post('/api/launch/revert', authenticate, authorize('Administrator'), async (req, res, next) => {
+  try {
+    let holding;
+    try { holding = await s3GetText(HOLDING_BACKUP_KEY); }
+    catch (e) { return res.status(404).json({ error: 'No saved holding page to revert to. Nothing was changed.' }); }
+    await s3PutHtml('index.html', holding);
+    logAction(req.user.username, 'REVERT', 'Site', 'energy.bm reverted to the holding page');
+    res.json({ live: false, message: 'Reverted to the holding page.' });
+  } catch (err) { next(err); }
+});
+
 app.get(/^\/portal(?:\/.*)?$/, (req, res) => {
   const indexPath = path.join(SPA_DIST, 'index.html');
   if (!fs.existsSync(indexPath)) {
