@@ -19,6 +19,11 @@ export const bursaryService = {
       bio: r.bio,
       achievement: r.achievement,
       focus: r.focus,
+      // The description the Department actually filled in lives across these
+      // fields, not in `bio` (which is empty on the live records). Carry them
+      // through so the recipients section has something to show.
+      education: r.education,
+      background: r.background,
     }))
   },
 }

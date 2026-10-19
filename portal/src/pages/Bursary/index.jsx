@@ -12,6 +12,10 @@ export default function Bursary() {
 
   const { data: programme } = useAsyncData(() => bursaryService.getProgramme(), [], bursaryProgramme)
   const { data: faqs } = useAsyncData(() => bursaryService.getFAQs(), [], bursaryFAQs)
+  // Empty fallback on purpose: if the API cannot be reached, show no recipients
+  // rather than the placeholder students in data/bursary.js, who are not real.
+  const { data: recipients } = useAsyncData(() => bursaryService.getRecipients(), [], [])
+  const shownRecipients = (recipients || []).filter((r) => r && r.name)
 
   return (
     <>
@@ -47,6 +51,58 @@ export default function Bursary() {
               </ul>
             </div>
           </div>
+
+          {shownRecipients.length > 0 && (
+            <div>
+              <SectionHeading title="Meet the Recipients" subtitle="Bermudian students supported by the programme" />
+              <div className="grid gap-5 md:grid-cols-2">
+                {shownRecipients.map((r) => {
+                  // Production fills these; local records carry a two-line `bio`
+                  // instead. Render whichever is present.
+                  const lines = [r.education, r.background, r.achievement, r.focus].filter(Boolean)
+                  const bioLines = !lines.length && r.bio ? String(r.bio).split('\n').map((l) => l.trim()).filter(Boolean) : []
+                  const paragraphs = lines.length ? lines : bioLines
+                  const initials = String(r.name || '?').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase()
+                  return (
+                    <div key={r.id} className="flex flex-col gap-4 rounded-xl border border-slate-200 bg-white card-padding card-shadow sm:flex-row">
+                      <div className="shrink-0">
+                        {r.photoUrl && (
+                          <img
+                            src={r.photoUrl}
+                            alt={r.name}
+                            className="h-28 w-28 rounded-xl object-cover"
+                            loading="lazy"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; if (e.currentTarget.nextElementSibling) e.currentTarget.nextElementSibling.style.display = 'flex' }}
+                          />
+                        )}
+                        <div
+                          className="h-28 w-28 items-center justify-center rounded-xl bg-teal-50 text-2xl font-semibold text-teal-700"
+                          style={{ display: r.photoUrl ? 'none' : 'flex' }}
+                          aria-hidden="true"
+                        >
+                          {initials}
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-navy-900">{r.name}</h3>
+                        {[r.fieldOfStudy, r.academicYear].filter(Boolean).length > 0 && (
+                          <p className="text-sm font-medium text-teal-700">{[r.fieldOfStudy, r.academicYear].filter(Boolean).join(' · ')}</p>
+                        )}
+                        {r.school && <p className="text-sm text-slate-500">{r.school}</p>}
+                        {paragraphs.length > 0 && (
+                          <div className="mt-3 space-y-2">
+                            {paragraphs.map((line, i) => (
+                              <p key={i} className="text-sm leading-relaxed text-slate-600">{line}</p>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
 
           <div>
             <SectionHeading title="Career Pathways in Energy" subtitle="Fields supported by the bursary programme" />
