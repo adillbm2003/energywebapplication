@@ -2521,13 +2521,17 @@ function siteImageCard(s) {
           <code style="font-size:10px">${esc(s.key)}</code> · ${esc(s.recommended || '')}
           ${s.updatedBy ? ` · updated by ${esc(s.updatedBy)}` : ''}
         </p>
-        <div class="write-only" style="display:flex;gap:8px;align-items:center">
-          <label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0">
-            ${isCustom ? 'Replace' : 'Upload'}
-            <input type="file" accept="image/*" style="display:none"
-                   onchange="uploadSiteImage('${esc(s.key)}', this)">
-          </label>
-          ${isCustom ? `<button class="btn btn-sm" onclick="resetSiteImage('${esc(s.key)}')">Reset</button>` : ''}
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-sm" title="Save the current image to your computer — do this before replacing it"
+                  onclick="downloadSiteImage('${esc(s.key)}', '${esc(current)}')">Download</button>
+          <div class="write-only" style="display:flex;gap:8px;align-items:center">
+            <label class="btn btn-sm btn-primary" style="cursor:pointer;margin:0">
+              ${isCustom ? 'Replace' : 'Upload'}
+              <input type="file" accept="image/*" style="display:none"
+                     onchange="uploadSiteImage('${esc(s.key)}', this)">
+            </label>
+            ${isCustom ? `<button class="btn btn-sm" onclick="resetSiteImage('${esc(s.key)}')">Reset</button>` : ''}
+          </div>
           <span class="si-status" id="si-status-${esc(s.key)}" style="font-size:11px;color:#64748b"></span>
         </div>
       </div>
@@ -2544,6 +2548,55 @@ function filterSiteImages(q) {
     const anyVisible = [...g.querySelectorAll('.si-card')].some(c => c.style.display !== 'none')
     g.style.display = anyVisible ? '' : 'none'
   })
+}
+
+// Saves the currently shown image to the operator's computer. The site serves
+// its images same-origin (defaults from /images via CloudFront+S3, custom ones
+// from /uploads), so a same-origin fetch reads them without CORS. If a fetch
+// ever cannot read the bytes -- a genuinely cross-origin source without CORS --
+// the image is opened in a new tab so it can still be saved by hand, rather
+// than failing silently.
+async function downloadSiteImage(key, url) {
+  const status = document.getElementById(`si-status-${key}`)
+  const setStatus = (t, c) => { if (status) { status.textContent = t; status.style.color = c || '#64748b' } }
+  if (!url) { setStatus('No image to download', '#dc2626'); return }
+
+  // Name the file after the slot, with the real extension, so a folder of
+  // downloads is self-describing and a re-upload is unambiguous.
+  const clean = String(url).split('?')[0].split('#')[0]
+  let ext = (clean.match(/\.[a-zA-Z0-9]+$/) || [''])[0].toLowerCase()
+
+  setStatus('Preparing download…')
+  try {
+    const res = await fetch(url, { credentials: 'include' })
+    if (!res.ok) throw new Error('HTTP ' + res.status)
+    const blob = await res.blob()
+    if (!ext) {
+      const t = blob.type || ''
+      ext = t.includes('png') ? '.png' : t.includes('webp') ? '.webp'
+          : t.includes('svg') ? '.svg' : t.includes('gif') ? '.gif' : '.jpg'
+    }
+    const objUrl = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = objUrl
+    a.download = key + ext
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    URL.revokeObjectURL(objUrl)
+    setStatus('Saved to your downloads', '#16a34a')
+    toast('Saved ' + key + ext + ' to your computer')
+  } catch (err) {
+    setStatus('Opened in a new tab — right-click to save', '#d97706')
+    const a = document.createElement('a')
+    a.href = url
+    a.target = '_blank'
+    a.rel = 'noopener'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    toast('Could not download directly — opened the image in a new tab so you can right-click and Save image.', 'warning')
+  }
 }
 
 async function uploadSiteImage(key, input) {
