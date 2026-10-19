@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Launch of energy.bm</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#0b1f3a; --navy2:#102a4c; --teal:#14b8a6; --teal-d:#0d9488;
+    --gold:#c8a94b; --ink:#0f172a; --muted:#94a3b8; --line:rgba(255,255,255,.12);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:Inter,system-ui,Arial,sans-serif; color:#fff;
+    background:radial-gradient(1200px 700px at 50% -10%,#16365f 0%,var(--navy) 55%,#08182e 100%);
+    min-height:100dvh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:24px; overflow:hidden; position:relative;
+  }
+  canvas#confetti{position:fixed; inset:0; width:100%; height:100%; pointer-events:none; z-index:5}
+  .wrap{position:relative; z-index:10; width:100%; max-width:640px}
+  .crest{width:230px; max-width:70%; height:auto; margin:0 auto 22px; display:block; filter:drop-shadow(0 6px 20px rgba(0,0,0,.4))}
+  .kicker{letter-spacing:.22em; text-transform:uppercase; font-size:12px; font-weight:600; color:var(--gold); margin-bottom:10px}
+  h1{font-size:clamp(28px,6vw,46px); font-weight:800; margin:0 0 6px; line-height:1.08}
+  .dept{color:#cfe0f5; font-weight:500; font-size:15px; margin:0 0 28px}
+  .sub{color:#b9c7dc; font-size:16px; line-height:1.6; max-width:460px; margin:0 auto 30px}
+  .btn{
+    appearance:none; border:0; cursor:pointer; font-family:inherit; font-weight:700;
+    font-size:18px; color:var(--navy); background:linear-gradient(180deg,#fcd678,var(--gold));
+    padding:18px 40px; border-radius:999px; box-shadow:0 14px 40px rgba(200,169,75,.45);
+    transition:transform .12s ease, box-shadow .12s ease, opacity .2s; letter-spacing:.01em;
+  }
+  .btn:hover{transform:translateY(-2px); box-shadow:0 18px 48px rgba(200,169,75,.55)}
+  .btn:active{transform:translateY(0)}
+  .btn:disabled{opacity:.5; cursor:default; transform:none; box-shadow:none}
+  .btn.secondary{background:transparent; color:#cfe0f5; border:1px solid var(--line); box-shadow:none; font-weight:600; font-size:15px; padding:12px 22px}
+  .hint{color:var(--muted); font-size:13px; margin-top:18px}
+  .count{font-size:clamp(90px,26vw,200px); font-weight:800; line-height:1; color:#fff; text-shadow:0 10px 50px rgba(20,184,166,.5); animation:pop .9s ease}
+  @keyframes pop{0%{transform:scale(.4);opacity:0}30%{transform:scale(1.08);opacity:1}100%{transform:scale(1);opacity:1}}
+  .count-label{color:var(--teal); letter-spacing:.2em; text-transform:uppercase; font-size:13px; font-weight:600; margin-top:12px}
+  .live-badge{display:inline-flex; align-items:center; gap:10px; background:rgba(20,184,166,.15); border:1px solid rgba(20,184,166,.5); color:#7ff0dd; padding:8px 16px; border-radius:999px; font-weight:600; font-size:14px; margin-bottom:22px}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 0 rgba(20,184,166,.7);animation:pulse 1.6s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(20,184,166,.6)}70%{box-shadow:0 0 0 12px rgba(20,184,166,0)}100%{box-shadow:0 0 0 0 rgba(20,184,166,0)}}
+  a.sitelink{display:inline-block; margin-top:8px; color:#fff; background:var(--teal-d); text-decoration:none; font-weight:700; padding:16px 34px; border-radius:999px; font-size:17px; box-shadow:0 12px 36px rgba(13,148,136,.45)}
+  a.sitelink:hover{background:var(--teal)}
+  .err{color:#fecaca; background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.4); padding:12px 16px; border-radius:12px; font-size:14px; margin-top:18px}
+  .rehearse-tag{position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:20; background:rgba(200,169,75,.15); border:1px solid rgba(200,169,75,.5); color:#f3d98a; padding:6px 14px; border-radius:999px; font-size:12px; font-weight:600; letter-spacing:.04em; display:none}
+  .foot{position:fixed; bottom:16px; left:0; right:0; text-align:center; color:rgba(255,255,255,.35); font-size:12px; z-index:10}
+  .fade{animation:fade .5s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<canvas id="confetti"></canvas>
+<div class="rehearse-tag" id="rehearseTag">Rehearsal mode — nothing will actually go live</div>
+
+<div class="wrap">
+  <img class="crest" src="/dept-of-energy-white.png" alt="Government of Bermuda — Department of Energy" onerror="this.style.display='none'">
+  <div class="kicker">Government of Bermuda</div>
+
+  <!-- READY -->
+  <section id="ready" hidden class="fade">
+    <h1>Launch of <span style="color:var(--gold)">energy.bm</span></h1>
+    <p class="dept">Department of Energy</p>
+    <p class="sub">When you are ready to open the new website to the public, press the button. A three-second countdown will begin, and energy.bm will go live.</p>
+    <button class="btn" id="launchBtn">Launch energy.bm</button>
+    <div class="hint" id="readyHint">Signed in and ready.</div>
+  </section>
+
+  <!-- COUNTDOWN -->
+  <section id="countdown" hidden>
+    <div class="count" id="countNum">3</div>
+    <div class="count-label" id="countLabel">Going live…</div>
+  </section>
+
+  <!-- SIGN-IN NEEDED -->
+  <section id="needauth" hidden class="fade">
+    <h1>Almost ready</h1>
+    <p class="dept">Department of Energy</p>
+    <p class="sub">To launch the site you first need to sign in to the content management system in this browser. Open it, sign in, then come back and check again.</p>
+    <a class="sitelink" href="/cms-admin.html" target="_blank" rel="noopener">Open the CMS to sign in</a>
+    <div style="margin-top:16px"><button class="btn secondary" id="recheckBtn">I've signed in — check again</button></div>
+    <div class="err" id="authErr" hidden></div>
+  </section>
+
+  <!-- LIVE -->
+  <section id="live" hidden class="fade">
+    <div class="live-badge"><span class="dot"></span> <span id="liveBadgeText">energy.bm is now LIVE</span></div>
+    <h1 id="liveTitle">The site is live 🎉</h1>
+    <p class="sub" id="liveSub">energy.bm is now open to the public.</p>
+    <a class="sitelink" href="https://energy.bm" target="_blank" rel="noopener">Open energy.bm →</a>
+  </section>
+
+  <!-- ERROR -->
+  <section id="failed" hidden class="fade">
+    <h1>That didn't go through</h1>
+    <p class="sub">The launch could not be completed. Nothing has changed. You can try again.</p>
+    <div class="err" id="failMsg"></div>
+    <div style="margin-top:18px"><button class="btn secondary" id="retryBtn">Try again</button></div>
+  </section>
+
+  <!-- LOADING -->
+  <section id="loading"><p class="sub" style="color:var(--muted)">Checking launch status…</p></section>
+</div>
+
+<div class="foot">Government of Bermuda · Department of Energy · Authorised staff only</div>
+
+<script>
+(function(){
+  var REHEARSE = /[?&]rehearse=1\b/.test(location.search);
+  var sections = ['ready','countdown','needauth','live','failed','loading'];
+  function show(id){ sections.forEach(function(s){ document.getElementById(s).hidden = (s!==id); }); }
+  function api(path, opts){ return fetch(path, Object.assign({credentials:'include', headers:{'Content-Type':'application/json'}}, opts||{})); }
+
+  if (REHEARSE) document.getElementById('rehearseTag').style.display='block';
+
+  // ---- status check ----
+  function check(){
+    show('loading');
+    api('/api/launch/status').then(function(r){
+      if (r.status === 401) { show('needauth'); return null; }
+      return r.json();
+    }).then(function(d){
+      if (!d) return;
+      if (d.live) { revealLive(true); }
+      else {
+        show('ready');
+        document.getElementById('readyHint').textContent = REHEARSE
+          ? 'Rehearsal mode — the countdown runs but the site stays on the holding page.'
+          : 'Signed in and ready.';
+      }
+    }).catch(function(){ show('needauth'); document.getElementById('authErr').hidden=false;
+      document.getElementById('authErr').textContent='Could not reach the server. Check your connection and try again.'; });
+  }
+
+  // ---- countdown then launch ----
+  function run(){
+    show('countdown');
+    var n = 3;
+    var numEl = document.getElementById('countNum');
+    var labelEl = document.getElementById('countLabel');
+    labelEl.textContent = REHEARSE ? 'Rehearsing…' : 'Going live…';
+    numEl.textContent = n;
+    numEl.style.animation='none'; void numEl.offsetWidth; numEl.style.animation='';
+    var timer = setInterval(function(){
+      n--;
+      if (n > 0){ numEl.textContent=n; numEl.style.animation='none'; void numEl.offsetWidth; numEl.style.animation=''; }
+      else {
+        clearInterval(timer);
+        numEl.textContent='0';
+        launch();
+      }
+    }, 1000);
+  }
+
+  function launch(){
+    var url = '/api/launch' + (REHEARSE ? '?dryRun=1' : '');
+    api(url, {method:'POST'}).then(function(r){ return r.json().then(function(d){ return {ok:r.ok, d:d}; }); })
+    .then(function(res){
+      if (!res.ok){ fail((res.d && res.d.error) || 'The launch request was rejected.'); return; }
+      if (REHEARSE){ revealRehearsal(res.d); } else { revealLive(false); }
+    }).catch(function(){ fail('The launch request could not be sent.'); });
+  }
+
+  function fail(msg){ document.getElementById('failMsg').textContent = msg; show('failed'); }
+
+  function revealLive(already){
+    document.getElementById('liveBadgeText').textContent = 'energy.bm is now LIVE';
+    document.getElementById('liveTitle').textContent = already ? 'energy.bm is live 🎉' : 'The site is live 🎉';
+    document.getElementById('liveSub').textContent = already
+      ? 'The site is already open to the public.'
+      : 'energy.bm is now open to the public.';
+    show('live'); party();
+  }
+  function revealRehearsal(d){
+    document.getElementById('liveBadgeText').textContent = 'Rehearsal successful';
+    document.getElementById('liveTitle').textContent = 'Rehearsal complete ✅';
+    document.getElementById('liveSub').textContent = 'The real launch will work. The site is still on the holding page — nothing was published.';
+    document.querySelector('#live a.sitelink').textContent = 'Run again';
+    document.querySelector('#live a.sitelink').href = location.href;
+    document.querySelector('#live a.sitelink').target='_self';
+    show('live'); party();
+  }
+
+  // ---- confetti ----
+  function party(){
+    var c = document.getElementById('confetti'), ctx = c.getContext('2d');
+    var W,H; function size(){ W=c.width=innerWidth; H=c.height=innerHeight; } size(); addEventListener('resize', size);
+    var cols = ['#14b8a6','#c8a94b','#fcd678','#ffffff','#5eead4','#0d9488'];
+    var P = []; for (var i=0;i<160;i++){ P.push({x:Math.random()*W, y:-20-Math.random()*H*0.6, r:4+Math.random()*6, c:cols[(Math.random()*cols.length)|0], vy:2+Math.random()*4, vx:-2+Math.random()*4, a:Math.random()*Math.PI, va:-.2+Math.random()*.4}); }
+    var start = Date.now();
+    (function frame(){
+      ctx.clearRect(0,0,W,H);
+      P.forEach(function(p){ p.x+=p.vx; p.y+=p.vy; p.a+=p.va; p.vy+=0.02;
+        ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.a); ctx.fillStyle=p.c; ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6); ctx.restore();
+        if (p.y>H+20){ p.y=-20; p.x=Math.random()*W; } });
+      if (Date.now()-start < 6500) requestAnimationFrame(frame); else ctx.clearRect(0,0,W,H);
+    })();
+  }
+
+  document.getElementById('launchBtn').addEventListener('click', function(){ this.disabled=true; run(); });
+  document.getElementById('recheckBtn').addEventListener('click', check);
+  document.getElementById('retryBtn').addEventListener('click', check);
+  check();
+})();
+</script>
+</body>
+</html>
